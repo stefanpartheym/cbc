@@ -9,7 +9,7 @@ endif
 
 SRC_DIR                := src
 OBJ_DIR                := obj
-SOURCES                := main.c
+SOURCES                := main.c utils.c cb_utils.c
 OBJECTS                := $(SOURCES:%.c=%.o)
 OBJ                    := $(OBJECTS:%=$(OBJ_DIR)/%)
 
