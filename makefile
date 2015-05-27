@@ -3,21 +3,31 @@
 ################################################################################
 
 TARGET                 := cbc
+TARGET_TEST            := cbc_test
 ifeq ($(OS), Windows_NT)
 TARGET                 := $(TARGET).exe
+TARGET_TEST            := $(TARGET_TEST).exe
 endif
 
 SRC_DIR                := src
+TEST_DIR               := test
 OBJ_DIR                := obj
-SOURCES                := main.c utils.c cb_utils.c \
+OBJ_DIR_TEST           := obj/$(TEST_DIR)
+MAIN                   := main.c
+SOURCES                := utils.c cb_utils.c \
                           variant.c vector.c
 OBJECTS                := $(SOURCES:%.c=%.o)
-OBJ                    := $(OBJECTS:%=$(OBJ_DIR)/%)
+OBJ                    := $(MAIN:%.c=$(OBJ_DIR)/%.o) $(OBJECTS:%=$(OBJ_DIR)/%)
+SOURCES_TEST           := test.c test_utils.c
+OBJ_TEST               := $(SOURCES_TEST:%.c=$(OBJ_DIR_TEST)/%.o) \
+                          $(OBJECTS:%=$(OBJ_DIR_TEST)/%)
 
 CFLAGS_COMMON          := -Wall -pedantic-errors -ansi
 CFLAGS                 := -g $(CFLAGS_COMMON) -D DEBUG
 CFLAGS_RELEASE         := $(CFLAGS_COMMON)
 LDFLAGS                := 
+CFLAGS_TEST            := -I$(TEST_DIR) $(CFLAGS) -D inline=__inline
+LDFLAGS_TEST           := -lcmocka $(LDFLAGS)
 
 MKDIR                  := mkdir -p
 GDB                    := gdb
@@ -94,3 +104,64 @@ clean:
 rebuild: clean default
 
 .PHONY: clean rebuild
+
+
+# ------------------------------------------------------------------------------
+# TEST
+
+# test target
+test: $(TARGET_TEST)
+
+$(TARGET_TEST): $(OBJ_TEST)
+	$(CC) -o $@ $^ $(LDFLAGS_TEST)
+
+# build test object files
+$(OBJ_DIR_TEST)/%.o: $(TEST_DIR)/%.c $(OBJ_DIR_TEST)/
+	$(CC) $(CFLAGS_TEST) -o $@ -c $<
+
+# build regular object files for test
+$(OBJ_DIR_TEST)/%.o: $(SRC_DIR)/%.c $(OBJ_DIR_TEST)/
+	$(CC) $(CFLAGS_TEST) -o $@ -c $<
+
+# create object file directory
+$(OBJ_DIR_TEST)/:
+	$(MKDIR) $@
+
+.PHONY: test
+
+
+# execution of test target
+trun:     test-run
+test-run: $(TARGET_TEST)
+	@./$<
+
+trund:         test-rundebug
+test-rundebug: $(TARGET_TEST)
+	$(GDB) ./$<
+
+.PHONY: trun test-run trund test-rundebug
+
+
+# memory-check for test target
+tmc:           test-memcheck
+test-memcheck: $(TARGET_TEST)
+	$(VALGRIND) $(VALGRIND_OPTIONS) ./$<
+
+tmcf:               test-memcheck-full
+test-memcheck-full: VALGRIND_OPTIONS := $(VALGRIND_OPTIONS) --leak-check=full
+test-memcheck-full: $(TARGET_TEST)
+	$(VALGRIND) $(VALGRIND_OPTIONS) ./$<
+
+.PHONY: tmc test-memcheck tmcf test-memcheck-full
+
+
+# cleanup test target
+tclean: test-clean
+test-clean:
+	$(RM) $(TARGET_TEST) $(OBJ_TEST)
+
+# cleanup all targets
+aclean: clean tclean
+
+.PHONY: tclean test-clean
+.PHONY: aclean
