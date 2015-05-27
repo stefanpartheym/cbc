@@ -8,4 +8,8 @@
 #include "test_utils.h"
 
 
+void vector_test(void** state);
+void vector_get_test(void** state);
+
+
 #endif /* TEST_H */
