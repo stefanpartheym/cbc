@@ -75,7 +75,7 @@ void cb_variant_destroy(CbVariant* self)
         default: cb_abort("Invalid variant type"); break;
     }
     
-    free(self);
+    memfree(self);
 }
 
 CbVariant* cb_variant_copy(const CbVariant* variant)
