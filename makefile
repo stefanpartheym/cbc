@@ -19,7 +19,7 @@ SOURCES                := utils.c cb_utils.c \
 OBJECTS                := $(SOURCES:%.c=%.o)
 OBJ                    := $(MAIN:%.c=$(OBJ_DIR)/%.o) $(OBJECTS:%=$(OBJ_DIR)/%)
 SOURCES_TEST           := test.c test_utils.c \
-                          vector_test.c
+                          vector_test.c variant_test.c
 OBJ_TEST               := $(SOURCES_TEST:%.c=$(OBJ_DIR_TEST)/%.o) \
                           $(OBJECTS:%=$(OBJ_DIR_TEST)/%)
 

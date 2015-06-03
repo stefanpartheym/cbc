@@ -11,5 +11,8 @@
 void vector_test(void** state);
 void vector_get_test(void** state);
 
+void variant_alloc_test(void** state);
+void variant_tyeps_test(void** state);
+
 
 #endif /* TEST_H */
