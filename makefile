@@ -14,12 +14,12 @@ TEST_DIR               := test
 OBJ_DIR                := obj
 OBJ_DIR_TEST           := obj/$(TEST_DIR)
 MAIN                   := main.c
-SOURCES                := utils.c cb_utils.c \
+SOURCES                := utils.c cb_utils.c error_handling.c \
                           variant.c vector.c
 OBJECTS                := $(SOURCES:%.c=%.o)
 OBJ                    := $(MAIN:%.c=$(OBJ_DIR)/%.o) $(OBJECTS:%=$(OBJ_DIR)/%)
 SOURCES_TEST           := test.c test_utils.c \
-                          vector_test.c variant_test.c
+                          vector_test.c variant_test.c error_handling_test.c
 OBJ_TEST               := $(SOURCES_TEST:%.c=$(OBJ_DIR_TEST)/%.o) \
                           $(OBJECTS:%=$(OBJ_DIR_TEST)/%)
 
@@ -61,7 +61,6 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 object_dir: $(OBJ_DIR)/
 $(OBJ_DIR)/:
 	$(MKDIR) $@
-
 .PHONY: default debug release build object_dir
 
 
@@ -111,24 +110,25 @@ rebuild: clean default
 # TEST
 
 # test target
-test: $(TARGET_TEST)
+test: build_test
+build_test: $(OBJ_DIR_TEST)/ $(TARGET_TEST)
 
 $(TARGET_TEST): $(OBJ_TEST)
 	$(CC) -o $@ $^ $(LDFLAGS_TEST)
 
 # build test object files
-$(OBJ_DIR_TEST)/%.o: $(TEST_DIR)/%.c $(OBJ_DIR_TEST)/
+$(OBJ_DIR_TEST)/%.o: $(TEST_DIR)/%.c
 	$(CC) $(CFLAGS_TEST) -o $@ -c $<
 
 # build regular object files for test
-$(OBJ_DIR_TEST)/%.o: $(SRC_DIR)/%.c $(OBJ_DIR_TEST)/
+$(OBJ_DIR_TEST)/%.o: $(SRC_DIR)/%.c
 	$(CC) $(CFLAGS_TEST) -o $@ -c $<
 
 # create object file directory
 $(OBJ_DIR_TEST)/:
 	$(MKDIR) $@
 
-.PHONY: test
+.PHONY: test build_test
 
 
 # execution of test target
