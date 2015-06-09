@@ -15,11 +15,16 @@ OBJ_DIR                := obj
 OBJ_DIR_TEST           := obj/$(TEST_DIR)
 MAIN                   := main.c
 SOURCES                := utils.c cb_utils.c error_handling.c \
-                          variant.c vector.c
+                          variant.c vector.c stack.c hash_table.c \
+                          symbol.c scope.c symbol_table.c \
+                          ast.c ast_binary.c ast_unary.c ast_value.c \
+                          ast_variable.c
 OBJECTS                := $(SOURCES:%.c=%.o)
 OBJ                    := $(MAIN:%.c=$(OBJ_DIR)/%.o) $(OBJECTS:%=$(OBJ_DIR)/%)
 SOURCES_TEST           := test.c test_utils.c \
-                          vector_test.c variant_test.c error_handling_test.c
+                          vector_test.c variant_test.c error_handling_test.c \
+                          stack_test.c hash_table_test.c symbol_table_test.c \
+                          ast_test.c
 OBJ_TEST               := $(SOURCES_TEST:%.c=$(OBJ_DIR_TEST)/%.o) \
                           $(OBJECTS:%=$(OBJ_DIR_TEST)/%)
 

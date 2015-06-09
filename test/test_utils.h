@@ -15,6 +15,8 @@
 #include <stdio.h>
 #include <stdbool.h>
 
+#include "../src/variant.h"
+
 
 typedef struct TestDummy TestDummy;
 struct TestDummy
@@ -31,6 +33,33 @@ void dummy_destroy(TestDummy* self);
 
 /* -------------------------------------------------------------------------- */
 
+
+#define assert_cb_variant_equal(expected, actual) \
+    _assert_cb_variant_equal(expected, actual, __FILE__, __LINE__)
+#define assert_cb_integer_equal(expected, actual) \
+    _assert_cb_integer_equal(expected, actual, __FILE__, __LINE__)
+
+/*
+ * Check if CbVariant structs are equals
+ */
+void _assert_cb_variant_equal(const CbVariant* expected,
+                              const CbVariant* actual,
+                              const char * const file,
+                              const int line);
+
+/*
+ * Check if CbVariant has a specific numeric value
+ */
+void _assert_cb_integer_equal(const CbIntegerDataType expected,
+                              const CbVariant* actual,
+                              const char * const file,
+                              const int line);
+
+/*
+ * Copy stream content to a string
+ * 
+ * NOTE: Arguemnt string must be allocated before this function is called!
+ */
 void stream_to_string(FILE* stream, char* string, bool trim);
 
 

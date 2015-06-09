@@ -21,11 +21,70 @@ void dummy_destroy(TestDummy* self)
 
 /* -------------------------------------------------------------------------- */
 
-/*
- * Copy stream content to a string
- * 
- * NOTE: Arguemnt string must be allocated before this function is called!
- */
+void _assert_cb_variant_equal(const CbVariant* expected,
+                              const CbVariant* actual,
+                              const char * const file,
+                              const int line)
+{
+    /* compare types */
+    CbVariantType expected_type = cb_variant_get_type(expected);
+    CbVariantType actual_type   = cb_variant_get_type(actual);
+    _assert_int_equal(cast_to_largest_integral_type(expected_type),
+                      cast_to_largest_integral_type(actual_type),
+                      file, line);
+    _assert_true(
+        cast_to_largest_integral_type(cb_variant_type_is_valid(expected_type)),
+        "Expected variant type is not valid",
+        file,
+        line
+    );
+    
+    /* compare values */
+    switch (expected_type)
+    {
+        case CB_VARIANT_TYPE_INTEGER:
+            _assert_int_equal(
+                cast_to_largest_integral_type(cb_integer_get_value(expected)),
+                cast_to_largest_integral_type(cb_integer_get_value(actual)),
+                file, line
+            );
+            break;
+        
+        case CB_VARIANT_TYPE_FLOAT:
+        {
+            CbFloatDataType value_expected = cb_float_get_value(expected);
+            CbFloatDataType value_actual   = cb_float_get_value(actual);
+            char msg[128];
+            sprintf(msg, "expected %f, but was %f", value_expected, value_actual);
+            
+            _assert_true(
+                cast_to_largest_integral_type(value_expected == value_actual),
+                msg, file, line
+            );
+            break;
+        }
+        
+        case CB_VARIANT_TYPE_UNDEFINED:
+            /* CB_VARIANT_TYPE_UNDEFINED has no value to be compared -> equal */
+            break;
+        
+        default:
+            _assert_true(cast_to_largest_integral_type(0),
+                         "Invalid variant type", file, line);
+            break;
+    }
+}
+
+void _assert_cb_integer_equal(const CbIntegerDataType expected,
+                              const CbVariant* actual,
+                              const char * const file,
+                              const int line)
+{
+    CbVariant* expected_variant = cb_integer_create(expected);
+    _assert_cb_variant_equal(expected_variant, actual, file, line);
+    cb_variant_destroy(expected_variant);
+}
+
 void stream_to_string(FILE* stream, char* string, bool trim)
 {
     rewind(stream); /* go to beginning of the stream */
