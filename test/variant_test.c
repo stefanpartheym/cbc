@@ -53,6 +53,6 @@ void variant_types_test(void** state)
     /* float variant */
     variant = cb_float_create(123.000321);
     assert_true(cb_variant_is_float(variant));
-    assert_true(123.000321 == cb_float_get_value(variant));
+    assert_true(dequal(123.000321, cb_float_get_value(variant)));
     cb_variant_destroy(variant);
 }

@@ -90,6 +90,11 @@ size_t fsize(FILE* f);
  */
 void msleep(unsigned int mseconds);
 
+/*
+ * Check if two double values are equal
+ */
+bool dequal(double a, double b);
+
 
 /*******************************************************************************
  * Additional utility functions, that are not available in ANSI C.

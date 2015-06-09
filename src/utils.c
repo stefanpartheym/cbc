@@ -1,6 +1,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <math.h>
+#include <float.h>
 #include <errno.h>
 
 #include "utils.h"
@@ -100,6 +102,11 @@ void msleep(unsigned int mseconds)
     
     t = clock();
     while ((clock() - t) < interval) {}
+}
+
+bool dequal(double a, double b)
+{
+    return fabs(a - b) < DBL_EPSILON;
 }
 
 
