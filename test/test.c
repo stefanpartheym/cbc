@@ -5,7 +5,7 @@
 int main(int argc, char* argv[])
 {
     const struct CMUnitTest tests[] = {
-        cmocka_unit_test(vector_test),
+        cmocka_unit_test(vector_common_test),
         cmocka_unit_test(vector_get_test),
         cmocka_unit_test(variant_alloc_test),
         cmocka_unit_test(variant_types_test),

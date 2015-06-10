@@ -8,7 +8,7 @@
 #include "test_utils.h"
 
 
-void vector_test(void** state);
+void vector_common_test(void** state);
 void vector_get_test(void** state);
 
 void variant_alloc_test(void** state);

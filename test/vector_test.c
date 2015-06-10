@@ -8,7 +8,7 @@
 
 /* -------------------------------------------------------------------------- */
 
-void vector_test(void** state)
+void vector_common_test(void** state)
 {
     Vector* v;
     TestDummy* dummy = NULL;
@@ -71,8 +71,10 @@ void vector_get_test(void** state)
     
     while (vector_get_count(v) > 0)
     {
-        int index = vector_get_count(v) - 1;
-        dummy_destroy(vector_remove(v, index));
+        int index       = vector_get_count(v) - 1;
+        VectorItem item = vector_remove(v, index);
+        assert_non_null(item);
+        dummy_destroy(item);
     }
     
     vector_destroy(v);
