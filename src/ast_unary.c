@@ -57,15 +57,14 @@ CbVariant* cb_ast_unary_node_eval(const CbAstUnaryNode* self)
     CbVariant* result = NULL;
     CbVariant* value  = cb_ast_node_eval(self->base.left);
     
-    /* make sure variant type of evaluated node is correct */
-    cb_assert(cb_variant_is_numeric(value));
-    
     switch (self->operator_type)
     {
         case CB_UNARY_OPERATOR_TYPE_MINUS:
         {
-            if (cb_variant_is_numeric(value))
+            if (cb_variant_is_integer(value))
                 result = cb_integer_create( - cb_integer_get_value(value));
+            else if (cb_variant_is_float(value))
+                result = cb_float_create( - cb_float_get_value(value));
             else
                 /* TODO: handle all compatible AST node types */
                 cb_abort("Wrong variant type");

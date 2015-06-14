@@ -97,13 +97,22 @@ void ast_eval_test(void** state)
     test_ast_binary_node_eval(
         CB_BINARY_OPERATOR_TYPE_DIV, 10,  -8,  cb_float_create(-1.25));
     
-    /* unary AST node */
+    /* unary AST node (expression: - <integer>) */
     unary_node = cb_ast_unary_node_create(
         CB_UNARY_OPERATOR_TYPE_MINUS,
         (CbAstNode*) test_create_ast_value_integer_node(123)
     );
     result = cb_ast_node_eval((CbAstNode*) unary_node);
     assert_cb_integer_equal(-123, result);
+    cb_variant_destroy(result);
+    cb_ast_node_destroy((CbAstNode*) unary_node);
+    /* unary AST node (expression: - <float>) */
+    unary_node = cb_ast_unary_node_create(
+        CB_UNARY_OPERATOR_TYPE_MINUS,
+        (CbAstNode*) test_create_ast_value_float_node(321.00123)
+    );
+    result = cb_ast_node_eval((CbAstNode*) unary_node);
+    assert_cb_float_equal(-321.00123, result);
     cb_variant_destroy(result);
     cb_ast_node_destroy((CbAstNode*) unary_node);
     
@@ -134,6 +143,14 @@ void ast_check_semantic_test(void** state)
     node = (CbAstNode*) cb_ast_binary_node_create(
         CB_BINARY_OPERATOR_TYPE_ADD,
         (CbAstNode*) test_create_ast_value_integer_node(123),
+        (CbAstNode*) test_create_ast_value_float_node(321.00123)
+    );
+    assert_true(cb_ast_node_check_semantic(node, NULL));
+    cb_ast_node_destroy(node);
+    
+    /* expression: - <float> */
+    node = (CbAstNode*) cb_ast_unary_node_create(
+        CB_UNARY_OPERATOR_TYPE_MINUS,
         (CbAstNode*) test_create_ast_value_float_node(321.00123)
     );
     assert_true(cb_ast_node_check_semantic(node, NULL));
@@ -201,24 +218,6 @@ void ast_check_semantic_error_test(void** state)
     assert_string_equal("semantic error: line 1: variable 'test_var' is "\
                         "not declared in an available scope", stream_content);
     cb_symbol_table_destroy(symbols);
-    
-    
-    /*
-    node = (CbAstNode*) cb_ast_unary_node_create(
-        CB_UNARY_OPERATOR_TYPE_MINUS,
-        (CbAstNode*) test_create_ast_value_float_node(321.00123)
-    );
-    cb_ast_node_set_line(node, 1);
-    assert_false(cb_ast_node_check_semantic(node));
-    cb_ast_node_destroy(node);
-    assert_true(cb_error_occurred());
-    cb_error_process();
-    assert_false(cb_error_occurred());
-    stream_to_string(*state, stream_content, true);
-    assert_string_equal("semantic error: line 1: invalid operand type for "\
-                        "unary '-', expecting numeric type",
-                        stream_content);
-    */
 }
 
 
