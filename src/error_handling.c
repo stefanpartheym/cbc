@@ -1,7 +1,3 @@
-/*******************************************************************************
- * error_handling -- Collection of error handling utilities
- ******************************************************************************/
-
 #include <stdlib.h>
 #include <stdarg.h>
 #include <string.h>
