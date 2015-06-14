@@ -85,6 +85,16 @@ void _assert_cb_integer_equal(const CbIntegerDataType expected,
     cb_variant_destroy(expected_variant);
 }
 
+void _assert_cb_float_equal(const CbFloatDataType expected,
+                            const CbVariant* actual,
+                            const char * const file,
+                            const int line)
+{
+    CbVariant* expected_variant = cb_float_create(expected);
+    _assert_cb_variant_equal(expected_variant, actual, file, line);
+    cb_variant_destroy(expected_variant);
+}
+
 void stream_to_string(FILE* stream, char* string, bool trim)
 {
     rewind(stream); /* go to beginning of the stream */
