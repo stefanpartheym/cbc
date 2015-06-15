@@ -3,6 +3,7 @@
  ******************************************************************************/
 
 #include "../src/symbol_table.h"
+#include "../src/symbol_variable.h"
 #include "test.h"
 
 
@@ -24,15 +25,9 @@ void teardown_symbol_table(void** state)
 void symbol_table_common_test(void** state)
 {
     const CbSymbol* symbol;
-    CbSymbol* test1 = cb_symbol_create("test_var",
-                                       CB_SYMBOL_TYPE_VARIABLE,
-                                       CB_VARIANT_TYPE_INTEGER);
-    CbSymbol* test2 = cb_symbol_create("test_var2",
-                                       CB_SYMBOL_TYPE_VARIABLE,
-                                       CB_VARIANT_TYPE_INTEGER);
-    CbSymbol* test3 = cb_symbol_create("test_var3",
-                                       CB_SYMBOL_TYPE_VARIABLE,
-                                       CB_VARIANT_TYPE_INTEGER);
+    CbSymbol* test1   = (CbSymbol*) cb_symbol_variable_create("test_var");
+    CbSymbol* test2   = (CbSymbol*) cb_symbol_variable_create("test_var2");
+    CbSymbol* test3   = (CbSymbol*) cb_symbol_variable_create("test_var3");
     CbSymbolTable* st = cb_symbol_table_create();
     
     assert_null(cb_symbol_table_insert(st, test1));

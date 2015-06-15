@@ -4,6 +4,8 @@
 
 #include "../src/error_handling.h"
 #include "../src/symbol_table.h"
+#include "../src/symbol_variable.h"
+#include "../src/symbol_function.h"
 #include "../src/ast.h"
 #include "../src/ast_value.h"
 #include "../src/ast_binary.h"
@@ -158,11 +160,9 @@ void ast_check_semantic_test(void** state)
     
     /* variable "test_var" */
     symbols = cb_symbol_table_create();
-    assert_null(
-        cb_symbol_table_insert(symbols, cb_symbol_create("test_var",
-                                                         CB_SYMBOL_TYPE_VARIABLE,
-                                                         CB_VARIANT_TYPE_NUMERIC))
-    );
+    assert_null(cb_symbol_table_insert(
+        symbols, (CbSymbol*) cb_symbol_variable_create("test_var")
+    ));
     node = (CbAstNode*) cb_ast_variable_node_create("test_var");
     assert_true(cb_ast_node_check_semantic(node, symbols));
     cb_ast_node_destroy(node);
@@ -182,11 +182,9 @@ void ast_check_semantic_error_test(void** state)
      * Test: Expected identifier is declared as a function
      */
     symbols = cb_symbol_table_create();
-    assert_null(
-        cb_symbol_table_insert(symbols, cb_symbol_create("test_var",
-                                                         CB_SYMBOL_TYPE_FUNCTION,
-                                                         CB_VARIANT_TYPE_NUMERIC))
-    );
+    assert_null(cb_symbol_table_insert(
+        symbols, (CbSymbol*) cb_symbol_function_create("test_var")
+    ));
     node = (CbAstNode*) cb_ast_variable_node_create("test_var");
     cb_ast_node_set_line(node, 1);
     assert_false(cb_ast_node_check_semantic(node, symbols));

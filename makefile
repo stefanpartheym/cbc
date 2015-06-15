@@ -16,7 +16,8 @@ OBJ_DIR_TEST           := obj/$(TEST_DIR)
 MAIN                   := main.c
 SOURCES                := utils.c cb_utils.c error_handling.c \
                           variant.c vector.c stack.c hash_table.c \
-                          symbol.c scope.c symbol_table.c \
+                          symbol.c symbol_variable.c symbol_function.c scope.c \
+                          symbol_table.c \
                           ast.c ast_binary.c ast_unary.c ast_value.c \
                           ast_variable.c
 OBJECTS                := $(SOURCES:%.c=%.o)

@@ -2,16 +2,10 @@
 
 #include "utils.h"
 #include "symbol.h"
+#include "symbol_internal.h"
 
 
 /* -------------------------------------------------------------------------- */
-
-struct CbSymbol
-{
-    CbSymbolType type;
-    char* identifier;
-    CbVariantType data_type;
-};
 
 const char* const CB_SYMBOL_TYPE_STRINGS[] = {
     "variable", /* CB_SYMBOL_TYPE_VARIABLE */
@@ -35,22 +29,22 @@ const char* cb_symbol_type_stringify(CbSymbolType type)
     return CB_SYMBOL_TYPE_STRINGS[type];
 }
 
-CbSymbol* cb_symbol_create(const char* identifier,
-                           CbSymbolType type,
-                           CbVariantType data_type)
+void cb_symbol_init(CbSymbol* self,
+                    CbSymbolType type,
+                    const char* identifier,
+                    CbSymbolDestructorFunc destructor,
+                    CbSymbolGetDataTypeFunc get_data_type)
 {
-    CbSymbol* self   = (CbSymbol*) memalloc(sizeof(CbSymbol));
-    self->identifier = strdup(identifier);
-    self->type       = type;
-    self->data_type  = data_type;
-    
-    return self;
+    self->type          = type;
+    self->identifier    = strdup(identifier);
+    self->destructor    = destructor;
+    self->get_data_type = get_data_type;
 }
 
 void cb_symbol_destroy(CbSymbol* self)
 {
     memfree(self->identifier);
-    memfree(self);
+    self->destructor(self);
 }
 
 const char* cb_symbol_get_identifier(const CbSymbol* self)
@@ -61,6 +55,11 @@ const char* cb_symbol_get_identifier(const CbSymbol* self)
 CbSymbolType cb_symbol_get_type(const CbSymbol* self)
 {
     return self->type;
+}
+
+CbVariantType cb_symbol_get_data_type(const CbSymbol* self)
+{
+    return self->get_data_type(self);
 }
 
 bool cb_symbol_is_variable(const CbSymbol* self)
