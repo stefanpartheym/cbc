@@ -50,12 +50,20 @@ void _assert_cb_variant_equal(const CbVariant* expected,
                               const int line);
 
 /*
- * Check if CbVariant has a specific numeric value
+ * Check if CbVariant has a specific integer value
  */
 void _assert_cb_integer_equal(const CbIntegerDataType expected,
                               const CbVariant* actual,
                               const char * const file,
                               const int line);
+
+/*
+ * Check if CbVariant has a specific float value
+ */
+void _assert_cb_float_equal(const CbFloatDataType expected,
+                            const CbVariant* actual,
+                            const char * const file,
+                            const int line);
 
 /*
  * Copy stream content to a string
