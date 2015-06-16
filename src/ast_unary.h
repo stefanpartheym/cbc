@@ -41,7 +41,8 @@ void cb_ast_unary_node_destroy(CbAstUnaryNode* self);
 /*
  * Evaluate unary node
  */
-CbVariant* cb_ast_unary_node_eval(const CbAstUnaryNode* self);
+CbVariant* cb_ast_unary_node_eval(const CbAstUnaryNode* self,
+                                  const CbSymbolTable* symbols);
 
 /*
  * Check semantics

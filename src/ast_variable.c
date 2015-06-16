@@ -1,7 +1,9 @@
 #include <stdlib.h>
 
 #include "utils.h"
+#include "cb_utils.h"
 #include "error_handling.h"
+#include "symbol_variable.h"
 #include "ast_internal.h"
 #include "ast_variable.h"
 
@@ -12,6 +14,16 @@ struct CbAstVariableNode
 {
     CbAstNode base;
     char* identifier;
+    
+    /*
+     * TODO:
+     * Implement a cache (i.e. a pointer), that holds a reference to the proper
+     * symbol object in the symbol table.
+     * The cache should be filled during the semantic check of this node, so
+     * that the cb_symbol_table_lookup()-function is only called once per
+     * execution.
+     */
+    /* CbSymbolVariable* variable; */
 };
 
 
@@ -38,12 +50,22 @@ void cb_ast_variable_node_destroy(CbAstVariableNode* self)
     memfree(self);
 }
 
-CbVariant* cb_ast_variable_node_eval(const CbAstVariableNode* self)
+CbVariant* cb_ast_variable_node_eval(const CbAstVariableNode* self,
+                                     const CbSymbolTable* symbols)
 {
-    /*
-     * TODO: Evaluate variable value
-     */
-    return NULL;
+    CbVariant* result      = NULL;
+    const CbSymbol* symbol = cb_symbol_table_lookup(symbols, self->identifier);
+    
+    /* make sure symbol is valid */
+    cb_assert(symbol != NULL);
+    cb_assert(cb_symbol_is_variable(symbol));
+    
+    /* return copy of the value */
+    result = cb_variant_copy(
+        cb_symbol_variable_get_value((const CbSymbolVariable*) symbol)
+    );
+    
+    return result;
 }
 
 bool cb_ast_variable_node_check_semantic(const CbAstVariableNode* self,

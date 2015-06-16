@@ -104,7 +104,7 @@ void ast_eval_test(void** state)
         CB_UNARY_OPERATOR_TYPE_MINUS,
         (CbAstNode*) test_create_ast_value_integer_node(123)
     );
-    result = cb_ast_node_eval((CbAstNode*) unary_node);
+    result = cb_ast_node_eval((CbAstNode*) unary_node, NULL);
     assert_cb_integer_equal(-123, result);
     cb_variant_destroy(result);
     cb_ast_node_destroy((CbAstNode*) unary_node);
@@ -113,7 +113,7 @@ void ast_eval_test(void** state)
         CB_UNARY_OPERATOR_TYPE_MINUS,
         (CbAstNode*) test_create_ast_value_float_node(321.00123)
     );
-    result = cb_ast_node_eval((CbAstNode*) unary_node);
+    result = cb_ast_node_eval((CbAstNode*) unary_node, NULL);
     assert_cb_float_equal(-321.00123, result);
     cb_variant_destroy(result);
     cb_ast_node_destroy((CbAstNode*) unary_node);
@@ -139,7 +139,7 @@ void ast_eval_test(void** state)
         /* prepare AST node */
         node = (CbAstNode*) cb_ast_variable_node_create("test_var");
         
-        result = cb_ast_node_eval(node);
+        result = cb_ast_node_eval(node, symbols);
         assert_non_null(result);
         assert_cb_integer_equal(123, result);
         
@@ -264,7 +264,7 @@ static void test_ast_binary_node_eval(const CbBinaryOperatorType operator,
         (CbAstNode*) test_create_ast_value_integer_node(value2)
     );
     
-    CbVariant* result = cb_ast_node_eval((CbAstNode*) node);
+    CbVariant* result = cb_ast_node_eval((CbAstNode*) node, NULL);
     assert_cb_variant_equal(expected_result, result);
     cb_variant_destroy(result);
     cb_variant_destroy(expected_result);

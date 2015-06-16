@@ -43,7 +43,8 @@ void cb_ast_variable_node_destroy(CbAstVariableNode* self);
  * 
  * @param self The CbAstVariableNode instance
  */
-CbVariant* cb_ast_variable_node_eval(const CbAstVariableNode* self);
+CbVariant* cb_ast_variable_node_eval(const CbAstVariableNode* self,
+                                     const CbSymbolTable* symbols);
 
 /**
  * @memberof CbAstVariableNode

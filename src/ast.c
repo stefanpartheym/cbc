@@ -44,9 +44,10 @@ CbAstType cb_ast_node_get_type(const CbAstNode* self)
     return self->type;
 }
 
-CbVariant* cb_ast_node_eval(const CbAstNode* self)
+CbVariant* cb_ast_node_eval(const CbAstNode* self,
+                            const CbSymbolTable* symbols)
 {
-    return self->eval(self);
+    return self->eval(self, symbols);
 }
 
 bool cb_ast_node_check_semantic(const CbAstNode* self,

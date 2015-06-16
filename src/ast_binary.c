@@ -71,12 +71,13 @@ void cb_ast_binary_node_destroy(CbAstBinaryNode* self)
     memfree(self);
 }
 
-CbVariant* cb_ast_binary_node_eval(const CbAstBinaryNode* self)
+CbVariant* cb_ast_binary_node_eval(const CbAstBinaryNode* self,
+                                   const CbSymbolTable* symbols)
 {
     CbVariant* result = NULL;
     /* evaluate child nodes first */
-    CbVariant* left  = cb_ast_node_eval(self->base.left);
-    CbVariant* right = cb_ast_node_eval(self->base.right);
+    CbVariant* left  = cb_ast_node_eval(self->base.left, symbols);
+    CbVariant* right = cb_ast_node_eval(self->base.right, symbols);
     
     /* make sure variant type of evaluated nodes is correct */
     cb_assert(cb_variant_is_numeric(left) && cb_variant_is_numeric(right));

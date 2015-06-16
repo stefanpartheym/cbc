@@ -52,10 +52,11 @@ void cb_ast_unary_node_destroy(CbAstUnaryNode* self)
     memfree(self);
 }
 
-CbVariant* cb_ast_unary_node_eval(const CbAstUnaryNode* self)
+CbVariant* cb_ast_unary_node_eval(const CbAstUnaryNode* self,
+                                  const CbSymbolTable* symbols)
 {
     CbVariant* result = NULL;
-    CbVariant* value  = cb_ast_node_eval(self->base.left);
+    CbVariant* value  = cb_ast_node_eval(self->base.left, symbols);
     
     switch (self->operator_type)
     {

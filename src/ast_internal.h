@@ -15,7 +15,8 @@
 /* -------------------------------------------------------------------------- */
 
 typedef void       (*CbAstNodeDestructorFunc) (CbAstNode*);
-typedef CbVariant* (*CbAstNodeEvalFunc)       (const CbAstNode*);
+typedef CbVariant* (*CbAstNodeEvalFunc)       (const CbAstNode*,
+                                               const CbSymbolTable*);
 typedef bool       (*CbAstNodeSemanticFunc)   (const CbAstNode*,
                                                CbSymbolTable*);
 

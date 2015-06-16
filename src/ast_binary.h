@@ -45,7 +45,8 @@ void cb_ast_binary_node_destroy(CbAstBinaryNode* self);
 /*
  * Evaluate binary node
  */
-CbVariant* cb_ast_binary_node_eval(const CbAstBinaryNode* self);
+CbVariant* cb_ast_binary_node_eval(const CbAstBinaryNode* self,
+                                   const CbSymbolTable* symbols);
 
 /*
  * Check semantics

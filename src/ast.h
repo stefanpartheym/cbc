@@ -60,7 +60,8 @@ CbAstType cb_ast_node_get_type(const CbAstNode* self);
 /*
  * Evaluate AST node
  */
-CbVariant* cb_ast_node_eval(const CbAstNode* self);
+CbVariant* cb_ast_node_eval(const CbAstNode* self,
+                            const CbSymbolTable* symbols);
 
 /*
  * Check AST node semantics
