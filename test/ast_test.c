@@ -11,6 +11,7 @@
 #include "../src/ast_binary.h"
 #include "../src/ast_unary.h"
 #include "../src/ast_variable.h"
+#include "../src/ast_declaration.h"
 
 #include "test.h"
 
@@ -120,8 +121,6 @@ void ast_eval_test(void** state)
     
     /*
      * variable AST node (expression: <variable>)
-     * TODO: This test will fail at the moment due to the not yet implemented
-     *       CbAstVariableNode structure.
      */
     {
         CbAstNode* node            = NULL;
@@ -147,6 +146,24 @@ void ast_eval_test(void** state)
         cb_variant_destroy(result);
         cb_ast_node_destroy(node);
         cb_symbol_table_destroy(symbols);
+    }
+    
+    /*
+     * declaration AST node (expression: |<variable>|)
+     */
+    {
+        CbVariant* result = NULL;
+        CbVariant* temp   = cb_variant_create();
+        CbAstNode* node   = (CbAstNode*) cb_ast_declaration_node_create(
+            CB_AST_DECLARATION_TYPE_VARIABLE, "test_var"
+        );
+        
+        result = cb_ast_node_eval(node, NULL);
+        assert_cb_variant_equal(temp, result);
+        
+        cb_variant_destroy(result);
+        cb_variant_destroy(temp);
+        cb_ast_node_destroy(node);
     }
 }
 
@@ -192,6 +209,19 @@ void ast_check_semantic_test(void** state)
     assert_null(cb_symbol_table_insert(
         symbols, (CbSymbol*) cb_symbol_variable_create("test_var")
     ));
+    node = (CbAstNode*) cb_ast_variable_node_create("test_var");
+    assert_true(cb_ast_node_check_semantic(node, symbols));
+    cb_ast_node_destroy(node);
+    cb_symbol_table_destroy(symbols);
+    
+    /* declaring variable "test_var" */
+    symbols = cb_symbol_table_create();
+    node    = (CbAstNode*) cb_ast_declaration_node_create(
+        CB_AST_DECLARATION_TYPE_VARIABLE, "test_var"
+    );
+    assert_true(cb_ast_node_check_semantic(node, symbols));
+    cb_ast_node_destroy(node);
+    /* additional test for accessing variable in symbol table */
     node = (CbAstNode*) cb_ast_variable_node_create("test_var");
     assert_true(cb_ast_node_check_semantic(node, symbols));
     cb_ast_node_destroy(node);
@@ -244,6 +274,31 @@ void ast_check_semantic_error_test(void** state)
     stream_to_string(*state, stream_content, true);
     assert_string_equal("semantic error: line 1: variable 'test_var' is "\
                         "not declared in an available scope", stream_content);
+    cb_symbol_table_destroy(symbols);
+    
+    /* discard stream content */
+    resetup_error_handling(state);
+    
+    /*
+     * Test: Expected identifier is already declared
+     */
+    symbols = cb_symbol_table_create();
+    assert_null(cb_symbol_table_insert(
+        symbols, (CbSymbol*) cb_symbol_variable_create("test_var")
+    ));
+    node = (CbAstNode*) cb_ast_declaration_node_create(
+        CB_AST_DECLARATION_TYPE_VARIABLE, "test_var"
+    );
+    cb_ast_node_set_line(node, 1);
+    assert_false(cb_ast_node_check_semantic(node, symbols));
+    cb_ast_node_destroy(node);
+    assert_true(cb_error_occurred());
+    cb_error_process();
+    assert_false(cb_error_occurred());
+    stream_to_string(*state, stream_content, true);
+    assert_string_equal("semantic error: line 1: symbol 'test_var' already "\
+                        "declared as variable in the current scope",
+                        stream_content);
     cb_symbol_table_destroy(symbols);
 }
 

@@ -19,7 +19,7 @@ SOURCES                := utils.c cb_utils.c error_handling.c \
                           symbol.c symbol_variable.c symbol_function.c scope.c \
                           symbol_table.c \
                           ast.c ast_binary.c ast_unary.c ast_value.c \
-                          ast_variable.c
+                          ast_variable.c ast_declaration.c
 OBJECTS                := $(SOURCES:%.c=%.o)
 OBJ                    := $(MAIN:%.c=$(OBJ_DIR)/%.o) $(OBJECTS:%=$(OBJ_DIR)/%)
 SOURCES_TEST           := test.c test_utils.c \
