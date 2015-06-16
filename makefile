@@ -25,7 +25,7 @@ OBJ                    := $(MAIN:%.c=$(OBJ_DIR)/%.o) $(OBJECTS:%=$(OBJ_DIR)/%)
 SOURCES_TEST           := test.c test_utils.c \
                           vector_test.c variant_test.c error_handling_test.c \
                           stack_test.c hash_table_test.c symbol_table_test.c \
-                          ast_test.c
+                          ast_test.c symbol_test.c
 OBJ_TEST               := $(SOURCES_TEST:%.c=$(OBJ_DIR_TEST)/%.o) \
                           $(OBJECTS:%=$(OBJ_DIR_TEST)/%)
 

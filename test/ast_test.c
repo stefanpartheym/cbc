@@ -118,7 +118,36 @@ void ast_eval_test(void** state)
     cb_variant_destroy(result);
     cb_ast_node_destroy((CbAstNode*) unary_node);
     
-    /* TODO: variable AST node */
+    /*
+     * variable AST node (expression: <variable>)
+     * TODO: This test will fail at the moment due to the not yet implemented
+     *       CbAstVariableNode structure.
+     */
+    {
+        CbAstNode* node            = NULL;
+        CbSymbolTable* symbols     = NULL;
+        CbSymbolVariable* variable = NULL;
+        CbVariant* temp            = NULL;
+        
+        /* prepare symbol and symbol table */
+        symbols  = cb_symbol_table_create();
+        variable = cb_symbol_variable_create("test_var");
+        temp     = cb_integer_create(123);
+        cb_symbol_variable_assign(variable, temp);
+        cb_variant_destroy(temp);
+        assert_null(cb_symbol_table_insert(symbols, (CbSymbol*) variable));
+        /* prepare AST node */
+        node = (CbAstNode*) cb_ast_variable_node_create("test_var");
+        
+        result = cb_ast_node_eval(node);
+        assert_non_null(result);
+        assert_cb_integer_equal(123, result);
+        
+        /* clean up */
+        cb_variant_destroy(result);
+        cb_ast_node_destroy(node);
+        cb_symbol_table_destroy(symbols);
+    }
 }
 
 /*
