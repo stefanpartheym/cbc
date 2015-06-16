@@ -30,6 +30,13 @@ void symbol_variable_test(void** state)
     assert_int_equal(CB_VARIANT_TYPE_FLOAT,     cb_symbol_get_data_type(test2));
     assert_int_equal(CB_VARIANT_TYPE_UNDEFINED, cb_symbol_get_data_type(test3));
     
+    assert_cb_integer_equal(
+        123, cb_symbol_variable_get_value((CbSymbolVariable*) test1)
+    );
+    assert_cb_float_equal(
+        123.000321, cb_symbol_variable_get_value((CbSymbolVariable*) test2)
+    );
+    
     /* clean up */
     cb_variant_destroy(value1);
     cb_variant_destroy(value2);

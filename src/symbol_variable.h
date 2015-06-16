@@ -36,9 +36,8 @@ void cb_symbol_variable_assign(CbSymbolVariable* self, const CbVariant* value);
 
 /*
  * Get the current value.
- * TODO: Implement!
  */
-/* const CbVariant* cb_symbol_variable_get_value(const CbSymbolVariable* self); */
+const CbVariant* cb_symbol_variable_get_value(const CbSymbolVariable* self);
 
 
 #endif /* SYMBOL_VARIABLE_H */

@@ -52,6 +52,11 @@ void cb_symbol_variable_assign(CbSymbolVariable* self, const CbVariant* value)
     self->value = cb_variant_copy(value);
 }
 
+const CbVariant* cb_symbol_variable_get_value(const CbSymbolVariable* self)
+{
+    return self->value;
+}
+
 
 /* -------------------------------------------------------------------------- */
 
