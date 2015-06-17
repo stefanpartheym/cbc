@@ -19,7 +19,7 @@ struct CbVariant
     } v;
 };
 
-static const char* CB_VARIANT_TYPE_STRINGS[] = {
+static const char* const CB_VARIANT_TYPE_STRINGS[] = {
     "undefined", /* CB_VARIANT_TYPE_UNDEFINED */
     "integer",   /* CB_VARIANT_TYPE_INTEGER   */
     "float",     /* CB_VARIANT_TYPE_FLOAT     */
