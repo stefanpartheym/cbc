@@ -28,6 +28,10 @@ static const char* const CB_VARIANT_TYPE_STRINGS[] = {
     "string"     /* CB_VARIANT_TYPE_STRING    */
 };
 
+static const char* const CB_VARIANT_DISPLAY_VALUE_UNDEFINED = "<undefined>";
+static const char* const CB_VARIANT_DISPLAY_VALUE_TRUE      = "True";
+static const char* const CB_VARIANT_DISPLAY_VALUE_FALSE     = "False";
+
 
 /* -------------------------------------------------------------------------- */
 
@@ -113,6 +117,37 @@ CbVariant* cb_variant_copy(const CbVariant* variant)
 CbVariantType cb_variant_get_type(const CbVariant* self)
 {
     return self->type;
+}
+
+char* cb_variant_to_string(const CbVariant* self)
+{
+    char* result;
+    
+    switch (self->type)
+    {
+        case CB_VARIANT_TYPE_UNDEFINED:
+            result = memalloc(strlen(CB_VARIANT_DISPLAY_VALUE_UNDEFINED) + 1);
+            sprintf(result, CB_VARIANT_DISPLAY_VALUE_UNDEFINED);
+            break;
+        
+        case CB_VARIANT_TYPE_INTEGER:
+            /* 63 digits should be enough for a long int */
+            result = memalloc(64);
+            sprintf(result, "%ld", self->v.integer);
+            break;
+        
+        case CB_VARIANT_TYPE_FLOAT:
+            result = memalloc(512);
+            sprintf(result, "%f", self->v.decimal);
+            break;
+        
+        case CB_VARIANT_TYPE_BOOLEAN:
+        case CB_VARIANT_TYPE_STRING: cb_abort("Not yet implemented"); break;
+        
+        default: cb_abort("Invalid variant type"); break;
+    }
+    
+    return result;
 }
 
 bool cb_variant_is_type(const CbVariant* self, const CbVariantType type)

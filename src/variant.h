@@ -64,6 +64,12 @@ CbVariant* cb_variant_copy(const CbVariant* variant);
 CbVariantType cb_variant_get_type(const CbVariant* self);
 
 /*
+ * Convert a variant to its string representation.
+ * NOTE: The returned c string needs to be freed after usage!
+ */
+char* cb_variant_to_string(const CbVariant* self);
+
+/*
  * Check if variant object has a specific type
  */
 bool cb_variant_is_type(const CbVariant* self, const CbVariantType type);

@@ -13,6 +13,7 @@ void vector_get_test(void** state);
 
 void variant_alloc_test(void** state);
 void variant_types_test(void** state);
+void variant_to_string_test(void** state);
 
 int setup_error_handling(void** state);
 int teardown_error_handling(void** state);

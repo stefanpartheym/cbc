@@ -57,3 +57,33 @@ void variant_types_test(void** state)
     assert_true(dequal(123.000321, cb_float_get_value(variant)));
     cb_variant_destroy(variant);
 }
+
+/*
+ * Test cb_variant_to_string()
+ */
+void variant_to_string_test(void** state)
+{
+    CbVariant* variant;
+    char* str;
+    
+    /* undefined variant */
+    variant = cb_variant_create();
+    str     = cb_variant_to_string(variant);
+    assert_string_equal("<undefined>", str);
+    memfree(str);
+    cb_variant_destroy(variant);
+    
+    /* integer variant */
+    variant = cb_integer_create(123);
+    str     = cb_variant_to_string(variant);
+    assert_string_equal("123", str);
+    memfree(str);
+    cb_variant_destroy(variant);
+    
+    /* float variant */
+    variant = cb_float_create(123.000321);
+    str     = cb_variant_to_string(variant);
+    assert_string_equal("123.000321", str);
+    memfree(str);
+    cb_variant_destroy(variant);
+}
