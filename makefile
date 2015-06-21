@@ -13,13 +13,26 @@ SRC_DIR                := src
 TEST_DIR               := test
 OBJ_DIR                := obj
 OBJ_DIR_TEST           := obj/$(TEST_DIR)
+
+LEXER_NAME             := cbc_lexer
+PARSER_NAME            := cbc_parser
+LEXER                  := $(SRC_DIR)/$(LEXER_NAME).l
+PARSER                 := $(SRC_DIR)/$(PARSER_NAME).y
+LEXER_SRC              := $(LEXER_NAME).c
+PARSER_SRC             := $(PARSER_NAME).c
+LEXER_INC              := $(LEXER_NAME).h
+PARSER_INC             := $(PARSER_NAME).h
+LEXER_AND_PARSER_FILES := $(SRC_DIR)/$(LEXER_NAME).c $(SRC_DIR)/$(LEXER_NAME).h \
+                          $(SRC_DIR)/$(PARSER_NAME).c $(SRC_DIR)/$(PARSER_NAME).h
+
 MAIN                   := main.c
-SOURCES                := utils.c cb_utils.c error_handling.c \
+SOURCES                := $(LEXER_SRC) $(PARSER_SRC) \
+                          utils.c cb_utils.c error_handling.c \
                           variant.c vector.c stack.c hash_table.c \
-                          symbol.c symbol_variable.c symbol_function.c scope.c \
-                          symbol_table.c \
                           ast.c ast_binary.c ast_unary.c ast_value.c \
-                          ast_variable.c ast_declaration.c
+                          ast_variable.c ast_declaration.c \
+                          scope.c symbol.c symbol_variable.c symbol_function.c \
+                          symbol_table.c
 OBJECTS                := $(SOURCES:%.c=%.o)
 OBJ                    := $(MAIN:%.c=$(OBJ_DIR)/%.o) $(OBJECTS:%=$(OBJ_DIR)/%)
 SOURCES_TEST           := test.c test_utils.c \
@@ -29,7 +42,7 @@ SOURCES_TEST           := test.c test_utils.c \
 OBJ_TEST               := $(SOURCES_TEST:%.c=$(OBJ_DIR_TEST)/%.o) \
                           $(OBJECTS:%=$(OBJ_DIR_TEST)/%)
 
-CFLAGS_COMMON          := -Wall -pedantic-errors -ansi
+CFLAGS_COMMON          := -Wall -D_POSIX_SOURCE -ansi -pedantic -pedantic-errors
 CFLAGS                 := -g $(CFLAGS_COMMON) -D DEBUG
 CFLAGS_RELEASE         := $(CFLAGS_COMMON)
 LDFLAGS                := 
@@ -38,6 +51,8 @@ LDFLAGS_TEST           := -lcmocka $(LDFLAGS)
 
 MKDIR                  := mkdir -p
 GDB                    := gdb
+LEX                    := flex
+YACC                   := bison
 VALGRIND               := valgrind
 VALGRIND_OPTIONS       := --tool=memcheck
 VALGRIND_OPTIONS_EXTRA := --leak-check=full --show-leak-kinds=all
@@ -54,7 +69,7 @@ debug: build
 release: CFLAGS := $(CFLAGS_RELEASE)
 release: build
 
-build: object_dir $(TARGET)
+build: object_dir build_lexer_and_parser $(TARGET)
 
 $(TARGET): $(OBJ)
 	$(CC) -o $@ $^ $(LDFLAGS)
@@ -68,6 +83,32 @@ object_dir: $(OBJ_DIR)/
 $(OBJ_DIR)/:
 	$(MKDIR) $@
 .PHONY: default debug release build object_dir
+
+
+# ------------------------------------------------------------------------------
+# LEXER AND PARSER BUILD
+
+build_lexer_and_parser: lexer parser
+
+#lexer: LEXER_SRC:= $(SRC_DIR)/$(LEXER_SRC)
+#lexer: $(LEXER_SRC)
+#$(LEXER_SRC): $(LEXER)
+#	$(LEX) --header-file=$(LEXER_INC) -o $@ $<
+
+lexer: $(SRC_DIR)/$(LEXER_SRC)
+$(SRC_DIR)/$(LEXER_SRC): $(LEXER)
+	$(LEX) --header-file=$(SRC_DIR)/$(LEXER_INC) -o $@ $<
+
+#parser: PARSER_SRC := $(SRC_DIR)/$(PARSER_SRC)
+#parser: $(PARSER_SRC)
+#$(PARSER_SRC): $(PARSER)
+#	$(YACC) -y -o $@ $<
+
+parser: $(SRC_DIR)/$(PARSER_SRC)
+$(SRC_DIR)/$(PARSER_SRC): $(PARSER)
+	$(YACC) -d -o $@ $<
+
+.PHONY: build_lexer_and_parser lexer parser
 
 
 # ------------------------------------------------------------------------------
@@ -105,7 +146,7 @@ memcheck-full: build
 
 # cleanup main target
 clean:
-	$(RM) $(TARGET) $(OBJ)
+	$(RM) $(TARGET) $(OBJ) $(LEXER_AND_PARSER_FILES)
 
 rebuild: clean default
 
@@ -117,7 +158,7 @@ rebuild: clean default
 
 # test target
 test: build_test
-build_test: $(OBJ_DIR_TEST)/ $(TARGET_TEST)
+build_test: $(OBJ_DIR_TEST)/ build_lexer_and_parser $(TARGET_TEST)
 
 $(TARGET_TEST): $(OBJ_TEST)
 	$(CC) -o $@ $^ $(LDFLAGS_TEST)
@@ -165,7 +206,7 @@ test-memcheck-full: $(TARGET_TEST)
 # cleanup test target
 tclean: test-clean
 test-clean:
-	$(RM) $(TARGET_TEST) $(OBJ_TEST)
+	$(RM) $(TARGET_TEST) $(OBJ_TEST) $(LEXER_AND_PARSER_FILES)
 
 # cleanup all targets
 aclean: clean tclean
