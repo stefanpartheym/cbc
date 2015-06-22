@@ -2,48 +2,58 @@
  * cbc -- Codeblock compiler
  ******************************************************************************/
 
-#include <stdio.h>
-#include "utils.h"
-#include "cb_utils.h"
 #include "error_handling.h"
-#include "symbol_table.h"
-#include "cbc_lexer.h"
-#include "cbc_parser.h"
+#include "codeblock.h"
 
 
 /* -------------------------------------------------------------------------- */
 
 int main(int argc, char* argv[])
 {
-    CbAstNode* ast = NULL;
+    CbCodeblock* cb;
+    bool parser_result;
+    FILE* input     = NULL;
+    bool parse_file = argc > 1;
     
-    cb_error_initialize(stderr);
-    
-    if (yyparse(&ast) == 0)
+    /*
+     * Determine whether to parse a file or stdin.
+     */
+    if (parse_file)
     {
-        CbSymbolTable* symbols = cb_symbol_table_create();
-        
-        if (cb_ast_node_check_semantic(ast, symbols))
+        input = fopen(argv[1], "r");
+        if (!input)
         {
-            CbVariant* result;
-            result = cb_ast_node_eval(ast, symbols);
-            if (result == NULL)
-                cb_error_process();
-            else
-            {
-                char* result_str = cb_variant_to_string(result);
-                printf("Result: %s\n", result_str);
-                memfree(result_str);
-                cb_variant_destroy(result);
-            }
+            cb_error_print_msg("Unable to open file `%s'", argv[1]);
+            return 1;
         }
-        else
-            cb_error_process();
-        
-        cb_symbol_table_destroy(symbols);
-        cb_ast_node_destroy(ast);
     }
     
+    /*
+     * Setup environment including error handling.
+     */
+    cb_error_initialize(stderr);
+    cb = cb_codeblock_create();
+    
+    /*
+     * Parse input stream:
+     * Either stdin or a file specified on the command line.
+     */
+    parser_result = cb_codeblock_parse_file(cb, input);
+    if (parse_file) fclose(input);
+    
+    /*
+     * Execute the parsed Codeblock.
+     */
+    if (parser_result && cb_codeblock_execute(cb))
+    {
+        cb_variant_print(cb_codeblock_get_result(cb));
+        printf("\n");
+    }
+    
+    /*
+     * Cleanup environment.
+     */
+    cb_codeblock_destroy(cb);
     cb_error_finalize();
     
     return 0;

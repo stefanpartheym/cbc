@@ -32,7 +32,8 @@ SOURCES                := $(LEXER_SRC) $(PARSER_SRC) \
                           ast.c ast_binary.c ast_unary.c ast_value.c \
                           ast_variable.c ast_declaration.c \
                           scope.c symbol.c symbol_variable.c symbol_function.c \
-                          symbol_table.c
+                          symbol_table.c \
+                          codeblock.c
 OBJECTS                := $(SOURCES:%.c=%.o)
 OBJ                    := $(MAIN:%.c=$(OBJ_DIR)/%.o) $(OBJECTS:%=$(OBJ_DIR)/%)
 SOURCES_TEST           := test.c test_utils.c \
@@ -90,19 +91,9 @@ $(OBJ_DIR)/:
 
 build_lexer_and_parser: lexer parser
 
-#lexer: LEXER_SRC:= $(SRC_DIR)/$(LEXER_SRC)
-#lexer: $(LEXER_SRC)
-#$(LEXER_SRC): $(LEXER)
-#	$(LEX) --header-file=$(LEXER_INC) -o $@ $<
-
 lexer: $(SRC_DIR)/$(LEXER_SRC)
 $(SRC_DIR)/$(LEXER_SRC): $(LEXER)
 	$(LEX) --header-file=$(SRC_DIR)/$(LEXER_INC) -o $@ $<
-
-#parser: PARSER_SRC := $(SRC_DIR)/$(PARSER_SRC)
-#parser: $(PARSER_SRC)
-#$(PARSER_SRC): $(PARSER)
-#	$(YACC) -y -o $@ $<
 
 parser: $(SRC_DIR)/$(PARSER_SRC)
 $(SRC_DIR)/$(PARSER_SRC): $(PARSER)
