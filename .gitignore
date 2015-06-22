@@ -2,3 +2,8 @@
 /cbc_test
 *.o
 /*.exe
+
+/src/cbc_lexer.c
+/src/cbc_lexer.h
+/src/cbc_parser.c
+/src/cbc_parser.h
