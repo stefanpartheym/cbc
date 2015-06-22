@@ -41,5 +41,7 @@ void ast_check_semantic_error_test(void** state);
 
 void symbol_variable_test(void** state);
 
+void codeblock_common_test(void** state);
+
 
 #endif /* TEST_H */

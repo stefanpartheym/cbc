@@ -39,7 +39,7 @@ OBJ                    := $(MAIN:%.c=$(OBJ_DIR)/%.o) $(OBJECTS:%=$(OBJ_DIR)/%)
 SOURCES_TEST           := test.c test_utils.c \
                           vector_test.c variant_test.c error_handling_test.c \
                           stack_test.c hash_table_test.c symbol_table_test.c \
-                          ast_test.c symbol_test.c
+                          ast_test.c symbol_test.c codeblock_test.c
 OBJ_TEST               := $(SOURCES_TEST:%.c=$(OBJ_DIR_TEST)/%.o) \
                           $(OBJECTS:%=$(OBJ_DIR_TEST)/%)
 
@@ -171,25 +171,25 @@ $(OBJ_DIR_TEST)/:
 
 # execution of test target
 trun:     test-run
-test-run: $(TARGET_TEST)
-	@./$<
+test-run: test
+	@./$(TARGET_TEST)
 
 trund:         test-rundebug
-test-rundebug: $(TARGET_TEST)
-	$(GDB) ./$<
+test-rundebug: test
+	$(GDB) ./$(TARGET_TEST)
 
 .PHONY: trun test-run trund test-rundebug
 
 
 # memory-check for test target
 tmc:           test-memcheck
-test-memcheck: $(TARGET_TEST)
-	$(VALGRIND) $(VALGRIND_OPTIONS) ./$<
+test-memcheck: test
+	$(VALGRIND) $(VALGRIND_OPTIONS) ./$(TARGET_TEST)
 
 tmcf:               test-memcheck-full
 test-memcheck-full: VALGRIND_OPTIONS := $(VALGRIND_OPTIONS) --leak-check=full
-test-memcheck-full: $(TARGET_TEST)
-	$(VALGRIND) $(VALGRIND_OPTIONS) ./$<
+test-memcheck-full: test
+	$(VALGRIND) $(VALGRIND_OPTIONS) ./$(TARGET_TEST)
 
 .PHONY: tmc test-memcheck tmcf test-memcheck-full
 
