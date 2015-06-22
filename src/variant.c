@@ -150,6 +150,13 @@ char* cb_variant_to_string(const CbVariant* self)
     return result;
 }
 
+void cb_variant_print(const CbVariant* self)
+{
+    char* variant_str = cb_variant_to_string(self);
+    printf("%s", variant_str);
+    memfree(variant_str);
+}
+
 bool cb_variant_is_type(const CbVariant* self, const CbVariantType type)
 {
     if (type == CB_VARIANT_TYPE_NUMERIC)

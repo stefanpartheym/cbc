@@ -70,6 +70,11 @@ CbVariantType cb_variant_get_type(const CbVariant* self);
 char* cb_variant_to_string(const CbVariant* self);
 
 /*
+ * Print the string representation of the variant.
+ */
+void cb_variant_print(const CbVariant* self);
+
+/*
  * Check if variant object has a specific type
  */
 bool cb_variant_is_type(const CbVariant* self, const CbVariantType type);
