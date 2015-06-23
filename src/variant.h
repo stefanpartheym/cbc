@@ -111,6 +111,20 @@ bool cb_variant_is_string(const CbVariant* self);
 
 
 /* -------------------------------------------------------------------------- */
+/* numeric variant type functions */
+
+/*
+ * Get numeric value as integer.
+ */
+CbIntegerDataType cb_numeric_as_integer(const CbVariant* self);
+
+/*
+ * Get numeric value as double.
+ */
+CbFloatDataType cb_numeric_as_float(const CbVariant* self);
+
+
+/* -------------------------------------------------------------------------- */
 /* integer variant type functions */
 
 /*

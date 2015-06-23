@@ -82,7 +82,7 @@ CbVariant* cb_ast_binary_node_eval(const CbAstBinaryNode* self,
     /* make sure variant type of evaluated nodes is correct */
     cb_assert(cb_variant_is_numeric(left) && cb_variant_is_numeric(right));
     
-    /* evaluate child nodes */
+    /* evaluate binary node */
     if (cb_variant_is_float(left) || cb_variant_is_float(right))
         result = cb_ast_binary_node_eval_float(self, left, right);
     else
@@ -171,9 +171,12 @@ static CbVariant* cb_ast_binary_node_eval_float(const CbAstBinaryNode* self,
                                                 const CbVariant* left,
                                                 const CbVariant* right)
 {
-    CbVariant* result  = NULL;
-    CbFloatDataType v1 = cb_float_get_value(left);
-    CbFloatDataType v2 = cb_float_get_value(right);
+    CbFloatDataType v1;
+    CbFloatDataType v2;
+    CbVariant* result = NULL;
+    
+    v1 = cb_numeric_as_float(left);
+    v2 = cb_numeric_as_float(right);
     
     switch (self->operator_type)
     {

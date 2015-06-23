@@ -19,8 +19,8 @@
 /* -------------------------------------------------------------------------- */
 
 static void test_ast_binary_node_eval(const CbBinaryOperatorType operator,
-                                      const CbIntegerDataType value1,
-                                      const CbIntegerDataType value2,
+                                      CbVariant* value1,
+                                      CbVariant* value2,
                                       CbVariant* expected_result);
 static CbAstValueNode* test_create_ast_value_integer_node(const CbIntegerDataType value);
 static CbAstValueNode* test_create_ast_value_float_node(const CbFloatDataType value);
@@ -60,7 +60,7 @@ void ast_alloc_test(void** state)
     var_node = cb_ast_variable_node_create("test_var");
     cb_ast_node_destroy((CbAstNode*) var_node);
 }
-
+#include "../src/utils.h"
 /*
  * Test evaluation of all AST node types
  */
@@ -71,34 +71,68 @@ void ast_eval_test(void** state)
     
     /* eval binary AST nodes (addition) */
     test_ast_binary_node_eval(
-        CB_BINARY_OPERATOR_TYPE_ADD, 123, 77,  cb_integer_create(200));
+        CB_BINARY_OPERATOR_TYPE_ADD, cb_integer_create(123),   cb_integer_create(77),    cb_integer_create(200));
     test_ast_binary_node_eval(
-        CB_BINARY_OPERATOR_TYPE_ADD, 123, -77, cb_integer_create(46));
+        CB_BINARY_OPERATOR_TYPE_ADD, cb_integer_create(123),   cb_integer_create(-77),   cb_integer_create(46));
+    test_ast_binary_node_eval(
+        CB_BINARY_OPERATOR_TYPE_ADD, cb_float_create(123.123), cb_float_create(77.321),  cb_float_create(200.444));
+    test_ast_binary_node_eval(
+        CB_BINARY_OPERATOR_TYPE_ADD, cb_float_create(123.123), cb_float_create(-77.321), cb_float_create(45.802));
+    test_ast_binary_node_eval(
+        CB_BINARY_OPERATOR_TYPE_ADD, cb_integer_create(123),   cb_float_create(-77.321), cb_float_create(45.679));
+    test_ast_binary_node_eval(
+        CB_BINARY_OPERATOR_TYPE_ADD, cb_float_create(123.123), cb_integer_create(77),    cb_float_create(200.123));
     /* eval binary AST nodes (subtraction) */
     test_ast_binary_node_eval(
-        CB_BINARY_OPERATOR_TYPE_SUB, 123, 23,  cb_integer_create(100));
+        CB_BINARY_OPERATOR_TYPE_SUB, cb_integer_create(123),   cb_integer_create(23),    cb_integer_create(100));
     test_ast_binary_node_eval(
-        CB_BINARY_OPERATOR_TYPE_SUB, 23,  -77, cb_integer_create(100));
+        CB_BINARY_OPERATOR_TYPE_SUB, cb_integer_create(23),    cb_integer_create(-77),   cb_integer_create(100));
     test_ast_binary_node_eval(
-        CB_BINARY_OPERATOR_TYPE_SUB, 23,  77,  cb_integer_create(-54));
+        CB_BINARY_OPERATOR_TYPE_SUB, cb_integer_create(23),    cb_integer_create(77),    cb_integer_create(-54));
+    test_ast_binary_node_eval(
+        CB_BINARY_OPERATOR_TYPE_SUB, cb_float_create(123.123), cb_float_create(77.321),  cb_float_create(45.802));
+    test_ast_binary_node_eval(
+        CB_BINARY_OPERATOR_TYPE_SUB, cb_float_create(123.123), cb_float_create(-77.321), cb_float_create(200.444));
+    test_ast_binary_node_eval(
+        CB_BINARY_OPERATOR_TYPE_SUB, cb_integer_create(123),   cb_float_create(-77.321), cb_float_create(200.321));
+    test_ast_binary_node_eval(
+        CB_BINARY_OPERATOR_TYPE_SUB, cb_float_create(123.123), cb_integer_create(77),    cb_float_create(46.123));
     /* eval binary AST nodes (multiplication) */
     test_ast_binary_node_eval(
-        CB_BINARY_OPERATOR_TYPE_MUL, 123, 8,   cb_integer_create(984));
+        CB_BINARY_OPERATOR_TYPE_MUL, cb_integer_create(123),   cb_integer_create(8),     cb_integer_create(984));
     test_ast_binary_node_eval(
-        CB_BINARY_OPERATOR_TYPE_MUL, 123, -8,  cb_integer_create(-984));
+        CB_BINARY_OPERATOR_TYPE_MUL, cb_integer_create(123),   cb_integer_create(-8),    cb_integer_create(-984));
+    test_ast_binary_node_eval(
+        CB_BINARY_OPERATOR_TYPE_MUL, cb_float_create(123.123), cb_float_create(77.321),  cb_float_create(9519.993483));
+    test_ast_binary_node_eval(
+        CB_BINARY_OPERATOR_TYPE_MUL, cb_float_create(123.123), cb_float_create(-77.321), cb_float_create(-9519.993483));
+    test_ast_binary_node_eval(
+        CB_BINARY_OPERATOR_TYPE_MUL, cb_integer_create(123),   cb_float_create(-77.321), cb_float_create(-9510.483));
+    test_ast_binary_node_eval(
+        CB_BINARY_OPERATOR_TYPE_MUL, cb_float_create(123.123), cb_integer_create(77),    cb_float_create(9480.471));
     /* eval binary AST nodes (division) */
     test_ast_binary_node_eval(
-        CB_BINARY_OPERATOR_TYPE_DIV, 984, 8,   cb_integer_create(123));
+        CB_BINARY_OPERATOR_TYPE_DIV, cb_integer_create(984),   cb_integer_create(8),     cb_integer_create(123));
     test_ast_binary_node_eval(
-        CB_BINARY_OPERATOR_TYPE_DIV, 984, -8,  cb_integer_create(-123));
+        CB_BINARY_OPERATOR_TYPE_DIV, cb_integer_create(984),   cb_integer_create(-8),    cb_integer_create(-123));
     test_ast_binary_node_eval(
-        CB_BINARY_OPERATOR_TYPE_DIV, 984, 5,   cb_float_create(196.8));
+        CB_BINARY_OPERATOR_TYPE_DIV, cb_integer_create(984),   cb_integer_create(5),     cb_float_create(196.8));
     test_ast_binary_node_eval(
-        CB_BINARY_OPERATOR_TYPE_DIV, 984, -5,  cb_float_create(-196.8));
+        CB_BINARY_OPERATOR_TYPE_DIV, cb_integer_create(984),   cb_integer_create(-5),    cb_float_create(-196.8));
     test_ast_binary_node_eval(
-        CB_BINARY_OPERATOR_TYPE_DIV, 10,  8,   cb_float_create(1.25));
+        CB_BINARY_OPERATOR_TYPE_DIV, cb_integer_create(10),    cb_integer_create(8),     cb_float_create(1.25));
     test_ast_binary_node_eval(
-        CB_BINARY_OPERATOR_TYPE_DIV, 10,  -8,  cb_float_create(-1.25));
+        CB_BINARY_OPERATOR_TYPE_DIV, cb_integer_create(10),    cb_integer_create(-8),    cb_float_create(-1.25));
+    test_ast_binary_node_eval(
+        CB_BINARY_OPERATOR_TYPE_DIV, cb_float_create(5.5),     cb_float_create(0.5),     cb_float_create(11.0));
+    test_ast_binary_node_eval(
+        CB_BINARY_OPERATOR_TYPE_DIV, cb_float_create(123.25),  cb_float_create(2.125),   cb_float_create(58));
+    test_ast_binary_node_eval(
+        CB_BINARY_OPERATOR_TYPE_DIV, cb_float_create(123.25),  cb_float_create(-2.125),  cb_float_create(-58));
+    test_ast_binary_node_eval(
+        CB_BINARY_OPERATOR_TYPE_DIV, cb_float_create(-195.6561), cb_integer_create(123),  cb_float_create(-1.5907));
+    test_ast_binary_node_eval(
+        CB_BINARY_OPERATOR_TYPE_DIV, cb_float_create(123.123), cb_integer_create(77),    cb_float_create(1.599));
     
     /* unary AST node (expression: - <integer>) */
     unary_node = cb_ast_unary_node_create(
@@ -309,22 +343,25 @@ void ast_check_semantic_error_test(void** state)
  * Test evaluation of binary AST nodes (internal)
  */
 static void test_ast_binary_node_eval(const CbBinaryOperatorType operator,
-                                      const CbIntegerDataType value1,
-                                      const CbIntegerDataType value2,
+                                      CbVariant* value1,
+                                      CbVariant* value2,
                                       CbVariant* expected_result)
 {
     CbAstBinaryNode* node = cb_ast_binary_node_create(
         operator,
-        (CbAstNode*) test_create_ast_value_integer_node(value1),
-        (CbAstNode*) test_create_ast_value_integer_node(value2)
+        (CbAstNode*) cb_ast_value_node_create(value1),
+        (CbAstNode*) cb_ast_value_node_create(value2)
     );
-    
     CbVariant* result = cb_ast_node_eval((CbAstNode*) node, NULL);
-    assert_cb_variant_equal(expected_result, result);
-    cb_variant_destroy(result);
-    cb_variant_destroy(expected_result);
     
+    assert_cb_variant_equal(expected_result, result);
+    
+    cb_variant_destroy(result);
     cb_ast_node_destroy((CbAstNode*) node);
+    
+    cb_variant_destroy(value1);
+    cb_variant_destroy(value2);
+    cb_variant_destroy(expected_result);
 }
 
 /*

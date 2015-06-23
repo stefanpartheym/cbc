@@ -118,7 +118,7 @@ CbVariantType cb_variant_get_type(const CbVariant* self)
 {
     return self->type;
 }
-
+#include <float.h>
 char* cb_variant_to_string(const CbVariant* self)
 {
     char* result;
@@ -193,6 +193,35 @@ bool cb_variant_is_boolean(const CbVariant* self)
 bool cb_variant_is_string(const CbVariant* self)
 {
     return cb_variant_is_type(self, CB_VARIANT_TYPE_STRING);
+}
+
+
+/* -------------------------------------------------------------------------- */
+
+CbIntegerDataType cb_numeric_as_integer(const CbVariant* self)
+{
+    CbIntegerDataType result;
+    cb_assert(cb_variant_is_numeric(self));
+    
+    if (cb_variant_is_float(self))
+        result = (CbIntegerDataType) cb_float_get_value(self);
+    else
+        result = cb_integer_get_value(self);
+    
+    return result;
+}
+
+CbFloatDataType cb_numeric_as_float(const CbVariant* self)
+{
+    CbFloatDataType result;
+    cb_assert(cb_variant_is_numeric(self));
+    
+    if (cb_variant_is_float(self))
+        result = cb_float_get_value(self);
+    else
+        result = (CbFloatDataType) cb_integer_get_value(self);
+    
+    return result;
 }
 
 
