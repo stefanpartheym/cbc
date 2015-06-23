@@ -6,6 +6,7 @@
 #include "variant.h"
 #include "ast.h"
 #include "ast_value.h"
+#include "ast_unary.h"
 #include "ast_binary.h"
 #include "ast_variable.h"
 
@@ -105,6 +106,13 @@ expression:
                                 $$ = (CbAstNode*) cb_ast_binary_node_create(
                                     CB_BINARY_OPERATOR_TYPE_DIV,
                                     $1, $3
+                                );
+                                cb_ast_node_set_line($$, yylineno);
+                            }
+    | '-' expression        {
+                                $$ = (CbAstNode*) cb_ast_unary_node_create(
+                                    CB_UNARY_OPERATOR_TYPE_MINUS,
+                                    $2
                                 );
                                 cb_ast_node_set_line($$, yylineno);
                             }
