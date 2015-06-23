@@ -106,7 +106,8 @@ void msleep(unsigned int mseconds)
 
 bool dequal(double a, double b)
 {
-    return fabs(a - b) < DBL_EPSILON;
+    double epsilon = (fabs(a) < fabs(b) ? fabs(b) : fabs(a)) * DBL_EPSILON;
+    return fabs(a - b) < epsilon;
 }
 
 
