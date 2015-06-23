@@ -88,9 +88,9 @@ void ast_eval_test(void** state)
         CB_BINARY_OPERATOR_TYPE_MUL, 123, -8,  cb_integer_create(-984));
     /* eval binary AST nodes (division) */
     test_ast_binary_node_eval(
-        CB_BINARY_OPERATOR_TYPE_DIV, 984, 8,   cb_float_create(123));
+        CB_BINARY_OPERATOR_TYPE_DIV, 984, 8,   cb_integer_create(123));
     test_ast_binary_node_eval(
-        CB_BINARY_OPERATOR_TYPE_DIV, 984, -8,  cb_float_create(-123));
+        CB_BINARY_OPERATOR_TYPE_DIV, 984, -8,  cb_integer_create(-123));
     test_ast_binary_node_eval(
         CB_BINARY_OPERATOR_TYPE_DIV, 984, 5,   cb_float_create(196.8));
     test_ast_binary_node_eval(

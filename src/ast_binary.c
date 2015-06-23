@@ -146,9 +146,18 @@ static CbVariant* cb_ast_binary_node_eval_integer(const CbAstBinaryNode* self,
             result = cb_integer_create(v1 * v2); break;
         
         case CB_BINARY_OPERATOR_TYPE_DIV:
-            /* division can result in a real number -> create float result */
-            result = cb_float_create((CbFloatDataType) v1 /
-                                     (CbFloatDataType) v2);
+            if ((v1 % v2) == 0)
+                /* 
+                 * Division does not yield a real number.
+                 * -> Create an integer result.
+                 */
+                result = cb_integer_create(v1 / v2);
+            else
+                /*
+                 * Division yields a real number -> Create a float result.
+                 */
+                result = cb_float_create((CbFloatDataType) v1 /
+                                         (CbFloatDataType) v2);
             break;
         
         /* invalid binary operator type */
