@@ -1,6 +1,7 @@
 #include <ctype.h>
 #include <stdlib.h>
 
+#include "../src/utils.h"
 #include "test_utils.h"
 
 
@@ -29,12 +30,15 @@ void _assert_cb_variant_equal(const CbVariant* expected,
     /* compare types */
     CbVariantType expected_type = cb_variant_get_type(expected);
     CbVariantType actual_type   = cb_variant_get_type(actual);
-    _assert_int_equal(cast_to_largest_integral_type(expected_type),
-                      cast_to_largest_integral_type(actual_type),
-                      file, line);
     _assert_true(
         cast_to_largest_integral_type(cb_variant_type_is_valid(expected_type)),
         "Expected variant type is not valid",
+        file,
+        line
+    );
+    _assert_int_equal(
+        cast_to_largest_integral_type(expected_type),
+        cast_to_largest_integral_type(actual_type),
         file,
         line
     );
@@ -57,10 +61,7 @@ void _assert_cb_variant_equal(const CbVariant* expected,
             char msg[128];
             sprintf(msg, "expected %f, but was %f", value_expected, value_actual);
             
-            _assert_true(
-                cast_to_largest_integral_type(value_expected == value_actual),
-                msg, file, line
-            );
+            _assert_true(dequal(value_expected, value_actual), msg, file, line);
             break;
         }
         
@@ -69,8 +70,7 @@ void _assert_cb_variant_equal(const CbVariant* expected,
             break;
         
         default:
-            _assert_true(cast_to_largest_integral_type(0),
-                         "Invalid variant type", file, line);
+            _assert_true(0, "Invalid variant type", file, line);
             break;
     }
 }
