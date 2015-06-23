@@ -125,7 +125,7 @@ memcheck: build
 	$(VALGRIND) $(VALGRIND_OPTIONS) ./$(TARGET)
 
 mcf:           memcheck-full
-memcheck-full: VALGRIND_OPTIONS := $(VALGRIND_OPTIONS) $(VALGRIND_OPTIONS_EXTRA)
+memcheck-full: VALGRIND_OPTIONS += $(VALGRIND_OPTIONS_EXTRA)
 memcheck-full: build
 	$(VALGRIND) $(VALGRIND_OPTIONS) ./$(TARGET)
 
@@ -187,7 +187,7 @@ test-memcheck: test
 	$(VALGRIND) $(VALGRIND_OPTIONS) ./$(TARGET_TEST)
 
 tmcf:               test-memcheck-full
-test-memcheck-full: VALGRIND_OPTIONS := $(VALGRIND_OPTIONS) --leak-check=full
+test-memcheck-full: VALGRIND_OPTIONS += $(VALGRIND_OPTIONS_EXTRA)
 test-memcheck-full: test
 	$(VALGRIND) $(VALGRIND_OPTIONS) ./$(TARGET_TEST)
 
