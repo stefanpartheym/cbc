@@ -64,7 +64,7 @@ void _raise_error(const char* message,
                   const char* file,
                   int line);
 #define raise_error(message) \
-_raise_error(message, __FUNCTION__, __FILE__, __LINE__)
+_raise_error(message, __func__, __FILE__, __LINE__)
 
 /*
  * Print an error message - indecated by errno (errno.h) - and abort the
@@ -74,7 +74,7 @@ void _raise_last_error(const char* function,
                        const char* file,
                        int line);
 #define raise_last_error() \
-_raise_last_error(__FUNCTION__, __FILE__, __LINE__)
+_raise_last_error(__func__, __FILE__, __LINE__)
 
 
 /* -------------------------------------------------------------------------- */

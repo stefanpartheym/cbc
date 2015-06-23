@@ -10,9 +10,9 @@
 
 #ifdef DEBUG
 #define cb_assert(condition) \
-        _cb_assert(condition, #condition, __FILE__, __LINE__, __FUNCTION__)
+        _cb_assert(condition, #condition, __FILE__, __LINE__, __func__)
 #define cb_abort(message) \
-        _cb_abort(message, __FILE__, __LINE__, __FUNCTION__)
+        _cb_abort(message, __FILE__, __LINE__, __func__)
 
 void _cb_assert(const int condition,
                 const char* condition_str,

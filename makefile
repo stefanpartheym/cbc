@@ -43,11 +43,11 @@ SOURCES_TEST           := test.c test_utils.c \
 OBJ_TEST               := $(SOURCES_TEST:%.c=$(OBJ_DIR_TEST)/%.o) \
                           $(OBJECTS:%=$(OBJ_DIR_TEST)/%)
 
-CFLAGS_COMMON          := -Wall -D_POSIX_SOURCE -ansi -pedantic -pedantic-errors
+CFLAGS_COMMON          := -Wall -std=c99 -pedantic -pedantic-errors
 CFLAGS                 := -g $(CFLAGS_COMMON) -D DEBUG
 CFLAGS_RELEASE         := $(CFLAGS_COMMON)
 LDFLAGS                := 
-CFLAGS_TEST            := -I$(TEST_DIR) $(CFLAGS) -D inline=__inline
+CFLAGS_TEST            := -I$(TEST_DIR) $(CFLAGS)
 LDFLAGS_TEST           := -lcmocka $(LDFLAGS)
 
 MKDIR                  := mkdir -p

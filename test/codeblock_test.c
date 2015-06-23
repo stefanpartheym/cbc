@@ -8,7 +8,7 @@
 
 /* -------------------------------------------------------------------------- */
 
-static const char* write_temp_file(const char* content);
+static FILE* write_temp_file(const char* content);
 
 
 /* -------------------------------------------------------------------------- */
@@ -27,7 +27,7 @@ void codeblock_common_test(void** state)
     assert_non_null(result);
     assert_cb_integer_equal(TEST_RESULT, result);
     
-    test_file = fopen(write_temp_file(TEST_STRING), "r");
+    test_file = write_temp_file(TEST_STRING);
     assert_true(cb_codeblock_parse_file(cb, test_file));
     fclose(test_file);
     
@@ -42,13 +42,13 @@ void codeblock_common_test(void** state)
 
 /* -------------------------------------------------------------------------- */
 
-static const char* write_temp_file(const char* content)
+static FILE* write_temp_file(const char* content)
 {
-    const char* file_name = tmpnam(NULL);
-    
-    FILE* f = fopen(file_name, "w");
+    FILE* f = tmpfile();
     fputs(content, f);
-    fclose(f);
     
-    return file_name;
+    /* reopen file for read operations */
+    freopen(NULL, "r", f);
+    
+    return f;
 }
