@@ -29,8 +29,8 @@ MAIN                   := main.c
 SOURCES                := $(LEXER_SRC) $(PARSER_SRC) \
                           utils.c cb_utils.c error_handling.c \
                           variant.c vector.c stack.c hash_table.c \
-                          ast.c ast_binary.c ast_unary.c ast_value.c \
-                          ast_variable.c ast_declaration.c \
+                          ast.c ast_binary.c ast_unary.c ast_variable.c \
+                          ast_value.c ast_declaration.c ast_statement_list.c \
                           scope.c symbol.c symbol_variable.c symbol_function.c \
                           symbol_table.c \
                           codeblock.c

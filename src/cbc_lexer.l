@@ -37,7 +37,7 @@
                 }
 
                 /* single character operators */
-[-+*/]          { return *yytext; }
+[-+*/|,]        { return *yytext; }
 
                 /* end of file */
 <<EOF>>         { return ENDOFFILE; }
