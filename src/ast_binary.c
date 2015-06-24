@@ -4,6 +4,8 @@
 #include "utils.h"
 #include "cb_utils.h"
 #include "error_handling.h"
+#include "symbol_variable.h"
+#include "ast_variable.h"
 #include "ast_internal.h"
 #include "ast_binary.h"
 
@@ -20,7 +22,8 @@ static const char* CB_BINARY_OPERATOR_TYPE_STRINGS[] = {
     "+", /* CB_BINARY_OPERATOR_TYPE_ADD */
     "-", /* CB_BINARY_OPERATOR_TYPE_SUB */
     "*", /* CB_BINARY_OPERATOR_TYPE_MUL */
-    "/"  /* CB_BINARY_OPERATOR_TYPE_DIV */
+    "/", /* CB_BINARY_OPERATOR_TYPE_DIV */
+    ":=" /* CB_BINARY_OPERATOR_TYPE_ASSIGN */
 };
 
 /*
@@ -75,21 +78,43 @@ CbVariant* cb_ast_binary_node_eval(const CbAstBinaryNode* self,
                                    const CbSymbolTable* symbols)
 {
     CbVariant* result = NULL;
-    /* evaluate child nodes first */
-    CbVariant* left  = cb_ast_node_eval(self->base.left, symbols);
-    CbVariant* right = cb_ast_node_eval(self->base.right, symbols);
     
-    /* make sure variant type of evaluated nodes is correct */
-    cb_assert(cb_variant_is_numeric(left) && cb_variant_is_numeric(right));
-    
-    /* evaluate binary node */
-    if (cb_variant_is_float(left) || cb_variant_is_float(right))
-        result = cb_ast_binary_node_eval_float(self, left, right);
+    /* special treatment for assignment nodes */
+    if (self->operator_type == CB_BINARY_OPERATOR_TYPE_ASSIGN)
+    {
+        CbAstVariableNode* node;
+        CbVariant* value;
+        
+        cb_assert(self->base.left->type == CB_AST_TYPE_VARIABLE);
+        
+        node  = (CbAstVariableNode*) self->base.left;
+        value = cb_ast_node_eval(self->base.right, symbols);
+        if (value != NULL)
+        {
+            result = cb_variant_copy(cb_ast_variable_node_assign(
+                node, symbols, value
+            ));
+            cb_variant_destroy(value);
+        }
+    }
     else
-        result = cb_ast_binary_node_eval_integer(self, left, right);
-    
-    cb_variant_destroy(left);
-    cb_variant_destroy(right);
+    {
+        /* evaluate child nodes first */
+        CbVariant* left  = cb_ast_node_eval(self->base.left, symbols);
+        CbVariant* right = cb_ast_node_eval(self->base.right, symbols);
+        
+        /* make sure variant type of evaluated nodes is correct */
+        cb_assert(cb_variant_is_numeric(left) && cb_variant_is_numeric(right));
+        
+        /* evaluate binary node */
+        if (cb_variant_is_float(left) || cb_variant_is_float(right))
+            result = cb_ast_binary_node_eval_float(self, left, right);
+        else
+            result = cb_ast_binary_node_eval_integer(self, left, right);
+        
+        cb_variant_destroy(left);
+        cb_variant_destroy(right);
+    }
     
     return result;
 }
@@ -103,20 +128,41 @@ bool cb_ast_binary_node_check_semantic(const CbAstBinaryNode* self,
     /* also, make sure the variant (value) type of the expression is correct */
     if (result)
     {
-        CbVariantType expected_type = CB_VARIANT_TYPE_NUMERIC;
-        if (! (cb_ast_node_check_expression_type(self->base.left,  expected_type) &&
-               cb_ast_node_check_expression_type(self->base.right, expected_type)) )
+        /* special treatment for assignment nodes */
+        if (self->operator_type == CB_BINARY_OPERATOR_TYPE_ASSIGN)
         {
+            result =
+                /* lhs must be a variable */
+                self->base.left->type == CB_AST_TYPE_VARIABLE &&
+                /* variable identifier must be properly declared */
+                cb_ast_variable_node_is_declared(
+                    (CbAstVariableNode*) self->base.left,
+                    symbols
+                );
             /*
-             * Raise an error, if not both child nodes are numeric expressions!
+             * TODO: In order to check semantics for the rhs properly, one needs
+             *       (in addition to the AST node type) some kind of attribute,
+             *       that specifies whether the AST node is an expression or
+             *       something else.
              */
-            cb_error_trigger(
-                CB_ERROR_SEMANTIC, self->base.line,
-                "invalid operand type for binary '%s', expecting %s type",
-                cb_binary_operator_type_stringify(self->operator_type),
-                cb_variant_type_stringify(expected_type)
-            );
-            result = false;
+        }
+        else
+        {
+            CbVariantType expected_type = CB_VARIANT_TYPE_NUMERIC;
+            if (! (cb_ast_node_check_expression_type(self->base.left,  expected_type) &&
+                   cb_ast_node_check_expression_type(self->base.right, expected_type)) )
+            {
+                /*
+                 * Raise an error, if not both child nodes are numeric expressions!
+                 */
+                cb_error_trigger(
+                    CB_ERROR_SEMANTIC, self->base.line,
+                    "invalid operand type for binary '%s', expecting %s type",
+                    cb_binary_operator_type_stringify(self->operator_type),
+                    cb_variant_type_stringify(expected_type)
+                );
+                result = false;
+            }
         }
     }
     

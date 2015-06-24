@@ -29,6 +29,12 @@ struct CbAstVariableNode
 
 /* -------------------------------------------------------------------------- */
 
+static CbSymbolVariable* cb_ast_variable_node_get_symbol_from_table(const CbAstVariableNode* self,
+                                                                    const CbSymbolTable* symbols);
+
+
+/* -------------------------------------------------------------------------- */
+
 CbAstVariableNode* cb_ast_variable_node_create(const char* identifier)
 {
     CbAstVariableNode* self = (CbAstVariableNode*) memalloc(sizeof(CbAstVariableNode));
@@ -53,17 +59,12 @@ void cb_ast_variable_node_destroy(CbAstVariableNode* self)
 CbVariant* cb_ast_variable_node_eval(const CbAstVariableNode* self,
                                      const CbSymbolTable* symbols)
 {
-    CbVariant* result      = NULL;
-    const CbSymbol* symbol = cb_symbol_table_lookup(symbols, self->identifier);
-    
-    /* make sure symbol is valid */
-    cb_assert(symbol != NULL);
-    cb_assert(cb_symbol_is_variable(symbol));
+    CbVariant* result = NULL;
+    const CbSymbolVariable* symbol =
+        cb_ast_variable_node_get_symbol_from_table(self, symbols);
     
     /* return copy of the value */
-    result = cb_variant_copy(
-        cb_symbol_variable_get_value((const CbSymbolVariable*) symbol)
-    );
+    result = cb_variant_copy(cb_symbol_variable_get_value(symbol));
     
     return result;
 }
@@ -101,4 +102,38 @@ bool cb_ast_variable_node_check_semantic(const CbAstVariableNode* self,
     }
     
     return true;
+}
+
+bool cb_ast_variable_node_is_declared(const CbAstVariableNode* self,
+                                      const CbSymbolTable* symbols)
+{
+    CbSymbol* symbol = cb_symbol_table_lookup(symbols, self->identifier);
+    if (symbol == NULL)
+        return false;
+    else
+        return cb_symbol_is_variable(symbol);
+}
+
+const CbVariant* cb_ast_variable_node_assign(CbAstVariableNode* self,
+                                             const CbSymbolTable* symbols,
+                                             const CbVariant* value)
+{
+    CbSymbolVariable* symbol =
+        cb_ast_variable_node_get_symbol_from_table(self, symbols);
+    cb_symbol_variable_assign(symbol, value);
+    return cb_symbol_variable_get_value(symbol);
+}
+
+
+/* -------------------------------------------------------------------------- */
+
+static CbSymbolVariable* cb_ast_variable_node_get_symbol_from_table(const CbAstVariableNode* self,
+                                                                    const CbSymbolTable* symbols)
+{
+    CbSymbol* symbol = cb_symbol_table_lookup(symbols, self->identifier);
+    /* make sure symbol is valid */
+    cb_assert(symbol != NULL);
+    cb_assert(cb_symbol_is_variable(symbol));
+    
+    return (CbSymbolVariable*) symbol;
 }

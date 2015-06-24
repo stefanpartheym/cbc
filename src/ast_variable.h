@@ -56,5 +56,29 @@ CbVariant* cb_ast_variable_node_eval(const CbAstVariableNode* self,
 bool cb_ast_variable_node_check_semantic(const CbAstVariableNode* self,
                                          CbSymbolTable* symbols);
 
+/**
+ * @memberof CbAstVariableNode
+ * @brief    Check if the identifier of the variable is declared properly.
+ * 
+ * @param self    The CbAstVariableNode instance.
+ * @param symbols The symbol-table to look for the identifier.
+ */
+bool cb_ast_variable_node_is_declared(const CbAstVariableNode* self,
+                                      const CbSymbolTable* symbols);
+
+/**
+ * @memberof CbAstVariableNode
+ * @brief    Assign a new value to the symbol referenced by this node.
+ * 
+ * @param self    The CbAstVariableNode instance.
+ * @param symbols The symbol-table to look for the identifier.
+ * @param value   The new value to be assigned.
+ * 
+ * @return Returns a pointer to the new value assigned to the symbol.
+ */
+const CbVariant* cb_ast_variable_node_assign(CbAstVariableNode* self,
+                                             const CbSymbolTable* symbols,
+                                             const CbVariant* value);
+
 
 #endif /* AST_VARIABLE_H */
