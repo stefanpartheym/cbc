@@ -15,7 +15,8 @@ static FILE* write_temp_file(const char* content);
 
 void codeblock_common_test(void** state)
 {
-    const char* const TEST_STRING = "333 + 55 * 7 - 99";
+    const char* const TEST_STRING = "333 + 55 * 7 - 99,";
+    const char* const FAIL_STRING = "undefined_var,";
     const int TEST_RESULT         = 619;
     FILE* test_file;
     const CbVariant* result;
@@ -26,6 +27,9 @@ void codeblock_common_test(void** state)
     result = cb_codeblock_get_result(cb);
     assert_non_null(result);
     assert_cb_integer_equal(TEST_RESULT, result);
+    
+    assert_true(cb_codeblock_parse_string(cb, FAIL_STRING));
+    assert_false(cb_codeblock_execute(cb));
     
     test_file = write_temp_file(TEST_STRING);
     assert_true(cb_codeblock_parse_file(cb, test_file));

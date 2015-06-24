@@ -14,7 +14,8 @@ enum CbCodeblockState
 {
     CB_STATE_READY,
     CB_STATE_PARSED,
-    CB_STATE_EXECUTED
+    CB_STATE_EXECUTED_SUCCESS,
+    CB_STATE_EXECUTED_FAILURE
 };
 
 struct CbCodeblock
@@ -99,20 +100,20 @@ bool cb_codeblock_execute(CbCodeblock* self)
     
     cb_assert(self->state == CB_STATE_PARSED);
     
-    self->state = CB_STATE_EXECUTED;
+    self->state = CB_STATE_EXECUTED_FAILURE;
     result      = false;
     symbols     = cb_symbol_table_create();
     
     result = cb_ast_node_check_semantic(self->ast, symbols);
-    if (result)
+    if (result) self->result = cb_ast_node_eval(self->ast, symbols);
+    
+    if (cb_error_occurred())
     {
-        self->result = cb_ast_node_eval(self->ast, symbols);
-        if (cb_error_occurred())
-        {
-            result = false;
-            cb_error_process();
-        }
+        result = false;
+        cb_error_process();
     }
+    else
+        self->state = CB_STATE_EXECUTED_SUCCESS;
     
     cb_symbol_table_destroy(symbols);
     
@@ -121,7 +122,7 @@ bool cb_codeblock_execute(CbCodeblock* self)
 
 const CbVariant* cb_codeblock_get_result(const CbCodeblock* self)
 {
-    cb_assert(self->state == CB_STATE_EXECUTED);
+    cb_assert(self->state == CB_STATE_EXECUTED_SUCCESS);
     
     return self->result;
 }
@@ -163,9 +164,10 @@ static void cb_codeblock_reset(CbCodeblock* self)
     {
         case CB_STATE_READY:    /* nothing to do */ break;
         
-        case CB_STATE_EXECUTED: cb_variant_destroy(self->result);
-        case CB_STATE_PARSED:   cb_ast_node_destroy(self->ast);
-                                self->state = CB_STATE_READY;
-                                break;
+        case CB_STATE_EXECUTED_SUCCESS: cb_variant_destroy(self->result);
+        case CB_STATE_EXECUTED_FAILURE:
+        case CB_STATE_PARSED: cb_ast_node_destroy(self->ast);
+                              self->state = CB_STATE_READY;
+                              break;
     }
 }
