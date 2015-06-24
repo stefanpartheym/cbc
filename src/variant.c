@@ -118,7 +118,7 @@ CbVariantType cb_variant_get_type(const CbVariant* self)
 {
     return self->type;
 }
-#include <float.h>
+
 char* cb_variant_to_string(const CbVariant* self)
 {
     char* result;
