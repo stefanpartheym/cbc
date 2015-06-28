@@ -25,6 +25,7 @@ typedef enum
 /* data type aliases */
 typedef long int CbIntegerDataType;
 typedef double   CbFloatDataType;
+typedef bool     CbBooleanDataType;
 
 
 /* -------------------------------------------------------------------------- */
@@ -150,6 +151,20 @@ CbVariant* cb_float_create(const CbFloatDataType value);
  * Float value (Getter)
  */
 CbFloatDataType cb_float_get_value(const CbVariant* self);
+
+
+/* -------------------------------------------------------------------------- */
+/* boolean variant type functions */
+
+/*
+ * Constructor (Boolean)
+ */
+CbVariant* cb_boolean_create(const CbBooleanDataType value);
+
+/*
+ * Boolean value (Getter)
+ */
+CbFloatDataType cb_boolean_get_value(const CbVariant* self);
 
 
 #endif /* VARIANT_H */

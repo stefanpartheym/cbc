@@ -31,6 +31,11 @@ void variant_alloc_test(void** state)
     variant = cb_float_create(123.000321);
     assert_non_null(variant);
     cb_variant_destroy(variant);
+    
+    /* boolean variant */
+    variant = cb_boolean_create(true);
+    assert_non_null(variant);
+    cb_variant_destroy(variant);
 }
 
 /*
@@ -55,6 +60,12 @@ void variant_types_test(void** state)
     variant = cb_float_create(123.000321);
     assert_true(cb_variant_is_float(variant));
     assert_true(dequal(123.000321, cb_float_get_value(variant)));
+    cb_variant_destroy(variant);
+    
+    /* boolean variant */
+    variant = cb_boolean_create(true);
+    assert_true(cb_variant_is_boolean(variant));
+    assert_int_equal(true, cb_boolean_get_value(variant));
     cb_variant_destroy(variant);
 }
 
@@ -84,6 +95,18 @@ void variant_to_string_test(void** state)
     variant = cb_float_create(123.000321);
     str     = cb_variant_to_string(variant);
     assert_string_equal("123.000321", str);
+    memfree(str);
+    cb_variant_destroy(variant);
+    
+    /* boolean variant */
+    variant = cb_boolean_create(true);
+    str     = cb_variant_to_string(variant);
+    assert_string_equal("True", str);
+    memfree(str);
+    cb_variant_destroy(variant);
+    variant = cb_boolean_create(false);
+    str     = cb_variant_to_string(variant);
+    assert_string_equal("False", str);
     memfree(str);
     cb_variant_destroy(variant);
 }

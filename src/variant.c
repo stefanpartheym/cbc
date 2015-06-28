@@ -16,6 +16,7 @@ struct CbVariant
     {
         CbIntegerDataType integer;
         CbFloatDataType   decimal;
+        CbBooleanDataType boolean;
     } v;
 };
 
@@ -62,11 +63,9 @@ void cb_variant_destroy(CbVariant* self)
     {
         case CB_VARIANT_TYPE_FLOAT:
         case CB_VARIANT_TYPE_INTEGER:
+        case CB_VARIANT_TYPE_BOOLEAN:
             /* TODO: currently there is no action requiered */
             break;
-        
-        case CB_VARIANT_TYPE_BOOLEAN:
-            cb_abort("CB_VARIANT_TYPE_BOOLEAN: Not yet implemented"); break;
         
         case CB_VARIANT_TYPE_STRING:
             cb_abort("CB_VARIANT_TYPE_STRING: Not yet implemented"); break;
@@ -100,7 +99,7 @@ CbVariant* cb_variant_copy(const CbVariant* variant)
             copy->v.decimal = variant->v.decimal; break;
         
         case CB_VARIANT_TYPE_BOOLEAN:
-            cb_abort("CB_VARIANT_TYPE_BOOLEAN: Not yet implemented"); break;
+            copy->v.boolean = variant->v.boolean; break;
         
         case CB_VARIANT_TYPE_STRING:
             cb_abort("CB_VARIANT_TYPE_STRING: Not yet implemented");  break;
@@ -142,6 +141,14 @@ char* cb_variant_to_string(const CbVariant* self)
             break;
         
         case CB_VARIANT_TYPE_BOOLEAN:
+            result = memalloc(6);
+            const char* display_value = CB_VARIANT_DISPLAY_VALUE_FALSE;
+            if (self->v.boolean)
+                display_value = CB_VARIANT_DISPLAY_VALUE_TRUE;
+            
+            sprintf(result, "%s", display_value);
+            break;
+        
         case CB_VARIANT_TYPE_STRING: cb_abort("Not yet implemented"); break;
         
         default: cb_abort("Invalid variant type"); break;
@@ -260,4 +267,23 @@ CbFloatDataType cb_float_get_value(const CbVariant* self)
     cb_assert(cb_variant_is_float(self));
     
     return self->v.decimal;
+}
+
+
+/* -------------------------------------------------------------------------- */
+
+CbVariant* cb_boolean_create(const CbBooleanDataType value)
+{
+    CbVariant* self = cb_variant_create();
+    self->type      = CB_VARIANT_TYPE_BOOLEAN;
+    self->v.boolean = value;
+    
+    return self;
+}
+
+CbFloatDataType cb_boolean_get_value(const CbVariant* self)
+{
+    cb_assert(cb_variant_is_boolean(self));
+    
+    return self->v.boolean;
 }

@@ -30,6 +30,12 @@
                     return FLOAT;
                 }
 
+                /* booleans */
+"True"|"False"  {
+                    yylval.boolean_val = strequ("True", yytext);
+                    return BOOLEAN;
+                }
+
                 /* identifiers */
 [_a-zA-Z][_a-zA-Z0-9]* {
                     yylval.identifier = strdup(yytext);
