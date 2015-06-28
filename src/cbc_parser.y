@@ -33,15 +33,16 @@ void yyerror(void* data, const char* format, ...);
     CbFloatDataType   float_val;
 };
 
-%token               ENDOFFILE
 %token <identifier>  IDENTIFIER
 %token <integer_val> INTEGER
 %token <float_val>   FLOAT
+%token               ASSIGNMENT
+%token               ENDOFFILE
 
 %left  '+' '-'
 %left  '*' '/'
 
-%type <ast> expression statement statement_list var_declaration
+%type <ast> expression statement statement_list var_declaration var_access
 
 /* Output parameter: The AST of the parsed codeblock */
 %parse-param {CbAstNode** result_ast}
@@ -50,7 +51,7 @@ void yyerror(void* data, const char* format, ...);
 /* Destructors: Destroy discarded symbols in case of errors */
 %destructor {
     cb_ast_node_destroy($$);
-} expression statement statement_list var_declaration
+} expression statement statement_list var_declaration var_access
 
 /*
  * TODO: The following destructor might be useless or even wrong, since the 
@@ -115,6 +116,14 @@ var_declaration:
                         }
     ;
 
+var_access:
+    IDENTIFIER          {
+                            $$ = (CbAstNode*) cb_ast_variable_node_create($1);
+                            cb_ast_node_set_line($$, yylineno);
+                            memfree($1); /* free duplicated string */
+                        }
+    ;
+
 expression:
     INTEGER             {
                             CbVariant* value = cb_integer_create($1);
@@ -128,10 +137,15 @@ expression:
                             cb_ast_node_set_line($$, yylineno);
                             cb_variant_destroy(value);
                         }
-    | IDENTIFIER        {
-                            $$ = (CbAstNode*) cb_ast_variable_node_create($1);
+    | var_access        {
+                            $$ = $1;
+                        }
+    | var_access ASSIGNMENT expression {
+                            $$ = (CbAstNode*) cb_ast_binary_node_create(
+                                CB_BINARY_OPERATOR_TYPE_ASSIGN,
+                                $1, $3
+                            );
                             cb_ast_node_set_line($$, yylineno);
-                            memfree($1); /* free duplicated string */
                         }
     | expression '+' expression {
                             $$ = (CbAstNode*) cb_ast_binary_node_create(

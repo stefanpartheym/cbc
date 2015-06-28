@@ -39,6 +39,9 @@
                 /* single character operators */
 [-+*/|,]        { return *yytext; }
 
+                /* assignment operator */
+":="            { return ASSIGNMENT; }
+
                 /* end of file */
 <<EOF>>         { return ENDOFFILE; }
 

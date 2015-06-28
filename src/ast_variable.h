@@ -58,6 +58,19 @@ bool cb_ast_variable_node_check_semantic(const CbAstVariableNode* self,
 
 /**
  * @memberof CbAstVariableNode
+ * @brief    Check if expression type is valid
+ * 
+ * @param self          The CbAstVariableNode instance
+ * @param expected_type Expected expression type
+ * 
+ * This function always returns true, since the data-type of the variable
+ * is not known during semantic check.
+ */
+bool cb_ast_variable_node_check_expression_type(const CbAstVariableNode* self,
+                                                CbVariantType expected_type);
+
+/**
+ * @memberof CbAstVariableNode
  * @brief    Check if the identifier of the variable is declared properly.
  * 
  * @param self    The CbAstVariableNode instance.

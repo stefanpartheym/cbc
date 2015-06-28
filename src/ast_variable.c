@@ -104,6 +104,16 @@ bool cb_ast_variable_node_check_semantic(const CbAstVariableNode* self,
     return true;
 }
 
+bool cb_ast_variable_node_check_expression_type(const CbAstVariableNode* self,
+                                                CbVariantType expected_type)
+{
+    /*
+     * NOTE: No type checking in case of a variable, since the type is
+     *       not known yet.
+     */
+    return true;
+}
+
 bool cb_ast_variable_node_is_declared(const CbAstVariableNode* self,
                                       const CbSymbolTable* symbols)
 {

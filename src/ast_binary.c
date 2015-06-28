@@ -103,7 +103,13 @@ CbVariant* cb_ast_binary_node_eval(const CbAstBinaryNode* self,
         CbVariant* left  = cb_ast_node_eval(self->base.left, symbols);
         CbVariant* right = cb_ast_node_eval(self->base.right, symbols);
         
-        /* make sure variant type of evaluated nodes is correct */
+        /*
+         * Make sure the variant types of evaluated nodes are correct.
+         * TODO: Throw an error instead of using hard asserts!
+         *       When performing a binary operation with a variable AST node as
+         *       operand, then there was no type checking done during semantic
+         *       check. This means one needs to check types during evaluation.
+         */
         cb_assert(cb_variant_is_numeric(left) && cb_variant_is_numeric(right));
         
         /* evaluate binary node */

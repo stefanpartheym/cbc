@@ -7,6 +7,7 @@
 #include "ast_value.h"
 #include "ast_binary.h"
 #include "ast_unary.h"
+#include "ast_variable.h"
 
 
 /* -------------------------------------------------------------------------- */
@@ -64,14 +65,14 @@ bool cb_ast_node_check_expression_type(const CbAstNode* self,
     switch (self->type)
     {
         case CB_AST_TYPE_VALUE:
-            result =
-                cb_ast_value_node_check_expression_type((CbAstValueNode*) self,
-                                                        variant_type);
+            result = cb_ast_value_node_check_expression_type(
+                (CbAstValueNode*) self, variant_type
+            );
             break;
         
         case CB_AST_TYPE_BINARY:
             result =
-                cb_ast_node_check_expression_type(self->left, variant_type) &&
+                cb_ast_node_check_expression_type(self->left,  variant_type) &&
                 cb_ast_node_check_expression_type(self->right, variant_type);
             break;
         
@@ -79,6 +80,13 @@ bool cb_ast_node_check_expression_type(const CbAstNode* self,
             result =
                 cb_ast_node_check_expression_type(self->left, variant_type);
             break;
+        
+        case CB_AST_TYPE_VARIABLE:
+            return cb_ast_variable_node_check_expression_type(
+                (CbAstVariableNode*) self, variant_type
+            );
+            break;
+        
         
         /* invalid AST node types */
         case CB_AST_TYPE_NONE:
