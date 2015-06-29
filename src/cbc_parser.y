@@ -11,6 +11,7 @@
 #include "ast_binary.h"
 #include "ast_variable.h"
 #include "ast_declaration.h"
+#include "ast_declaration_block.h"
 #include "ast_statement_list.h"
 
 
@@ -44,7 +45,10 @@ void yyerror(void* data, const char* format, ...);
 %left  '+' '-'
 %left  '*' '/'
 
-%type <ast> expression statement statement_list var_declaration var_access
+%type <ast> expression
+            statement statement_list
+            var_declaration var_declaration_block var_declaration_list
+            var_access
 
 /* Output parameter: The AST of the parsed codeblock */
 %parse-param {CbAstNode** result_ast}
@@ -76,7 +80,7 @@ program:
     ;
 
 statement_list:
-    var_declaration statement_list {
+    var_declaration_list statement_list {
                             if ($2 == NULL)
                                 $$ = $1;
                             else
@@ -107,14 +111,37 @@ statement:
     expression          { $$ = $1; }
     ;
 
+var_declaration_list:
+    '|' var_declaration_block '|'
+                        { $$ = $2; }
+    ;
+
+var_declaration_block:
+    var_declaration     {
+                            $$ = (CbAstNode*) cb_ast_declaration_block_node_create();
+                            cb_ast_node_set_line($$, yylineno);
+                            cb_ast_declaration_block_node_add(
+                                (CbAstDeclarationBlockNode*) $$,
+                                (CbAstDeclarationNode*) $1
+                            );
+                        }
+    | var_declaration_block ',' var_declaration {
+                            cb_ast_declaration_block_node_add(
+                                (CbAstDeclarationBlockNode*) $1,
+                                (CbAstDeclarationNode*) $3
+                            );
+                            $$ = $1;
+                        }
+    ;
+
 var_declaration:
-    '|' IDENTIFIER '|'  {
+    IDENTIFIER          {
                             $$ = (CbAstNode*) cb_ast_declaration_node_create(
                                 CB_AST_DECLARATION_TYPE_VARIABLE,
-                                $2
+                                $1
                             );
-                            memfree($2); /* free duplicated string */
                             cb_ast_node_set_line($$, yylineno);
+                            memfree($1); /* free duplicated string */
                         }
     ;
 
