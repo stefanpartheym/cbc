@@ -48,7 +48,7 @@ CFLAGS_COMMON          := -Wall -std=c99 -pedantic -pedantic-errors
 CFLAGS                 := -g $(CFLAGS_COMMON) -D DEBUG
 CFLAGS_RELEASE         := $(CFLAGS_COMMON)
 LDFLAGS                := 
-CFLAGS_TEST            := -I$(TEST_DIR) $(CFLAGS)
+CFLAGS_TEST            := $(CFLAGS)
 LDFLAGS_TEST           := -lcmocka $(LDFLAGS)
 
 MKDIR                  := mkdir -p
