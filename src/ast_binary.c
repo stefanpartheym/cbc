@@ -99,27 +99,42 @@ CbVariant* cb_ast_binary_node_eval(const CbAstBinaryNode* self,
     }
     else
     {
-        /* evaluate child nodes first */
-        CbVariant* left  = cb_ast_node_eval(self->base.left, symbols);
-        CbVariant* right = cb_ast_node_eval(self->base.right, symbols);
-        
-        /*
-         * Make sure the variant types of evaluated nodes are correct.
-         * TODO: Throw an error instead of using hard asserts!
-         *       When performing a binary operation with a variable AST node as
-         *       operand, then there was no type checking done during semantic
-         *       check. This means one needs to check types during evaluation.
-         */
-        cb_assert(cb_variant_is_numeric(left) && cb_variant_is_numeric(right));
-        
-        /* evaluate binary node */
-        if (cb_variant_is_float(left) || cb_variant_is_float(right))
-            result = cb_ast_binary_node_eval_float(self, left, right);
-        else
-            result = cb_ast_binary_node_eval_integer(self, left, right);
-        
-        cb_variant_destroy(left);
-        cb_variant_destroy(right);
+        /* evaluate left child node first */
+        CbVariant* left = cb_ast_node_eval(self->base.left, symbols);
+        if (!cb_error_occurred())
+        {
+            /* evaluate right child node first */
+            CbVariant* right = cb_ast_node_eval(self->base.right, symbols);
+            if (!cb_error_occurred())
+            {
+                /*
+                 * Make sure the variant types of evaluated nodes are correct.
+                 */
+                if (cb_variant_is_numeric(left) && cb_variant_is_numeric(right))
+                {
+                    /* evaluate binary node */
+                    if (cb_variant_is_float(left) || cb_variant_is_float(right))
+                        result = cb_ast_binary_node_eval_float(self, left, right);
+                    else
+                        result = cb_ast_binary_node_eval_integer(self, left, right);
+                }
+                else
+                {
+                    /* types mismatch -> trigger an error */
+                    cb_error_trigger(
+                        CB_ERROR_RUNTIME, self->base.line,
+                        "Invalid binary operation: <%s> %s <%s>",
+                        cb_variant_type_stringify(cb_variant_get_type(left)),
+                        cb_binary_operator_type_stringify(self->operator_type),
+                        cb_variant_type_stringify(cb_variant_get_type(right))
+                    );
+                }
+                
+                cb_variant_destroy(right);
+            }
+            
+            cb_variant_destroy(left);
+        }
     }
     
     return result;
