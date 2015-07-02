@@ -102,20 +102,30 @@ bool cb_codeblock_execute(CbCodeblock* self)
     
     self->state = CB_STATE_EXECUTED_FAILURE;
     result      = false;
-    symbols     = cb_symbol_table_create();
     
-    result = cb_ast_node_check_semantic(self->ast, symbols);
-    if (result) self->result = cb_ast_node_eval(self->ast, symbols);
-    
-    if (cb_error_occurred())
+    if (self->ast == NULL)
     {
-        result = false;
-        cb_error_process();
+        /* an empty codeblock is considered "successul" */
+        self->state  = CB_STATE_EXECUTED_SUCCESS;
+        result       = true;
+        self->result = cb_variant_create();
     }
     else
-        self->state = CB_STATE_EXECUTED_SUCCESS;
-    
-    cb_symbol_table_destroy(symbols);
+    {
+        symbols = cb_symbol_table_create();
+        result  = cb_ast_node_check_semantic(self->ast, symbols);
+        if (result) self->result = cb_ast_node_eval(self->ast, symbols);
+        
+        if (cb_error_occurred())
+        {
+            result = false;
+            cb_error_process();
+        }
+        else
+            self->state = CB_STATE_EXECUTED_SUCCESS;
+        
+        cb_symbol_table_destroy(symbols);
+    }
     
     return result;
 }
@@ -162,12 +172,20 @@ static void cb_codeblock_reset(CbCodeblock* self)
 {
     switch (self->state)
     {
-        case CB_STATE_READY:    /* nothing to do */ break;
+        case CB_STATE_READY: /* nothing to do */ break;
         
-        case CB_STATE_EXECUTED_SUCCESS: cb_variant_destroy(self->result);
+        case CB_STATE_EXECUTED_SUCCESS:
+            cb_variant_destroy(self->result);
+            self->result = NULL;
+            /* no break! */
         case CB_STATE_EXECUTED_FAILURE:
-        case CB_STATE_PARSED: cb_ast_node_destroy(self->ast);
-                              self->state = CB_STATE_READY;
-                              break;
+        case CB_STATE_PARSED:
+            if (self->ast != NULL)
+            {
+                cb_ast_node_destroy(self->ast);
+                self->ast = NULL;
+            }
+            self->state = CB_STATE_READY;
+            break;
     }
 }

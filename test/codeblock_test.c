@@ -28,9 +28,15 @@ void codeblock_common_test(void** state)
     assert_non_null(result);
     assert_cb_integer_equal(TEST_RESULT, result);
     
+    /* invalid codeblock */
     assert_true(cb_codeblock_parse_string(cb, FAIL_STRING));
     assert_false(cb_codeblock_execute(cb));
     
+    /* empty codeblock */
+    assert_true(cb_codeblock_parse_string(cb, ""));
+    assert_true(cb_codeblock_execute(cb));
+    
+    /* codeblock from a file */
     test_file = write_temp_file(TEST_STRING);
     assert_true(cb_codeblock_parse_file(cb, test_file));
     fclose(test_file);
@@ -51,8 +57,8 @@ static FILE* write_temp_file(const char* content)
     FILE* f = tmpfile();
     fputs(content, f);
     
-    /* reopen file for read operations */
-    freopen(NULL, "r", f);
+    freopen(NULL, "r", f); /* reopen file for read operations */
+    fseek(f, 0, SEEK_SET); /* goto beginning of file */
     
     return f;
 }
