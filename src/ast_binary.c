@@ -101,11 +101,11 @@ CbVariant* cb_ast_binary_node_eval(const CbAstBinaryNode* self,
     {
         /* evaluate left child node first */
         CbVariant* left = cb_ast_node_eval(self->base.left, symbols);
-        if (!cb_error_occurred())
+        if (left != NULL)
         {
             /* evaluate right child node first */
             CbVariant* right = cb_ast_node_eval(self->base.right, symbols);
-            if (!cb_error_occurred())
+            if (right != NULL)
             {
                 /*
                  * Make sure the variant types of evaluated nodes are correct.
@@ -213,18 +213,24 @@ static CbVariant* cb_ast_binary_node_eval_integer(const CbAstBinaryNode* self,
             result = cb_integer_create(v1 * v2); break;
         
         case CB_BINARY_OPERATOR_TYPE_DIV:
-            if ((v1 % v2) == 0)
-                /* 
-                 * Division does not yield a real number.
-                 * -> Create an integer result.
-                 */
-                result = cb_integer_create(v1 / v2);
+            if (v2 == 0)
+                cb_error_trigger(CB_ERROR_RUNTIME, self->base.line,
+                                 "Division by zero is not allowed");
             else
-                /*
-                 * Division yields a real number -> Create a float result.
-                 */
-                result = cb_float_create((CbFloatDataType) v1 /
-                                         (CbFloatDataType) v2);
+            {
+                if ((v1 % v2) == 0)
+                    /* 
+                     * Division does not yield a real number.
+                     * -> Create an integer result.
+                     */
+                    result = cb_integer_create(v1 / v2);
+                else
+                    /*
+                     * Division yields a real number -> Create a float result.
+                     */
+                    result = cb_float_create((CbFloatDataType) v1 /
+                                             (CbFloatDataType) v2);
+            }
             break;
         
         /* invalid binary operator type */
@@ -257,7 +263,12 @@ static CbVariant* cb_ast_binary_node_eval_float(const CbAstBinaryNode* self,
             result = cb_float_create(v1 * v2); break;
         
         case CB_BINARY_OPERATOR_TYPE_DIV:
-            result = cb_float_create(v1 / v2); break;
+            if (v2 == 0.0)
+                cb_error_trigger(CB_ERROR_RUNTIME, self->base.line,
+                                 "Division by zero is not allowed");
+            else
+                result = cb_float_create(v1 / v2);
+            break;
         
         /* invalid binary operator type */
         default: cb_abort("Invalid binary operator type"); break;

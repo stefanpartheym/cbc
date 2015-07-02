@@ -60,7 +60,7 @@ void ast_alloc_test(void** state)
     var_node = cb_ast_variable_node_create("test_var");
     cb_ast_node_destroy((CbAstNode*) var_node);
 }
-#include "../src/utils.h"
+
 /*
  * Test evaluation of all AST node types
  */
@@ -334,6 +334,36 @@ void ast_check_semantic_error_test(void** state)
                         "declared as variable in the current scope",
                         stream_content);
     cb_symbol_table_destroy(symbols);
+}
+
+/*
+ * Test evaluation error handling
+ */
+void ast_eval_error_test(void** state)
+{
+    char buffer[1024];
+    CbAstNode* node   = NULL;
+    CbVariant* left   = cb_integer_create(3);
+    CbVariant* right  = cb_integer_create(0);
+    
+    node = (CbAstNode*) cb_ast_binary_node_create(
+        CB_BINARY_OPERATOR_TYPE_DIV,
+        (CbAstNode*) cb_ast_value_node_create(left),
+        (CbAstNode*) cb_ast_value_node_create(right)
+    );
+    cb_ast_node_set_line(node, 1);
+    
+    cb_variant_destroy(left);
+    cb_variant_destroy(right);
+    
+    assert_null(cb_ast_node_eval(node, NULL));
+    assert_true(cb_error_occurred());
+    cb_error_process();
+    stream_to_string(*state, buffer, true);
+    assert_string_equal("runtime error: line 1: Division by zero is not allowed",
+                        buffer);
+    
+    cb_ast_node_destroy(node);
 }
 
 

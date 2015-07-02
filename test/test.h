@@ -36,6 +36,7 @@ void symbol_table_common_test(void** state);
 
 void ast_alloc_test(void** state);
 void ast_eval_test(void** state);
+void ast_eval_error_test(void** state);
 void ast_check_semantic_test(void** state);
 void ast_check_semantic_error_test(void** state);
 

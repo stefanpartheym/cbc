@@ -20,6 +20,7 @@ int main(int argc, char* argv[])
         cmocka_unit_test(symbol_table_common_test),
         cmocka_unit_test(ast_alloc_test),
         cmocka_unit_test(ast_eval_test),
+        cmocka_unit_test_setup_teardown(ast_eval_error_test, setup_error_handling, teardown_error_handling),
         cmocka_unit_test(ast_check_semantic_test),
         cmocka_unit_test_setup_teardown(ast_check_semantic_error_test, setup_error_handling, teardown_error_handling),
         cmocka_unit_test(symbol_variable_test),
