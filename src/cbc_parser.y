@@ -46,6 +46,7 @@ void yyerror(void* data, const char* format, ...);
 
 %left  '+' '-'
 %left  '*' '/'
+%right ASSIGNMENT
 
 %type <ast> expression
             statement statement_list
