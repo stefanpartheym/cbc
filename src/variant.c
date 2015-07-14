@@ -17,6 +17,7 @@ struct CbVariant
         CbIntegerDataType integer;
         CbFloatDataType   decimal;
         CbBooleanDataType boolean;
+        CbStringDataType  string;
     } v;
 };
 
@@ -68,7 +69,7 @@ void cb_variant_destroy(CbVariant* self)
             break;
         
         case CB_VARIANT_TYPE_STRING:
-            cb_abort("CB_VARIANT_TYPE_STRING: Not yet implemented"); break;
+            memfree(self->v.string); break;
         
         case CB_VARIANT_TYPE_UNDEFINED:
             /* undefined variant does not requiere any additional action */
@@ -102,7 +103,7 @@ CbVariant* cb_variant_copy(const CbVariant* variant)
             copy->v.boolean = variant->v.boolean; break;
         
         case CB_VARIANT_TYPE_STRING:
-            cb_abort("CB_VARIANT_TYPE_STRING: Not yet implemented");  break;
+            copy->v.string = strdup(variant->v.string); break;
         
         /* No action requiered -> break */
         case CB_VARIANT_TYPE_UNDEFINED: break;
@@ -149,7 +150,10 @@ char* cb_variant_to_string(const CbVariant* self)
             sprintf(result, "%s", display_value);
             break;
         
-        case CB_VARIANT_TYPE_STRING: cb_abort("Not yet implemented"); break;
+        case CB_VARIANT_TYPE_STRING:
+            result = memalloc(strlen(self->v.string) + 1);
+            sprintf(result, "%s", self->v.string);
+            break;
         
         default: cb_abort("Invalid variant type"); break;
     }
@@ -286,4 +290,23 @@ CbFloatDataType cb_boolean_get_value(const CbVariant* self)
     cb_assert(cb_variant_is_boolean(self));
     
     return self->v.boolean;
+}
+
+
+/* -------------------------------------------------------------------------- */
+
+CbVariant* cb_string_create(CbConstStringDataType value)
+{
+    CbVariant* self = cb_variant_create();
+    self->type      = CB_VARIANT_TYPE_STRING;
+    self->v.string  = strdup(value);
+    
+    return self;
+}
+
+CbConstStringDataType cb_string_get_value(const CbVariant* self)
+{
+    cb_assert(cb_variant_is_string(self));
+    
+    return self->v.string;
 }

@@ -10,6 +10,11 @@
 
 /* -------------------------------------------------------------------------- */
 
+static const char* TEST_STRING = "test string";
+
+
+/* -------------------------------------------------------------------------- */
+
 /*
  * Test constructors and destructors of CbVariant
  */
@@ -34,6 +39,11 @@ void variant_alloc_test(void** state)
     
     /* boolean variant */
     variant = cb_boolean_create(true);
+    assert_non_null(variant);
+    cb_variant_destroy(variant);
+    
+    /* string variant */
+    variant = cb_string_create(TEST_STRING);
     assert_non_null(variant);
     cb_variant_destroy(variant);
 }
@@ -66,6 +76,12 @@ void variant_types_test(void** state)
     variant = cb_boolean_create(true);
     assert_true(cb_variant_is_boolean(variant));
     assert_int_equal(true, cb_boolean_get_value(variant));
+    cb_variant_destroy(variant);
+    
+    /* string variant */
+    variant = cb_string_create(TEST_STRING);
+    assert_true(cb_variant_is_string(variant));
+    assert_string_equal(TEST_STRING, cb_string_get_value(variant));
     cb_variant_destroy(variant);
 }
 
@@ -107,6 +123,13 @@ void variant_to_string_test(void** state)
     variant = cb_boolean_create(false);
     str     = cb_variant_to_string(variant);
     assert_string_equal("False", str);
+    memfree(str);
+    cb_variant_destroy(variant);
+    
+    /* string variant */
+    variant = cb_string_create(TEST_STRING);
+    str     = cb_variant_to_string(variant);
+    assert_string_equal(TEST_STRING, str);
     memfree(str);
     cb_variant_destroy(variant);
 }

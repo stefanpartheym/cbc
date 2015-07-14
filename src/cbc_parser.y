@@ -33,12 +33,14 @@ void yyerror(void* data, const char* format, ...);
     CbIntegerDataType integer_val;
     CbFloatDataType   float_val;
     CbBooleanDataType boolean_val;
+    CbStringDataType  string_val;
 };
 
 %token <identifier>  IDENTIFIER
 %token <integer_val> INTEGER
 %token <float_val>   FLOAT
 %token <boolean_val> BOOLEAN
+%token <string_val>  STRING
 %token               ASSIGNMENT
 %token               ENDOFFILE
 
@@ -168,6 +170,13 @@ expression:
                         }
     | BOOLEAN           {
                             CbVariant* value = cb_boolean_create($1);
+                            $$ = (CbAstNode*) cb_ast_value_node_create(value);
+                            cb_ast_node_set_line($$, yylineno);
+                            cb_variant_destroy(value);
+                        }
+    | STRING            {
+                            CbVariant* value = cb_string_create($1);
+                            memfree($1); /* free duplicated string */
                             $$ = (CbAstNode*) cb_ast_value_node_create(value);
                             cb_ast_node_set_line($$, yylineno);
                             cb_variant_destroy(value);

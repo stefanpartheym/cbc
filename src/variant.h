@@ -23,9 +23,11 @@ typedef enum
 } CbVariantType;
 
 /* data type aliases */
-typedef long int CbIntegerDataType;
-typedef double   CbFloatDataType;
-typedef bool     CbBooleanDataType;
+typedef long int    CbIntegerDataType;
+typedef double      CbFloatDataType;
+typedef bool        CbBooleanDataType;
+typedef char*       CbStringDataType;
+typedef const char* CbConstStringDataType;
 
 
 /* -------------------------------------------------------------------------- */
@@ -165,6 +167,20 @@ CbVariant* cb_boolean_create(const CbBooleanDataType value);
  * Boolean value (Getter)
  */
 CbFloatDataType cb_boolean_get_value(const CbVariant* self);
+
+
+/* -------------------------------------------------------------------------- */
+/* string variant type functions */
+
+/*
+ * Constructor (String)
+ */
+CbVariant* cb_string_create(CbConstStringDataType value);
+
+/*
+ * String value (Getter)
+ */
+CbConstStringDataType cb_string_get_value(const CbVariant* self);
 
 
 #endif /* VARIANT_H */
