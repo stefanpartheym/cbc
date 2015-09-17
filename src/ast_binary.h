@@ -16,21 +16,9 @@
 /* -------------------------------------------------------------------------- */
 
 typedef struct CbAstBinaryNode CbAstBinaryNode;
-typedef enum
-{
-    CB_BINARY_OPERATOR_TYPE_ADD,
-    CB_BINARY_OPERATOR_TYPE_SUB,
-    CB_BINARY_OPERATOR_TYPE_MUL,
-    CB_BINARY_OPERATOR_TYPE_DIV
-} CbBinaryOperatorType;
 
 
 /* -------------------------------------------------------------------------- */
-
-/*
- * Get string representation of an binary operator type
- */
-const char* cb_binary_operator_type_stringify(CbBinaryOperatorType type);
 
 /*
  * Constructor

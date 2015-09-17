@@ -1,4 +1,3 @@
-#include <stdlib.h>
 #include <string.h>
 
 #include "utils.h"
@@ -34,6 +33,17 @@ static const char* const CB_VARIANT_DISPLAY_VALUE_UNDEFINED = "<undefined>";
 static const char* const CB_VARIANT_DISPLAY_VALUE_TRUE      = "True";
 static const char* const CB_VARIANT_DISPLAY_VALUE_FALSE     = "False";
 
+static const char* const CB_UNARY_OPERATOR_TYPE_STRINGS[] = {
+    "-" /* CB_UNARY_OPERATOR_TYPE_MINUS */
+};
+
+static const char* CB_BINARY_OPERATOR_TYPE_STRINGS[] = {
+    "+", /* CB_BINARY_OPERATOR_TYPE_ADD */
+    "-", /* CB_BINARY_OPERATOR_TYPE_SUB */
+    "*", /* CB_BINARY_OPERATOR_TYPE_MUL */
+    "/"  /* CB_BINARY_OPERATOR_TYPE_DIV */
+};
+
 
 /* -------------------------------------------------------------------------- */
 
@@ -44,11 +54,26 @@ const char* const cb_variant_type_stringify(const CbVariantType type)
     return CB_VARIANT_TYPE_STRINGS[type];
 }
 
+const char* cb_unary_operator_type_stringify(CbUnaryOperatorType type)
+{
+    /* TODO: make sure type arguemnt is valid */
+    return CB_UNARY_OPERATOR_TYPE_STRINGS[type];
+}
+
+const char* cb_binary_operator_type_stringify(CbBinaryOperatorType type)
+{
+    /* TODO: make sure type arguemnt is valid */
+    return CB_BINARY_OPERATOR_TYPE_STRINGS[type];
+}
+
 bool cb_variant_type_is_valid(const CbVariantType type)
 {
     return ((type >= CB_VARIANT_TYPE_UNDEFINED) &&
             (type <= CB_VARIANT_TYPE_STRING));
 }
+
+
+/* -------------------------------------------------------------------------- */
 
 CbVariant* cb_variant_create()
 {

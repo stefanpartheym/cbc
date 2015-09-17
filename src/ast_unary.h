@@ -14,18 +14,9 @@
 /* -------------------------------------------------------------------------- */
 
 typedef struct CbAstUnaryNode CbAstUnaryNode;
-typedef enum
-{
-    CB_UNARY_OPERATOR_TYPE_MINUS
-} CbUnaryOperatorType;
 
 
 /* -------------------------------------------------------------------------- */
-
-/*
- * Get string representation of an unary operator type
- */
-const char* cb_unary_operator_type_stringify(CbUnaryOperatorType type);
 
 /*
  * Constructor

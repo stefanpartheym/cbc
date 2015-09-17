@@ -1,6 +1,3 @@
-#include <stdlib.h>
-#include <stdbool.h>
-
 #include "utils.h"
 #include "cb_utils.h"
 #include "error_handling.h"
@@ -16,13 +13,6 @@ struct CbAstBinaryNode
 {
     CbAstNode base;
     CbBinaryOperatorType operator_type;
-};
-
-static const char* CB_BINARY_OPERATOR_TYPE_STRINGS[] = {
-    "+", /* CB_BINARY_OPERATOR_TYPE_ADD */
-    "-", /* CB_BINARY_OPERATOR_TYPE_SUB */
-    "*", /* CB_BINARY_OPERATOR_TYPE_MUL */
-    "/"  /* CB_BINARY_OPERATOR_TYPE_DIV */
 };
 
 /*
@@ -41,12 +31,6 @@ static CbVariant* cb_ast_binary_node_eval_float(const CbAstBinaryNode* self,
 
 
 /* -------------------------------------------------------------------------- */
-
-const char* cb_binary_operator_type_stringify(CbBinaryOperatorType type)
-{
-    /* TODO: make sure type arguemnt is valid */
-    return CB_BINARY_OPERATOR_TYPE_STRINGS[type];
-}
 
 CbAstBinaryNode* cb_ast_binary_node_create(CbBinaryOperatorType operator_type,
                                            CbAstNode* left,

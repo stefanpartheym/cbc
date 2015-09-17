@@ -29,6 +29,21 @@ typedef bool        CbBooleanDataType;
 typedef char*       CbStringDataType;
 typedef const char* CbConstStringDataType;
 
+/* unary operators */
+typedef enum
+{
+    CB_UNARY_OPERATOR_TYPE_MINUS
+} CbUnaryOperatorType;
+
+/* binary operators */
+typedef enum
+{
+    CB_BINARY_OPERATOR_TYPE_ADD,
+    CB_BINARY_OPERATOR_TYPE_SUB,
+    CB_BINARY_OPERATOR_TYPE_MUL,
+    CB_BINARY_OPERATOR_TYPE_DIV
+} CbBinaryOperatorType;
+
 
 /* -------------------------------------------------------------------------- */
 
@@ -36,6 +51,16 @@ typedef const char* CbConstStringDataType;
  * String representation of a CbVariantType.
  */
 const char* const cb_variant_type_stringify(const CbVariantType type);
+
+/*
+ * Get string representation of an unary operator type
+ */
+const char* cb_unary_operator_type_stringify(CbUnaryOperatorType type);
+
+/*
+ * Get string representation of an binary operator type
+ */
+const char* cb_binary_operator_type_stringify(CbBinaryOperatorType type);
 
 /*
  * Check if a specific variant type is valid.

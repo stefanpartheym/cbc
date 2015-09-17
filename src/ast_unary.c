@@ -1,6 +1,3 @@
-#include <stdlib.h>
-#include <stdbool.h>
-
 #include "utils.h"
 #include "cb_utils.h"
 #include "error_handling.h"
@@ -16,18 +13,8 @@ struct CbAstUnaryNode
     CbUnaryOperatorType operator_type;
 };
 
-static const char* const CB_UNARY_OPERATOR_TYPE_STRINGS[] = {
-    "-" /* CB_UNARY_OPERATOR_TYPE_MINUS */
-};
-
 
 /* -------------------------------------------------------------------------- */
-
-const char* cb_unary_operator_type_stringify(CbUnaryOperatorType type)
-{
-    /* TODO: make sure type arguemnt is valid */
-    return CB_UNARY_OPERATOR_TYPE_STRINGS[type];
-}
 
 CbAstUnaryNode* cb_ast_unary_node_create(const CbUnaryOperatorType operator_type,
                                          CbAstNode* operand)
