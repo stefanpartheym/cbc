@@ -10,6 +10,7 @@
 #include "ast_unary.h"
 #include "ast_binary.h"
 #include "ast_variable.h"
+#include "ast_assignment.h"
 #include "ast_declaration.h"
 #include "ast_declaration_block.h"
 #include "ast_statement_list.h"
@@ -186,8 +187,7 @@ expression:
                             $$ = $1;
                         }
     | var_access ASSIGNMENT expression {
-                            $$ = (CbAstNode*) cb_ast_binary_node_create(
-                                CB_BINARY_OPERATOR_TYPE_ASSIGN,
+                            $$ = (CbAstNode*) cb_ast_assignment_node_create(
                                 $1, $3
                             );
                             cb_ast_node_set_line($$, yylineno);

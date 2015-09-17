@@ -1,6 +1,8 @@
 /*******************************************************************************
  * Abstract syntax tree node: Binary
  * Representation of a binary operation (e.g. addition, subtraction, etc.)
+ * NOTE: This does not include assignment operations, for these operations the
+ *       node type CbAstAssignmentNode is used.
  * 
  * Inherites from CbAstNode
  ******************************************************************************/
@@ -19,8 +21,7 @@ typedef enum
     CB_BINARY_OPERATOR_TYPE_ADD,
     CB_BINARY_OPERATOR_TYPE_SUB,
     CB_BINARY_OPERATOR_TYPE_MUL,
-    CB_BINARY_OPERATOR_TYPE_DIV,
-    CB_BINARY_OPERATOR_TYPE_ASSIGN
+    CB_BINARY_OPERATOR_TYPE_DIV
 } CbBinaryOperatorType;
 
 
