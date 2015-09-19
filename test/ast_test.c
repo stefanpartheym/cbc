@@ -269,7 +269,35 @@ void ast_check_semantic_error_test(void** state)
 {
     CbAstNode* node;
     CbSymbolTable* symbols;
+    CbVariant* v1;
+    CbVariant* v2;
     char stream_content[128];
+    
+    /*
+     * Test: Invalid binary operation
+     */
+    symbols = NULL;
+    v1      = cb_integer_create(100);
+    v2      = cb_boolean_create(false);
+    node = (CbAstNode*) cb_ast_binary_node_create(
+        CB_BINARY_OPERATOR_TYPE_DIV,
+        (CbAstNode*) cb_ast_value_node_create(v1),
+        (CbAstNode*) cb_ast_value_node_create(v2)
+    );
+    cb_variant_destroy(v1);
+    cb_variant_destroy(v2);
+    cb_ast_node_set_line(node, 1);
+    assert_false(cb_ast_node_check_semantic(node, symbols));
+    cb_ast_node_destroy(node);
+    assert_true(cb_error_occurred());
+    cb_error_process();
+    assert_false(cb_error_occurred());
+    stream_to_string(*state, stream_content, true);
+    assert_string_equal("semantic error: line 1: invalid operand type for "\
+                        "binary '/', expecting numeric type", stream_content);
+    
+    /* discard stream content */
+    resetup_error_handling(state);
     
     /*
      * Test: Expected identifier is declared as a function
