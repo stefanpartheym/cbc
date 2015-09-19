@@ -67,6 +67,31 @@ const char* cb_binary_operator_type_stringify(CbBinaryOperatorType type);
  */
 bool cb_variant_type_is_valid(const CbVariantType type);
 
+/*
+ * Check if a specific variant type is numeric.
+ */
+bool cb_variant_type_is_numeric(const CbVariantType type);
+
+/*
+ * Check if unary operation is valid
+ */
+bool cb_variant_type_is_unary_operation_valid(const CbUnaryOperatorType operation,
+                                              const CbVariantType type);
+
+/*
+ * Check if binary operation is valid
+ */
+bool cb_variant_type_is_binary_operation_valid(const CbBinaryOperatorType operation,
+                                               const CbVariantType lhs,
+                                               const CbVariantType rhs);
+
+/*
+ * Determine the result type of a binary operation
+ */
+CbVariantType cb_variant_type_binary_operation_result_type(const CbBinaryOperatorType operation,
+                                                           const CbVariantType lhs,
+                                                           const CbVariantType rhs);
+
 
 /* -------------------------------------------------------------------------- */
 /* basic variant type functions */
@@ -206,6 +231,11 @@ CbVariant* cb_string_create(CbConstStringDataType value);
  * String value (Getter)
  */
 CbConstStringDataType cb_string_get_value(const CbVariant* self);
+
+/*
+ * Concatenate two strings together
+ */
+void cb_string_concat(CbVariant* self, const CbVariant* source);
 
 
 #endif /* VARIANT_H */

@@ -9,6 +9,7 @@
 #ifndef AST_INTERNAL_H
 #define AST_INTERNAL_H
 
+#include "error_handling.h"
 #include "ast.h"
 
 
@@ -24,6 +25,7 @@ struct CbAstNode
 {
     CbAstType type;
     int line;
+    CbErrorType error_context;
     
     struct CbAstNode* left;
     struct CbAstNode* right;

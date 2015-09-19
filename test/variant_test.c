@@ -2,15 +2,17 @@
  * Test for CbVariant
  ******************************************************************************/
 
+#include <string.h>
+
 #include "../src/variant.h"
 #include "../src/utils.h"
 #include "test.h"
 
 
-
 /* -------------------------------------------------------------------------- */
 
-static const char* TEST_STRING = "test string";
+static const char* TEST_STRING  = "test string";
+static const char* TEST_STRING2 = "another test string";
 
 
 /* -------------------------------------------------------------------------- */
@@ -53,7 +55,9 @@ void variant_alloc_test(void** state)
  */
 void variant_types_test(void** state)
 {
-    CbVariant* variant = NULL;
+    CbVariant* variant;
+    CbVariant* variant2;
+    char buffer[32];
     
     /* undefined variant */
     variant = cb_variant_create();
@@ -79,9 +83,16 @@ void variant_types_test(void** state)
     cb_variant_destroy(variant);
     
     /* string variant */
+    strcpy(buffer, TEST_STRING);
+    strcat(buffer, TEST_STRING2);
     variant = cb_string_create(TEST_STRING);
     assert_true(cb_variant_is_string(variant));
     assert_string_equal(TEST_STRING, cb_string_get_value(variant));
+    variant2 = cb_string_create(TEST_STRING2);
+    assert_true(cb_variant_is_string(variant2));
+    cb_string_concat(variant, variant2);
+    assert_string_equal(buffer, cb_string_get_value(variant));
+    cb_variant_destroy(variant2);
     cb_variant_destroy(variant);
 }
 

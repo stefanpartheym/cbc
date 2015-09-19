@@ -279,7 +279,7 @@ void ast_check_semantic_error_test(void** state)
     symbols = NULL;
     v1      = cb_integer_create(100);
     v2      = cb_boolean_create(false);
-    node = (CbAstNode*) cb_ast_binary_node_create(
+    node    = (CbAstNode*) cb_ast_binary_node_create(
         CB_BINARY_OPERATOR_TYPE_DIV,
         (CbAstNode*) cb_ast_value_node_create(v1),
         (CbAstNode*) cb_ast_value_node_create(v2)
@@ -293,8 +293,8 @@ void ast_check_semantic_error_test(void** state)
     cb_error_process();
     assert_false(cb_error_occurred());
     stream_to_string(*state, stream_content, true);
-    assert_string_equal("semantic error: line 1: invalid operand type for "\
-                        "binary '/', expecting numeric type", stream_content);
+    assert_string_equal("semantic error: line 1: Invalid binary operation: "\
+                        "<integer> / <boolean>", stream_content);
     
     /* discard stream content */
     resetup_error_handling(state);
@@ -369,12 +369,42 @@ void ast_check_semantic_error_test(void** state)
  */
 void ast_eval_error_test(void** state)
 {
+    CbAstNode* node;
+    CbVariant* left;
+    CbVariant* right;
     char buffer[1024];
-    CbAstNode* node   = NULL;
-    CbVariant* left   = cb_integer_create(3);
-    CbVariant* right  = cb_integer_create(0);
     
-    node = (CbAstNode*) cb_ast_binary_node_create(
+    /*
+     * Test: Invalid binary operation
+     */
+    left    = cb_integer_create(100);
+    right   = cb_boolean_create(false);
+    node    = (CbAstNode*) cb_ast_binary_node_create(
+        CB_BINARY_OPERATOR_TYPE_DIV,
+        (CbAstNode*) cb_ast_value_node_create(left),
+        (CbAstNode*) cb_ast_value_node_create(right)
+    );
+    cb_variant_destroy(left);
+    cb_variant_destroy(right);
+    cb_ast_node_set_line(node, 1);
+    assert_false(cb_ast_node_eval(node, NULL));
+    cb_ast_node_destroy(node);
+    assert_true(cb_error_occurred());
+    cb_error_process();
+    assert_false(cb_error_occurred());
+    stream_to_string(*state, buffer, true);
+    assert_string_equal("runtime error: line 1: Invalid binary operation: "\
+                        "<integer> / <boolean>", buffer);
+    
+    /* discard stream content */
+    resetup_error_handling(state);
+    
+    /*
+     * Test: Division by zero
+     */
+    left   = cb_integer_create(3);
+    right  = cb_integer_create(0);
+    node   = (CbAstNode*) cb_ast_binary_node_create(
         CB_BINARY_OPERATOR_TYPE_DIV,
         (CbAstNode*) cb_ast_value_node_create(left),
         (CbAstNode*) cb_ast_value_node_create(right)

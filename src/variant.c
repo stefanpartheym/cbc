@@ -72,6 +72,104 @@ bool cb_variant_type_is_valid(const CbVariantType type)
             (type <= CB_VARIANT_TYPE_STRING));
 }
 
+bool cb_variant_type_is_numeric(const CbVariantType type)
+{
+    return (type == CB_VARIANT_TYPE_INTEGER) ||
+           (type == CB_VARIANT_TYPE_FLOAT)   ||
+           (type == CB_VARIANT_TYPE_NUMERIC);
+}
+
+bool cb_variant_type_is_unary_operation_valid(const CbUnaryOperatorType operation,
+                                              const CbVariantType type)
+{
+    bool result = false;
+    switch (operation)
+    {
+        case CB_UNARY_OPERATOR_TYPE_MINUS:
+            result = cb_variant_type_is_numeric(type);
+            break;
+        
+        default: cb_abort("Invalid unary operator type"); break;
+    }
+    
+    return result;
+}
+
+bool cb_variant_type_is_binary_operation_valid(const CbBinaryOperatorType operation,
+                                               const CbVariantType lhs,
+                                               const CbVariantType rhs)
+{
+    bool result = false;
+    switch (operation)
+    {
+        case CB_BINARY_OPERATOR_TYPE_ADD:
+            result = (cb_variant_type_is_numeric(lhs) &&
+                      cb_variant_type_is_numeric(rhs)) ||
+                     (lhs == CB_VARIANT_TYPE_STRING &&
+                      rhs == CB_VARIANT_TYPE_STRING);
+            break;
+        
+        case CB_BINARY_OPERATOR_TYPE_SUB:
+            result = (cb_variant_type_is_numeric(lhs) &&
+                      cb_variant_type_is_numeric(rhs));
+            break;
+        
+        case CB_BINARY_OPERATOR_TYPE_MUL:
+            result = (cb_variant_type_is_numeric(lhs) &&
+                      cb_variant_type_is_numeric(rhs));
+            break;
+        
+        case CB_BINARY_OPERATOR_TYPE_DIV:
+            result = (cb_variant_type_is_numeric(lhs) &&
+                      cb_variant_type_is_numeric(rhs));
+            break;
+        
+        default: cb_abort("Invalid binary operator type"); break;
+    }
+    
+    return result;
+}
+
+CbVariantType cb_variant_type_binary_operation_result_type(const CbBinaryOperatorType operation,
+                                                           const CbVariantType lhs,
+                                                           const CbVariantType rhs)
+{
+    CbVariantType result = CB_VARIANT_TYPE_UNDEFINED;
+    
+    if ((lhs == rhs) ||
+        (cb_variant_type_is_numeric(lhs) && cb_variant_type_is_numeric(rhs)))
+    {
+        switch (operation)
+        {
+            case CB_BINARY_OPERATOR_TYPE_ADD:
+                if (lhs == CB_VARIANT_TYPE_STRING)
+                    result = CB_VARIANT_TYPE_STRING;
+                else if (cb_variant_type_is_numeric(lhs))
+                    result = CB_VARIANT_TYPE_NUMERIC;
+                break;
+            
+            case CB_BINARY_OPERATOR_TYPE_SUB:
+                if (cb_variant_type_is_numeric(lhs))
+                    result = CB_VARIANT_TYPE_NUMERIC;
+                break;
+            
+            case CB_BINARY_OPERATOR_TYPE_MUL:
+                if (cb_variant_type_is_numeric(lhs))
+                    result = CB_VARIANT_TYPE_NUMERIC;
+                break;
+            
+            case CB_BINARY_OPERATOR_TYPE_DIV:
+                if (cb_variant_type_is_numeric(lhs))
+                    result = CB_VARIANT_TYPE_NUMERIC;
+                break;
+            
+            default: cb_abort("Invalid binary operator type"); break;
+        }
+    }
+    
+    return result;
+}
+
 
 /* -------------------------------------------------------------------------- */
 
@@ -334,4 +432,19 @@ CbConstStringDataType cb_string_get_value(const CbVariant* self)
     cb_assert(cb_variant_is_string(self));
     
     return self->v.string;
+}
+
+void cb_string_concat(CbVariant* self, const CbVariant* source)
+{
+    char* buffer;
+    
+    CbConstStringDataType v1 = cb_string_get_value(self);
+    CbConstStringDataType v2 = cb_string_get_value(source);
+    
+    buffer = memalloc(strlen(v1) + strlen(v2) + 1);
+    strcpy(buffer, v1);
+    strcat(buffer, v2);
+    
+    memfree(self->v.string); /* free old string            */
+    self->v.string = buffer; /* assign concatenated string */
 }

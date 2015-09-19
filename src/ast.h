@@ -64,14 +64,12 @@ CbAstType cb_ast_node_get_type(const CbAstNode* self);
 /*
  * Evaluate AST node
  */
-CbVariant* cb_ast_node_eval(const CbAstNode* self,
-                            const CbSymbolTable* symbols);
+CbVariant* cb_ast_node_eval(CbAstNode* self, const CbSymbolTable* symbols);
 
 /*
  * Check AST node semantics
  */
-bool cb_ast_node_check_semantic(const CbAstNode* self,
-                                CbSymbolTable* symbols);
+bool cb_ast_node_check_semantic(CbAstNode* self, CbSymbolTable* symbols);
 
 /*
  * Check if the variant type of an expression is correct
@@ -82,6 +80,15 @@ bool cb_ast_node_check_semantic(const CbAstNode* self,
  */
 bool cb_ast_node_check_expression_type(const CbAstNode* self,
                                        CbVariantType variant_type);
+
+/*
+ * Get the variant type of an expression
+ * 
+ * NOTE: This function recursively walks the AST until it finds a value node
+ *       (CB_AST_TYPE_VALUE). At this point it is possible to determine the
+ *       variant type.
+ */
+CbVariantType cb_ast_node_get_expression_type(const CbAstNode* self);
 
 
 #endif /* AST_H */
