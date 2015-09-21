@@ -65,6 +65,15 @@ void _assert_cb_variant_equal(const CbVariant* expected,
             break;
         }
         
+        case CB_VARIANT_TYPE_STRING:
+            _assert_string_equal(
+                cb_string_get_value(expected),
+                cb_string_get_value(actual),
+                file,
+                line
+            );
+            break;
+        
         case CB_VARIANT_TYPE_UNDEFINED:
             /* CB_VARIANT_TYPE_UNDEFINED has no value to be compared -> equal */
             break;

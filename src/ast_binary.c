@@ -96,7 +96,7 @@ CbVariant* cb_ast_binary_node_eval(const CbAstBinaryNode* self,
                         result = cb_ast_binary_node_eval_integer(self, left, right);
                 }
                 else if (cb_variant_is_string(left))
-                    cb_ast_binary_node_eval_string(self, left, right);
+                    result = cb_ast_binary_node_eval_string(self, left, right);
                 else
                     cb_abort("Invalid binary operation");
             }

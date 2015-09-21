@@ -82,6 +82,11 @@ void ast_eval_test(void** state)
         CB_BINARY_OPERATOR_TYPE_ADD, cb_integer_create(123),   cb_float_create(-77.321), cb_float_create(45.679));
     test_ast_binary_node_eval(
         CB_BINARY_OPERATOR_TYPE_ADD, cb_float_create(123.123), cb_integer_create(77),    cb_float_create(200.123));
+    /* eval binary AST nodes (string concatenation) */
+    test_ast_binary_node_eval(
+        CB_BINARY_OPERATOR_TYPE_ADD, cb_string_create("a"),    cb_string_create("b"),    cb_string_create("ab"));
+    test_ast_binary_node_eval(
+        CB_BINARY_OPERATOR_TYPE_ADD, cb_string_create("foo"),  cb_string_create("bar"),  cb_string_create("foobar"));
     /* eval binary AST nodes (subtraction) */
     test_ast_binary_node_eval(
         CB_BINARY_OPERATOR_TYPE_SUB, cb_integer_create(123),   cb_integer_create(23),    cb_integer_create(100));
