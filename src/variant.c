@@ -86,7 +86,8 @@ bool cb_variant_type_is_unary_operation_valid(const CbUnaryOperatorType operatio
     switch (operation)
     {
         case CB_UNARY_OPERATOR_TYPE_MINUS:
-            result = cb_variant_type_is_numeric(type);
+            result = cb_variant_type_is_numeric(type) ||
+                     type == CB_VARIANT_TYPE_UNDEFINED;
             break;
         
         default: cb_abort("Invalid unary operator type"); break;
@@ -106,22 +107,30 @@ bool cb_variant_type_is_binary_operation_valid(const CbBinaryOperatorType operat
             result = (cb_variant_type_is_numeric(lhs) &&
                       cb_variant_type_is_numeric(rhs)) ||
                      (lhs == CB_VARIANT_TYPE_STRING &&
-                      rhs == CB_VARIANT_TYPE_STRING);
+                      rhs == CB_VARIANT_TYPE_STRING) ||
+                     (lhs == CB_VARIANT_TYPE_UNDEFINED ||
+                      rhs == CB_VARIANT_TYPE_UNDEFINED);
             break;
         
         case CB_BINARY_OPERATOR_TYPE_SUB:
             result = (cb_variant_type_is_numeric(lhs) &&
-                      cb_variant_type_is_numeric(rhs));
+                      cb_variant_type_is_numeric(rhs)) ||
+                     (lhs == CB_VARIANT_TYPE_UNDEFINED ||
+                      rhs == CB_VARIANT_TYPE_UNDEFINED);
             break;
         
         case CB_BINARY_OPERATOR_TYPE_MUL:
             result = (cb_variant_type_is_numeric(lhs) &&
-                      cb_variant_type_is_numeric(rhs));
+                      cb_variant_type_is_numeric(rhs)) ||
+                     (lhs == CB_VARIANT_TYPE_UNDEFINED ||
+                      rhs == CB_VARIANT_TYPE_UNDEFINED);
             break;
         
         case CB_BINARY_OPERATOR_TYPE_DIV:
             result = (cb_variant_type_is_numeric(lhs) &&
-                      cb_variant_type_is_numeric(rhs));
+                      cb_variant_type_is_numeric(rhs)) ||
+                     (lhs == CB_VARIANT_TYPE_UNDEFINED ||
+                      rhs == CB_VARIANT_TYPE_UNDEFINED);
             break;
         
         default: cb_abort("Invalid binary operator type"); break;
