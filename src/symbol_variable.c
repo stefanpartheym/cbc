@@ -48,7 +48,7 @@ void cb_symbol_variable_assign(CbSymbolVariable* self, const CbVariant* value)
      *       a new CbVariant object each time.
      */
     
-    memfree(self->value);
+    cb_variant_destroy(self->value);
     self->value = cb_variant_copy(value);
 }
 
