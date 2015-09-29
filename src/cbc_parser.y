@@ -42,12 +42,11 @@ void yyerror(void* data, const char* format, ...);
 %token <float_val>   FLOAT
 %token <boolean_val> BOOLEAN
 %token <string_val>  STRING
-%token               ASSIGNMENT
 %token               ENDOFFILE
 
+%right ASSIGNMENT
 %left  '+' '-'
 %left  '*' '/'
-%right ASSIGNMENT
 
 %type <ast> expression
             statement statement_list
