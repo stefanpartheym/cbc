@@ -118,6 +118,10 @@ CbVariantType cb_ast_node_get_expression_type(const CbAstNode* self)
             result = cb_ast_node_get_expression_type(self->left);
             break;
         
+        case CB_AST_TYPE_ASSIGNMENT:
+            result = cb_ast_node_get_expression_type(self->right);
+            break;
+        
         /*
          * For variable AST nodes there is nothing to do, since at this point
          * (semantic checking) there is no value available yet.
