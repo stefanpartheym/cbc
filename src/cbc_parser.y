@@ -45,6 +45,7 @@ void yyerror(void* data, const char* format, ...);
 %token               ENDOFFILE
 
 %right ASSIGNMENT
+%right LOGICAL_NOT
 %left  '+' '-'
 %left  '*' '/'
 
@@ -222,6 +223,13 @@ expression:
     | '-' expression    {
                             $$ = (CbAstNode*) cb_ast_unary_node_create(
                                 CB_UNARY_OPERATOR_TYPE_MINUS,
+                                $2
+                            );
+                            cb_ast_node_set_line($$, yylineno);
+                        }
+    | LOGICAL_NOT expression {
+                            $$ = (CbAstNode*) cb_ast_unary_node_create(
+                                CB_UNARY_OPERATOR_TYPE_LOGICAL_NOT,
                                 $2
                             );
                             cb_ast_node_set_line($$, yylineno);

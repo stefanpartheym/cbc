@@ -65,6 +65,14 @@ void _assert_cb_variant_equal(const CbVariant* expected,
             break;
         }
         
+        case CB_VARIANT_TYPE_BOOLEAN:
+            _assert_int_equal(
+                cast_to_largest_integral_type(cb_boolean_get_value(expected)),
+                cast_to_largest_integral_type(cb_boolean_get_value(actual)),
+                file, line
+            );
+            break;
+        
         case CB_VARIANT_TYPE_STRING:
             _assert_string_equal(
                 cb_string_get_value(expected),
@@ -100,6 +108,16 @@ void _assert_cb_float_equal(const CbFloatDataType expected,
                             const int line)
 {
     CbVariant* expected_variant = cb_float_create(expected);
+    _assert_cb_variant_equal(expected_variant, actual, file, line);
+    cb_variant_destroy(expected_variant);
+}
+
+void _assert_cb_boolean_equal(const CbBooleanDataType expected,
+                              const CbVariant* actual,
+                              const char * const file,
+                              const int line)
+{
+    CbVariant* expected_variant = cb_boolean_create(expected);
     _assert_cb_variant_equal(expected_variant, actual, file, line);
     cb_variant_destroy(expected_variant);
 }

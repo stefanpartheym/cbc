@@ -18,6 +18,9 @@
 %%  /* RULES ---------------------------------------------------------------- */
 
 
+                /* logical gates */
+"not"           { return LOGICAL_NOT; }
+
                 /* integers */
 [0-9]+          {
                     yylval.integer_val = atoi(yytext);

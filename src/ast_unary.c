@@ -70,6 +70,11 @@ CbVariant* cb_ast_unary_node_eval(const CbAstUnaryNode* self,
                     break;
                 }
                 
+                case CB_UNARY_OPERATOR_TYPE_LOGICAL_NOT:
+                    cb_assert(cb_variant_is_boolean(value));
+                    result = cb_boolean_create(!cb_boolean_get_value(value));
+                    break;
+                
                 /* invalid unary operator type */
                 default:
                     cb_abort("Invalid unary operator type"); break;

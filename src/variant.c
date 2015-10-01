@@ -34,7 +34,8 @@ static const char* const CB_VARIANT_DISPLAY_VALUE_TRUE      = "True";
 static const char* const CB_VARIANT_DISPLAY_VALUE_FALSE     = "False";
 
 static const char* const CB_UNARY_OPERATOR_TYPE_STRINGS[] = {
-    "-" /* CB_UNARY_OPERATOR_TYPE_MINUS */
+    "-",   /* CB_UNARY_OPERATOR_TYPE_MINUS       */
+    "not"  /* CB_UNARY_OPERATOR_TYPE_LOGICAL_NOT */
 };
 
 static const char* CB_BINARY_OPERATOR_TYPE_STRINGS[] = {
@@ -87,6 +88,11 @@ bool cb_variant_type_is_unary_operation_valid(const CbUnaryOperatorType operatio
     {
         case CB_UNARY_OPERATOR_TYPE_MINUS:
             result = cb_variant_type_is_numeric(type) ||
+                     type == CB_VARIANT_TYPE_UNDEFINED;
+            break;
+        
+        case CB_UNARY_OPERATOR_TYPE_LOGICAL_NOT:
+            result = type == CB_VARIANT_TYPE_BOOLEAN ||
                      type == CB_VARIANT_TYPE_UNDEFINED;
             break;
         

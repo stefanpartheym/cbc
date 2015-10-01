@@ -40,6 +40,8 @@ void dummy_destroy(TestDummy* self);
     _assert_cb_integer_equal(expected, actual, __FILE__, __LINE__)
 #define assert_cb_float_equal(expected, actual) \
     _assert_cb_float_equal(expected, actual, __FILE__, __LINE__)
+#define assert_cb_boolean_equal(expected, actual) \
+    _assert_cb_boolean_equal(expected, actual, __FILE__, __LINE__)
 
 /*
  * Check if CbVariant structs are equals
@@ -64,6 +66,14 @@ void _assert_cb_float_equal(const CbFloatDataType expected,
                             const CbVariant* actual,
                             const char * const file,
                             const int line);
+
+/*
+ * Check if CbVariant has a specific boolean value
+ */
+void _assert_cb_boolean_equal(const CbBooleanDataType expected,
+                              const CbVariant* actual,
+                              const char * const file,
+                              const int line);
 
 /*
  * Copy stream content to a string

@@ -24,6 +24,7 @@ static void test_ast_binary_node_eval(const CbBinaryOperatorType operator,
                                       CbVariant* expected_result);
 static CbAstValueNode* test_create_ast_value_integer_node(const CbIntegerDataType value);
 static CbAstValueNode* test_create_ast_value_float_node(const CbFloatDataType value);
+static CbAstValueNode* test_create_ast_value_boolean_node(const CbBooleanDataType value);
 
 
 /* -------------------------------------------------------------------------- */
@@ -155,6 +156,24 @@ void ast_eval_test(void** state)
     );
     result = cb_ast_node_eval((CbAstNode*) unary_node, NULL);
     assert_cb_float_equal(-321.00123, result);
+    cb_variant_destroy(result);
+    cb_ast_node_destroy((CbAstNode*) unary_node);
+    /* unary AST node (expression: not <boolean>) */
+    unary_node = cb_ast_unary_node_create(
+        CB_UNARY_OPERATOR_TYPE_LOGICAL_NOT,
+        (CbAstNode*) test_create_ast_value_boolean_node(true)
+    );
+    result = cb_ast_node_eval((CbAstNode*) unary_node, NULL);
+    assert_cb_boolean_equal(false, result);
+    cb_variant_destroy(result);
+    cb_ast_node_destroy((CbAstNode*) unary_node);
+    /* unary AST node (expression: not <boolean>) */
+    unary_node = cb_ast_unary_node_create(
+        CB_UNARY_OPERATOR_TYPE_LOGICAL_NOT,
+        (CbAstNode*) test_create_ast_value_boolean_node(false)
+    );
+    result = cb_ast_node_eval((CbAstNode*) unary_node, NULL);
+    assert_cb_boolean_equal(true, result);
     cb_variant_destroy(result);
     cb_ast_node_destroy((CbAstNode*) unary_node);
     
@@ -475,6 +494,18 @@ static CbAstValueNode* test_create_ast_value_integer_node(const CbIntegerDataTyp
 static CbAstValueNode* test_create_ast_value_float_node(const CbFloatDataType value)
 {
     CbVariant* variant         = cb_float_create(value);
+    CbAstValueNode* value_node = cb_ast_value_node_create(variant);
+    cb_variant_destroy(variant);
+    
+    return value_node;
+}
+
+/*
+ * Create a boolean value node (internal)
+ */
+static CbAstValueNode* test_create_ast_value_boolean_node(const CbBooleanDataType value)
+{
+    CbVariant* variant         = cb_boolean_create(value);
     CbAstValueNode* value_node = cb_ast_value_node_create(variant);
     cb_variant_destroy(variant);
     

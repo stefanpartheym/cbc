@@ -32,7 +32,8 @@ typedef const char* CbConstStringDataType;
 /* unary operators */
 typedef enum
 {
-    CB_UNARY_OPERATOR_TYPE_MINUS
+    CB_UNARY_OPERATOR_TYPE_MINUS,
+    CB_UNARY_OPERATOR_TYPE_LOGICAL_NOT
 } CbUnaryOperatorType;
 
 /* binary operators */
