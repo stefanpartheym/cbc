@@ -42,12 +42,13 @@
                      * An apostrophe can be escaped by writing a double
                      * apostrophe.
                      */
-                    char* str = (char*) malloc(yyleng - 1);
-                    *str      = '\0'; /* terminate string */
+                    size_t size = yyleng - 1;
+                    char* str   = (char*) malloc(size);
+                    memclr(str, size);
                     
                     /* omit first and last char, which are both quotes */
-                    int offset         = 1;
-                    yytext[yyleng - 1] = '\0';
+                    int offset   = 1;
+                    yytext[size] = '\0';
                     
                     if (yytext[0] == '\'')
                     {
@@ -76,7 +77,7 @@
                         }
                     }
                     else
-                        strncpy(str, (yytext + offset), yyleng - (1 + offset));
+                        strncpy(str, (yytext + offset), size - offset);
                     
                     yylval.string_val = str;
                     return STRING;
