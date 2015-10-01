@@ -44,10 +44,12 @@ void yyerror(void* data, const char* format, ...);
 %token <string_val>  STRING
 %token               ENDOFFILE
 
-%right ASSIGNMENT
-%right LOGICAL_NOT
-%left  '+' '-'
-%left  '*' '/'
+%right    ASSIGNMENT
+%left     '+' '-'
+%left     '*' '/'
+%left     LOGICAL_AND
+%left     LOGICAL_OR
+%nonassoc LOGICAL_NOT
 
 %type <ast> expression
             statement statement_list
@@ -216,6 +218,20 @@ expression:
     | expression '/' expression {
                             $$ = (CbAstNode*) cb_ast_binary_node_create(
                                 CB_BINARY_OPERATOR_TYPE_DIV,
+                                $1, $3
+                            );
+                            cb_ast_node_set_line($$, yylineno);
+                        }
+    | expression LOGICAL_AND expression {
+                            $$ = (CbAstNode*) cb_ast_binary_node_create(
+                                CB_BINARY_OPERATOR_TYPE_LOGICAL_AND,
+                                $1, $3
+                            );
+                            cb_ast_node_set_line($$, yylineno);
+                        }
+    | expression LOGICAL_OR expression {
+                            $$ = (CbAstNode*) cb_ast_binary_node_create(
+                                CB_BINARY_OPERATOR_TYPE_LOGICAL_OR,
                                 $1, $3
                             );
                             cb_ast_node_set_line($$, yylineno);

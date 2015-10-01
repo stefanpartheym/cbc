@@ -20,6 +20,8 @@
 
                 /* logical gates */
 "not"           { return LOGICAL_NOT; }
+"and"           { return LOGICAL_AND; }
+"or"            { return LOGICAL_OR; }
 
                 /* integers */
 [0-9]+          {

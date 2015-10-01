@@ -37,6 +37,13 @@ static CbVariant* cb_ast_binary_node_eval_string(const CbAstBinaryNode* self,
                                                  const CbVariant* right);
 
 /*
+ * Evaluate binary node (boolean)
+ */
+static CbVariant* cb_ast_binary_node_eval_boolean(const CbAstBinaryNode* self,
+                                                  const CbVariant* left,
+                                                  const CbVariant* right);
+
+/*
  * Check if a binary operation is valid. Raise an error if not.
  */
 static bool cb_ast_binary_node_check_operation(const CbAstBinaryNode* self,
@@ -97,6 +104,8 @@ CbVariant* cb_ast_binary_node_eval(const CbAstBinaryNode* self,
                 }
                 else if (cb_variant_is_string(left))
                     result = cb_ast_binary_node_eval_string(self, left, right);
+                else if (cb_variant_is_boolean(left))
+                    result = cb_ast_binary_node_eval_boolean(self, left, right);
                 else
                     cb_abort("Invalid binary operation");
             }
@@ -224,6 +233,32 @@ static CbVariant* cb_ast_binary_node_eval_string(const CbAstBinaryNode* self,
     
     result = cb_variant_copy(left);
     cb_string_concat(result, right);
+    
+    return result;
+}
+
+static CbVariant* cb_ast_binary_node_eval_boolean(const CbAstBinaryNode* self,
+                                                  const CbVariant* left,
+                                                  const CbVariant* right)
+{
+    CbFloatDataType v1;
+    CbFloatDataType v2;
+    CbVariant* result = NULL;
+    
+    v1 = cb_boolean_get_value(left);
+    v2 = cb_boolean_get_value(right);
+    
+    switch (self->operator_type)
+    {
+        case CB_BINARY_OPERATOR_TYPE_LOGICAL_AND:
+            result = cb_boolean_create(v1 && v2); break;
+        
+        case CB_BINARY_OPERATOR_TYPE_LOGICAL_OR:
+            result = cb_boolean_create(v1 || v2); break;
+        
+        /* invalid binary operator type */
+        default: cb_abort("Invalid binary operator type"); break;
+    }
     
     return result;
 }

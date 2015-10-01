@@ -39,10 +39,12 @@ static const char* const CB_UNARY_OPERATOR_TYPE_STRINGS[] = {
 };
 
 static const char* CB_BINARY_OPERATOR_TYPE_STRINGS[] = {
-    "+", /* CB_BINARY_OPERATOR_TYPE_ADD */
-    "-", /* CB_BINARY_OPERATOR_TYPE_SUB */
-    "*", /* CB_BINARY_OPERATOR_TYPE_MUL */
-    "/"  /* CB_BINARY_OPERATOR_TYPE_DIV */
+    "+",    /* CB_BINARY_OPERATOR_TYPE_ADD         */
+    "-",    /* CB_BINARY_OPERATOR_TYPE_SUB         */
+    "*",    /* CB_BINARY_OPERATOR_TYPE_MUL         */
+    "/",    /* CB_BINARY_OPERATOR_TYPE_DIV         */
+    "and",  /* CB_BINARY_OPERATOR_TYPE_LOGICAL_AND */
+    "or"    /* CB_BINARY_OPERATOR_TYPE_LOGICAL_OR  */
 };
 
 
@@ -55,13 +57,13 @@ const char* const cb_variant_type_stringify(const CbVariantType type)
     return CB_VARIANT_TYPE_STRINGS[type];
 }
 
-const char* cb_unary_operator_type_stringify(CbUnaryOperatorType type)
+const char* const cb_unary_operator_type_stringify(CbUnaryOperatorType type)
 {
     /* TODO: make sure type arguemnt is valid */
     return CB_UNARY_OPERATOR_TYPE_STRINGS[type];
 }
 
-const char* cb_binary_operator_type_stringify(CbBinaryOperatorType type)
+const char* const cb_binary_operator_type_stringify(CbBinaryOperatorType type)
 {
     /* TODO: make sure type arguemnt is valid */
     return CB_BINARY_OPERATOR_TYPE_STRINGS[type];
@@ -119,19 +121,7 @@ bool cb_variant_type_is_binary_operation_valid(const CbBinaryOperatorType operat
             break;
         
         case CB_BINARY_OPERATOR_TYPE_SUB:
-            result = (cb_variant_type_is_numeric(lhs) &&
-                      cb_variant_type_is_numeric(rhs)) ||
-                     (lhs == CB_VARIANT_TYPE_UNDEFINED ||
-                      rhs == CB_VARIANT_TYPE_UNDEFINED);
-            break;
-        
         case CB_BINARY_OPERATOR_TYPE_MUL:
-            result = (cb_variant_type_is_numeric(lhs) &&
-                      cb_variant_type_is_numeric(rhs)) ||
-                     (lhs == CB_VARIANT_TYPE_UNDEFINED ||
-                      rhs == CB_VARIANT_TYPE_UNDEFINED);
-            break;
-        
         case CB_BINARY_OPERATOR_TYPE_DIV:
             result = (cb_variant_type_is_numeric(lhs) &&
                       cb_variant_type_is_numeric(rhs)) ||
@@ -139,47 +129,15 @@ bool cb_variant_type_is_binary_operation_valid(const CbBinaryOperatorType operat
                       rhs == CB_VARIANT_TYPE_UNDEFINED);
             break;
         
+        case CB_BINARY_OPERATOR_TYPE_LOGICAL_OR:
+        case CB_BINARY_OPERATOR_TYPE_LOGICAL_AND:
+            result = (lhs == CB_VARIANT_TYPE_BOOLEAN &&
+                      rhs == CB_VARIANT_TYPE_BOOLEAN) ||
+                     (lhs == CB_VARIANT_TYPE_UNDEFINED ||
+                      rhs == CB_VARIANT_TYPE_UNDEFINED);
+            break;
+        
         default: cb_abort("Invalid binary operator type"); break;
-    }
-    
-    return result;
-}
-
-CbVariantType cb_variant_type_binary_operation_result_type(const CbBinaryOperatorType operation,
-                                                           const CbVariantType lhs,
-                                                           const CbVariantType rhs)
-{
-    CbVariantType result = CB_VARIANT_TYPE_UNDEFINED;
-    
-    if ((lhs == rhs) ||
-        (cb_variant_type_is_numeric(lhs) && cb_variant_type_is_numeric(rhs)))
-    {
-        switch (operation)
-        {
-            case CB_BINARY_OPERATOR_TYPE_ADD:
-                if (lhs == CB_VARIANT_TYPE_STRING)
-                    result = CB_VARIANT_TYPE_STRING;
-                else if (cb_variant_type_is_numeric(lhs))
-                    result = CB_VARIANT_TYPE_NUMERIC;
-                break;
-            
-            case CB_BINARY_OPERATOR_TYPE_SUB:
-                if (cb_variant_type_is_numeric(lhs))
-                    result = CB_VARIANT_TYPE_NUMERIC;
-                break;
-            
-            case CB_BINARY_OPERATOR_TYPE_MUL:
-                if (cb_variant_type_is_numeric(lhs))
-                    result = CB_VARIANT_TYPE_NUMERIC;
-                break;
-            
-            case CB_BINARY_OPERATOR_TYPE_DIV:
-                if (cb_variant_type_is_numeric(lhs))
-                    result = CB_VARIANT_TYPE_NUMERIC;
-                break;
-            
-            default: cb_abort("Invalid binary operator type"); break;
-        }
     }
     
     return result;

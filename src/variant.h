@@ -42,7 +42,9 @@ typedef enum
     CB_BINARY_OPERATOR_TYPE_ADD,
     CB_BINARY_OPERATOR_TYPE_SUB,
     CB_BINARY_OPERATOR_TYPE_MUL,
-    CB_BINARY_OPERATOR_TYPE_DIV
+    CB_BINARY_OPERATOR_TYPE_DIV,
+    CB_BINARY_OPERATOR_TYPE_LOGICAL_AND,
+    CB_BINARY_OPERATOR_TYPE_LOGICAL_OR
 } CbBinaryOperatorType;
 
 
@@ -56,12 +58,12 @@ const char* const cb_variant_type_stringify(const CbVariantType type);
 /*
  * Get string representation of an unary operator type
  */
-const char* cb_unary_operator_type_stringify(CbUnaryOperatorType type);
+const char* const cb_unary_operator_type_stringify(CbUnaryOperatorType type);
 
 /*
  * Get string representation of an binary operator type
  */
-const char* cb_binary_operator_type_stringify(CbBinaryOperatorType type);
+const char* const cb_binary_operator_type_stringify(CbBinaryOperatorType type);
 
 /*
  * Check if a specific variant type is valid.
@@ -85,13 +87,6 @@ bool cb_variant_type_is_unary_operation_valid(const CbUnaryOperatorType operatio
 bool cb_variant_type_is_binary_operation_valid(const CbBinaryOperatorType operation,
                                                const CbVariantType lhs,
                                                const CbVariantType rhs);
-
-/*
- * Determine the result type of a binary operation
- */
-CbVariantType cb_variant_type_binary_operation_result_type(const CbBinaryOperatorType operation,
-                                                           const CbVariantType lhs,
-                                                           const CbVariantType rhs);
 
 
 /* -------------------------------------------------------------------------- */

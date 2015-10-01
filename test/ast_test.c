@@ -139,6 +139,24 @@ void ast_eval_test(void** state)
         CB_BINARY_OPERATOR_TYPE_DIV, cb_float_create(-195.6561), cb_integer_create(123),  cb_float_create(-1.5907));
     test_ast_binary_node_eval(
         CB_BINARY_OPERATOR_TYPE_DIV, cb_float_create(123.123), cb_integer_create(77),    cb_float_create(1.599));
+    /* eval binary AST nodes (logical AND) */
+    test_ast_binary_node_eval(
+        CB_BINARY_OPERATOR_TYPE_LOGICAL_AND, cb_boolean_create(true),  cb_boolean_create(true),  cb_boolean_create(true));
+    test_ast_binary_node_eval(
+        CB_BINARY_OPERATOR_TYPE_LOGICAL_AND, cb_boolean_create(true),  cb_boolean_create(false), cb_boolean_create(false));
+    test_ast_binary_node_eval(
+        CB_BINARY_OPERATOR_TYPE_LOGICAL_AND, cb_boolean_create(false), cb_boolean_create(false), cb_boolean_create(false));
+    test_ast_binary_node_eval(
+        CB_BINARY_OPERATOR_TYPE_LOGICAL_AND, cb_boolean_create(false), cb_boolean_create(true),  cb_boolean_create(false));
+    /* eval binary AST nodes (logical OR) */
+    test_ast_binary_node_eval(
+        CB_BINARY_OPERATOR_TYPE_LOGICAL_OR, cb_boolean_create(true),  cb_boolean_create(true),  cb_boolean_create(true));
+    test_ast_binary_node_eval(
+        CB_BINARY_OPERATOR_TYPE_LOGICAL_OR, cb_boolean_create(true),  cb_boolean_create(false), cb_boolean_create(true));
+    test_ast_binary_node_eval(
+        CB_BINARY_OPERATOR_TYPE_LOGICAL_OR, cb_boolean_create(false), cb_boolean_create(false), cb_boolean_create(false));
+    test_ast_binary_node_eval(
+        CB_BINARY_OPERATOR_TYPE_LOGICAL_OR, cb_boolean_create(false), cb_boolean_create(true),  cb_boolean_create(true));
     
     /* unary AST node (expression: - <integer>) */
     unary_node = cb_ast_unary_node_create(
