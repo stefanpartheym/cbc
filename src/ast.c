@@ -110,8 +110,12 @@ CbVariantType cb_ast_node_get_expression_type(const CbAstNode* self)
             break;
         
         case CB_AST_TYPE_BINARY:
-            result = cb_ast_node_get_expression_type(self->left) &&
-                     cb_ast_node_get_expression_type(self->right);
+            /*
+             * Only return type of left node, since the binary operation is
+             * ensured to be semantically correct, so types of left and right
+             * node are equal (or both types are numeric).
+             */
+            result = cb_ast_node_get_expression_type(self->left);
             break;
         
         case CB_AST_TYPE_UNARY:
