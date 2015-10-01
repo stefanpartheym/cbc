@@ -222,6 +222,7 @@ expression:
                             );
                             cb_ast_node_set_line($$, yylineno);
                         }
+    | '(' expression ')' {  $$ = $2; }
     | expression LOGICAL_AND expression {
                             $$ = (CbAstNode*) cb_ast_binary_node_create(
                                 CB_BINARY_OPERATOR_TYPE_LOGICAL_AND,

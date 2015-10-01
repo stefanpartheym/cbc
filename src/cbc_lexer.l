@@ -95,7 +95,7 @@
                 }
 
                 /* single character operators */
-[-+*/|,]        { return *yytext; }
+[-+*/|,()]      { return *yytext; }
 
                 /* assignment operator */
 ":="            { return ASSIGNMENT; }
