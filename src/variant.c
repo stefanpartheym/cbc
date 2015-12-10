@@ -39,12 +39,19 @@ static const char* const CB_UNARY_OPERATOR_TYPE_STRINGS[] = {
 };
 
 static const char* CB_BINARY_OPERATOR_TYPE_STRINGS[] = {
-    "+",    /* CB_BINARY_OPERATOR_TYPE_ADD         */
-    "-",    /* CB_BINARY_OPERATOR_TYPE_SUB         */
-    "*",    /* CB_BINARY_OPERATOR_TYPE_MUL         */
-    "/",    /* CB_BINARY_OPERATOR_TYPE_DIV         */
-    "and",  /* CB_BINARY_OPERATOR_TYPE_LOGICAL_AND */
-    "or"    /* CB_BINARY_OPERATOR_TYPE_LOGICAL_OR  */
+    "+",   /* CB_BINARY_OPERATOR_TYPE_ADD           */
+    "-",   /* CB_BINARY_OPERATOR_TYPE_SUB           */
+    "*",   /* CB_BINARY_OPERATOR_TYPE_MUL           */
+    "/",   /* CB_BINARY_OPERATOR_TYPE_DIV           */
+    "and", /* CB_BINARY_OPERATOR_TYPE_LOGICAL_AND   */
+    "or",  /* CB_BINARY_OPERATOR_TYPE_LOGICAL_OR    */
+    ">",   /* CB_BINARY_OPERATOR_TYPE_COMPARISON_GR */
+    ">=",  /* CB_BINARY_OPERATOR_TYPE_COMPARISON_GQ */
+    "<",   /* CB_BINARY_OPERATOR_TYPE_COMPARISON_LE */
+    "<=",  /* CB_BINARY_OPERATOR_TYPE_COMPARISON_LQ */
+    "=",   /* CB_BINARY_OPERATOR_TYPE_COMPARISON_EQ */
+    "==",  /* CB_BINARY_OPERATOR_TYPE_COMPARISON_SQ */
+    "<>"   /* CB_BINARY_OPERATOR_TYPE_COMPARISON_NE */
 };
 
 
@@ -123,6 +130,10 @@ bool cb_variant_type_is_binary_operation_valid(const CbBinaryOperatorType operat
         case CB_BINARY_OPERATOR_TYPE_SUB:
         case CB_BINARY_OPERATOR_TYPE_MUL:
         case CB_BINARY_OPERATOR_TYPE_DIV:
+        case CB_BINARY_OPERATOR_TYPE_COMPARISON_GR:
+        case CB_BINARY_OPERATOR_TYPE_COMPARISON_GQ:
+        case CB_BINARY_OPERATOR_TYPE_COMPARISON_LE:
+        case CB_BINARY_OPERATOR_TYPE_COMPARISON_LQ:
             result = (cb_variant_type_is_numeric(lhs) &&
                       cb_variant_type_is_numeric(rhs)) ||
                      (lhs == CB_VARIANT_TYPE_UNDEFINED ||
@@ -132,6 +143,19 @@ bool cb_variant_type_is_binary_operation_valid(const CbBinaryOperatorType operat
         case CB_BINARY_OPERATOR_TYPE_LOGICAL_OR:
         case CB_BINARY_OPERATOR_TYPE_LOGICAL_AND:
             result = (lhs == CB_VARIANT_TYPE_BOOLEAN &&
+                      rhs == CB_VARIANT_TYPE_BOOLEAN) ||
+                     (lhs == CB_VARIANT_TYPE_UNDEFINED ||
+                      rhs == CB_VARIANT_TYPE_UNDEFINED);
+            break;
+        
+        case CB_BINARY_OPERATOR_TYPE_COMPARISON_EQ:
+        case CB_BINARY_OPERATOR_TYPE_COMPARISON_SQ:
+        case CB_BINARY_OPERATOR_TYPE_COMPARISON_NE:
+            result = (cb_variant_type_is_numeric(lhs) &&
+                      cb_variant_type_is_numeric(rhs)) ||
+                     (lhs == CB_VARIANT_TYPE_STRING &&
+                      rhs == CB_VARIANT_TYPE_STRING) ||
+                     (lhs == CB_VARIANT_TYPE_BOOLEAN &&
                       rhs == CB_VARIANT_TYPE_BOOLEAN) ||
                      (lhs == CB_VARIANT_TYPE_UNDEFINED ||
                       rhs == CB_VARIANT_TYPE_UNDEFINED);
@@ -420,4 +444,9 @@ void cb_string_concat(CbVariant* self, const CbVariant* source)
     
     memfree(self->v.string); /* free old string            */
     self->v.string = buffer; /* assign concatenated string */
+}
+
+CbBooleanDataType cb_string_equal(const CbVariant* lhs, const CbVariant* rhs)
+{
+    return strequ(cb_string_get_value(lhs), cb_string_get_value(rhs));
 }

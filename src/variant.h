@@ -44,7 +44,14 @@ typedef enum
     CB_BINARY_OPERATOR_TYPE_MUL,
     CB_BINARY_OPERATOR_TYPE_DIV,
     CB_BINARY_OPERATOR_TYPE_LOGICAL_AND,
-    CB_BINARY_OPERATOR_TYPE_LOGICAL_OR
+    CB_BINARY_OPERATOR_TYPE_LOGICAL_OR,
+    CB_BINARY_OPERATOR_TYPE_COMPARISON_GR, /* greater than          */
+    CB_BINARY_OPERATOR_TYPE_COMPARISON_GQ, /* greater than or equal */
+    CB_BINARY_OPERATOR_TYPE_COMPARISON_LE, /* less than             */
+    CB_BINARY_OPERATOR_TYPE_COMPARISON_LQ, /* less than or equal    */
+    CB_BINARY_OPERATOR_TYPE_COMPARISON_EQ, /* equal                 */
+    CB_BINARY_OPERATOR_TYPE_COMPARISON_SQ, /* string equal          */
+    CB_BINARY_OPERATOR_TYPE_COMPARISON_NE  /* not equal             */
 } CbBinaryOperatorType;
 
 
@@ -227,6 +234,11 @@ CbVariant* cb_string_create(CbConstStringDataType value);
  * String value (Getter)
  */
 CbConstStringDataType cb_string_get_value(const CbVariant* self);
+
+/*
+ * Compare two strings
+ */
+CbBooleanDataType cb_string_equal(const CbVariant* lhs, const CbVariant* rhs);
 
 /*
  * Concatenate two strings together

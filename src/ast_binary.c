@@ -179,6 +179,25 @@ static CbVariant* cb_ast_binary_node_eval_integer(const CbAstBinaryNode* self,
             }
             break;
         
+        case CB_BINARY_OPERATOR_TYPE_COMPARISON_GR:
+            result = cb_boolean_create(v1 > v2); break;
+        
+        case CB_BINARY_OPERATOR_TYPE_COMPARISON_GQ:
+            result = cb_boolean_create(v1 >= v2); break;
+        
+        case CB_BINARY_OPERATOR_TYPE_COMPARISON_LE:
+            result = cb_boolean_create(v1 < v2); break;
+        
+        case CB_BINARY_OPERATOR_TYPE_COMPARISON_LQ:
+            result = cb_boolean_create(v1 <= v2); break;
+        
+        case CB_BINARY_OPERATOR_TYPE_COMPARISON_EQ:
+        case CB_BINARY_OPERATOR_TYPE_COMPARISON_SQ:
+            result = cb_boolean_create(v1 == v2); break;
+        
+        case CB_BINARY_OPERATOR_TYPE_COMPARISON_NE:
+            result = cb_boolean_create(v1 != v2); break;
+        
         /* invalid binary operator type */
         default: cb_abort("Invalid binary operator type"); break;
     }
@@ -216,6 +235,25 @@ static CbVariant* cb_ast_binary_node_eval_float(const CbAstBinaryNode* self,
                 result = cb_float_create(v1 / v2);
             break;
         
+        case CB_BINARY_OPERATOR_TYPE_COMPARISON_GR:
+            cb_abort("Not yet implemented"); break;
+        
+        case CB_BINARY_OPERATOR_TYPE_COMPARISON_GQ:
+            cb_abort("Not yet implemented"); break;
+        
+        case CB_BINARY_OPERATOR_TYPE_COMPARISON_LE:
+            cb_abort("Not yet implemented"); break;
+        
+        case CB_BINARY_OPERATOR_TYPE_COMPARISON_LQ:
+            cb_abort("Not yet implemented"); break;
+        
+        case CB_BINARY_OPERATOR_TYPE_COMPARISON_EQ:
+        case CB_BINARY_OPERATOR_TYPE_COMPARISON_SQ:
+            result = cb_boolean_create(dequal(v1, v2)); break;
+        
+        case CB_BINARY_OPERATOR_TYPE_COMPARISON_NE:
+            result = cb_boolean_create(!dequal(v1, v2)); break;
+        
         /* invalid binary operator type */
         default: cb_abort("Invalid binary operator type"); break;
     }
@@ -229,10 +267,27 @@ static CbVariant* cb_ast_binary_node_eval_string(const CbAstBinaryNode* self,
 {
     CbVariant* result = NULL;
     
-    cb_assert(self->operator_type == CB_BINARY_OPERATOR_TYPE_ADD);
+    switch (self->operator_type)
+    {
+        case CB_BINARY_OPERATOR_TYPE_ADD:
+            result = cb_variant_copy(left);
+            cb_string_concat(result, right);
+            break;
+        
+        case CB_BINARY_OPERATOR_TYPE_COMPARISON_EQ:
+            /* result = cb_boolean_create(); break; */
+            cb_abort("Left handed string comparison not yet implemented"); break;
+            
+        case CB_BINARY_OPERATOR_TYPE_COMPARISON_SQ:
+            result = cb_boolean_create(cb_string_equal(left, right)); break;
+        
+        case CB_BINARY_OPERATOR_TYPE_COMPARISON_NE:
+            result = cb_boolean_create(!cb_string_equal(left, right)); break;
+        
+        /* invalid binary operator type */
+        default: cb_abort("Invalid binary operator type"); break;
+    }
     
-    result = cb_variant_copy(left);
-    cb_string_concat(result, right);
     
     return result;
 }
@@ -255,6 +310,13 @@ static CbVariant* cb_ast_binary_node_eval_boolean(const CbAstBinaryNode* self,
         
         case CB_BINARY_OPERATOR_TYPE_LOGICAL_OR:
             result = cb_boolean_create(v1 || v2); break;
+        
+        case CB_BINARY_OPERATOR_TYPE_COMPARISON_EQ:
+        case CB_BINARY_OPERATOR_TYPE_COMPARISON_SQ:
+            result = cb_boolean_create(v1 == v2); break;
+        
+        case CB_BINARY_OPERATOR_TYPE_COMPARISON_NE:
+            result = cb_boolean_create(v1 != v2); break;
         
         /* invalid binary operator type */
         default: cb_abort("Invalid binary operator type"); break;
