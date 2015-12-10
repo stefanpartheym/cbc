@@ -40,7 +40,8 @@ typedef enum CbAstType
     CB_AST_TYPE_ASSIGNMENT,
     CB_AST_TYPE_DECLARATION,
     CB_AST_TYPE_DECLARATION_BLOCK,
-    CB_AST_TYPE_STATEMENT_LIST
+    CB_AST_TYPE_STATEMENT_LIST,
+    CB_AST_TYPE_CONTROL_FLOW
 } CbAstType;
 
 
@@ -67,9 +68,23 @@ CbAstType cb_ast_node_get_type(const CbAstNode* self);
 CbVariant* cb_ast_node_eval(CbAstNode* self, const CbSymbolTable* symbols);
 
 /*
+ * Make sure the node is valid (i.e. not NULL) and evaluate it and return its
+ * result.
+ * Otherwise return an empty (undefined) variant object.
+ */
+CbVariant* cb_ast_node_safe_eval(CbAstNode* self, const CbSymbolTable* symbols);
+
+/*
  * Check AST node semantics
  */
 bool cb_ast_node_check_semantic(CbAstNode* self, CbSymbolTable* symbols);
+
+/*
+ * Make sure the node is valid (i.e. not NULL) and call
+ * cb_ast_node_check_semantic().
+ * Otherwise return true.
+ */
+bool cb_ast_node_safe_check_semantic(CbAstNode* self, CbSymbolTable* symbols);
 
 /*
  * Check if the variant type of an expression is correct

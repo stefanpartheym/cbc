@@ -12,6 +12,7 @@
 #include "../src/ast_unary.h"
 #include "../src/ast_variable.h"
 #include "../src/ast_declaration.h"
+#include "../src/ast_control_flow.h"
 
 #include "test.h"
 
@@ -241,6 +242,64 @@ void ast_eval_test(void** state)
         cb_variant_destroy(temp);
         cb_ast_node_destroy(node);
     }
+    
+    /*
+     * Control flow AST nodes
+     */
+    {
+        CbAstNode* node;
+        CbVariant* result;
+        CbVariant* condition   = cb_boolean_create(false);
+        CbVariant* value_true  = cb_integer_create(123);
+        CbVariant* value_false = cb_integer_create(321);
+        
+        /* Case 1: Condition is false */
+        node = (CbAstNode*) cb_ast_if_node_create(
+            (CbAstNode*) cb_ast_value_node_create(condition),
+            (CbAstNode*) cb_ast_value_node_create(value_true),
+            (CbAstNode*) cb_ast_value_node_create(value_false)
+        );
+        
+        result = cb_ast_node_eval(node, NULL);
+        assert_cb_variant_equal(value_false, result);
+        
+        cb_variant_destroy(result);
+        cb_variant_destroy(condition);
+        cb_ast_node_destroy(node);
+        condition = cb_boolean_create(true);
+        
+        /* Case 2: Condition is true */
+        node = (CbAstNode*) cb_ast_if_node_create(
+            (CbAstNode*) cb_ast_value_node_create(condition),
+            (CbAstNode*) cb_ast_value_node_create(value_true),
+            (CbAstNode*) cb_ast_value_node_create(value_false)
+        );
+        
+        result = cb_ast_node_eval(node, NULL);
+        assert_cb_variant_equal(value_true, result);
+        
+        cb_variant_destroy(result);
+        cb_variant_destroy(condition);
+        cb_ast_node_destroy(node);
+        condition = cb_boolean_create(false);
+        
+        /* Case 3: Condition is false, no false-branch */
+        node = (CbAstNode*) cb_ast_if_node_create(
+            (CbAstNode*) cb_ast_value_node_create(condition),
+            (CbAstNode*) cb_ast_value_node_create(value_true),
+            NULL
+        );
+        
+        result = cb_ast_node_eval(node, NULL);
+        assert_true(cb_variant_is_undefined(result));
+        
+        cb_variant_destroy(result);
+        cb_variant_destroy(condition);
+        cb_ast_node_destroy(node);
+        
+        cb_variant_destroy(value_true);
+        cb_variant_destroy(value_false);
+    }
 }
 
 /*
@@ -302,6 +361,44 @@ void ast_check_semantic_test(void** state)
     assert_true(cb_ast_node_check_semantic(node, symbols));
     cb_ast_node_destroy(node);
     cb_symbol_table_destroy(symbols);
+    
+    /* statement: if */
+    {
+        CbVariant* dummy1 = cb_boolean_create(true);
+        CbVariant* dummy2 = cb_integer_create(123);
+        CbVariant* dummy3 = cb_integer_create(321);
+        
+        node = (CbAstNode*) cb_ast_if_node_create(
+            (CbAstNode*) cb_ast_value_node_create(dummy1),
+            (CbAstNode*) cb_ast_value_node_create(dummy2),
+            (CbAstNode*) cb_ast_value_node_create(dummy3)
+        );
+        
+        assert_true(cb_ast_node_check_semantic(node, NULL));
+        cb_ast_node_destroy(node);
+        
+        node = (CbAstNode*) cb_ast_if_node_create(
+            (CbAstNode*) cb_ast_value_node_create(dummy1),
+            (CbAstNode*) cb_ast_value_node_create(dummy2),
+            NULL
+        );
+        
+        assert_true(cb_ast_node_check_semantic(node, NULL));
+        cb_ast_node_destroy(node);
+        
+        node = (CbAstNode*) cb_ast_if_node_create(
+            (CbAstNode*) cb_ast_value_node_create(dummy1),
+            NULL,
+            NULL
+        );
+        
+        assert_true(cb_ast_node_check_semantic(node, NULL));
+        cb_ast_node_destroy(node);
+        
+        cb_variant_destroy(dummy1);
+        cb_variant_destroy(dummy2);
+        cb_variant_destroy(dummy3);
+    }
 }
 
 /*
@@ -404,6 +501,30 @@ void ast_check_semantic_error_test(void** state)
                         "declared as variable in the current scope",
                         stream_content);
     cb_symbol_table_destroy(symbols);
+    
+    /* discard stream content */
+    resetup_error_handling(state);
+    
+    /*
+     * Test: Condition of if-statement is not boolean
+     */
+    {
+        CbVariant* dummy = cb_integer_create(123);
+        node             = (CbAstNode*) cb_ast_if_node_create(
+            (CbAstNode*) cb_ast_value_node_create(dummy),
+            (CbAstNode*) cb_ast_value_node_create(dummy),
+            (CbAstNode*) cb_ast_value_node_create(dummy)
+        );
+        cb_ast_node_set_line(node, 1);
+        assert_false(cb_ast_node_check_semantic(node, NULL));
+        cb_ast_node_destroy(node);
+        assert_true(cb_error_occurred());
+        cb_error_process();
+        assert_false(cb_error_occurred());
+        stream_to_string(*state, stream_content, true);
+        assert_string_equal("semantic error: line 1: Condition is not a "\
+                            "boolean expression", stream_content);
+    }
 }
 
 /*

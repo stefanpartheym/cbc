@@ -52,10 +52,23 @@ CbVariant* cb_ast_node_eval(CbAstNode* self, const CbSymbolTable* symbols)
     return self->eval(self, symbols);
 }
 
+CbVariant* cb_ast_node_safe_eval(CbAstNode* self, const CbSymbolTable* symbols)
+{
+    if (self == NULL)
+        return cb_variant_create();
+    else
+        return cb_ast_node_eval(self, symbols);
+}
+
 bool cb_ast_node_check_semantic(CbAstNode* self, CbSymbolTable* symbols)
 {
     self->error_context = CB_ERROR_SEMANTIC;
     return self->semantic_check(self, symbols);
+}
+
+bool cb_ast_node_safe_check_semantic(CbAstNode* self, CbSymbolTable* symbols)
+{
+    return (self == NULL) || cb_ast_node_check_semantic(self, symbols);
 }
 
 bool cb_ast_node_check_expression_type(const CbAstNode* self,
