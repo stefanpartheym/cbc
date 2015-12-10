@@ -13,6 +13,7 @@
 #include "ast_assignment.h"
 #include "ast_declaration.h"
 #include "ast_declaration_block.h"
+#include "ast_control_flow.h"
 #include "ast_statement_list.h"
 
 
@@ -42,6 +43,7 @@ void yyerror(void* data, const char* format, ...);
 %token <float_val>   FLOAT
 %token <boolean_val> BOOLEAN
 %token <string_val>  STRING
+%token               IF THEN ELSE ENDIF
 %token               ENDOFFILE
 
 %right    ASSIGNMENT
@@ -115,6 +117,24 @@ statement_list:
 
 statement:
     expression          { $$ = $1; }
+    | IF expression THEN statement_list ENDIF {
+                            $$ = (CbAstNode*) cb_ast_if_node_create(
+                                $2, $4, NULL
+                            );
+                            /*
+                             * TODO: It might be neccessary to push the line
+                             *       number at the opening keyword "if".
+                             *       Otherwise yylineno will correspond to the
+                             *       "endif"s line number.
+                             */
+                            cb_ast_node_set_line($$, yylineno);
+                        }
+    | IF expression THEN statement_list ELSE statement_list ENDIF {
+                            $$ = (CbAstNode*) cb_ast_if_node_create(
+                                $2, $4, $6
+                            );
+                            cb_ast_node_set_line($$, yylineno);
+                        }
     ;
 
 var_declaration_list:

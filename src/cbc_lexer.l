@@ -18,6 +18,12 @@
 %%  /* RULES ---------------------------------------------------------------- */
 
 
+                /* keywords */
+"if"            { return IF; }
+"then"          { return THEN; }
+"else"          { return ELSE; }
+"endif"         { return ENDIF; }
+
                 /* logical gates */
 "not"           { return LOGICAL_NOT; }
 "and"           { return LOGICAL_AND; }
