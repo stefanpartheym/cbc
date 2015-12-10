@@ -158,6 +158,23 @@ void ast_eval_test(void** state)
         CB_BINARY_OPERATOR_TYPE_LOGICAL_OR, cb_boolean_create(false), cb_boolean_create(false), cb_boolean_create(false));
     test_ast_binary_node_eval(
         CB_BINARY_OPERATOR_TYPE_LOGICAL_OR, cb_boolean_create(false), cb_boolean_create(true),  cb_boolean_create(true));
+    /* eval binary AST nodes (comparison operator >) */
+    /*
+     * TODO: Test also with other value types:
+     *   - float
+     *   - string
+     *   - boolean
+     */
+    test_ast_binary_node_eval(
+        CB_BINARY_OPERATOR_TYPE_COMPARISON_GR, cb_integer_create(984),   cb_integer_create(8),  cb_boolean_create(true));
+    test_ast_binary_node_eval(
+        CB_BINARY_OPERATOR_TYPE_COMPARISON_GR, cb_integer_create(-1),   cb_integer_create(0),   cb_boolean_create(false));
+    test_ast_binary_node_eval(
+        CB_BINARY_OPERATOR_TYPE_COMPARISON_GR, cb_integer_create(0),   cb_integer_create(-1), cb_boolean_create(true));
+    test_ast_binary_node_eval(
+        CB_BINARY_OPERATOR_TYPE_COMPARISON_GR, cb_integer_create(-3),   cb_integer_create(-8),  cb_boolean_create(true));
+    test_ast_binary_node_eval(
+        CB_BINARY_OPERATOR_TYPE_COMPARISON_GR, cb_integer_create(1),   cb_integer_create(1),  cb_boolean_create(false));
     
     /* unary AST node (expression: - <integer>) */
     unary_node = cb_ast_unary_node_create(
