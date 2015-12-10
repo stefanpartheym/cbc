@@ -108,11 +108,11 @@ $(SRC_DIR)/$(PARSER_SRC): $(PARSER)
 
 # execution of main target
 run: build
-	@./$(TARGET)
+	@./$(TARGET) $(p)
 
 rund:     rundebug
 rundebug: build
-	$(GDB) ./$(TARGET)
+	$(GDB) ./$(TARGET) $(p)
 
 .PHONY: run rund rundebug
 
