@@ -44,5 +44,10 @@ CbVariant* cb_ast_binary_node_eval(const CbAstBinaryNode* self,
 bool cb_ast_binary_node_check_semantic(const CbAstBinaryNode* self,
                                        CbSymbolTable* symbols);
 
+/*
+ * Get the variant type of a binary operation
+ */
+CbVariantType cb_ast_binary_node_get_expression_type(const CbAstBinaryNode* self);
+
 
 #endif /* AST_BINARY_H */

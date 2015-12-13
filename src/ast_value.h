@@ -44,11 +44,5 @@ CbVariant* cb_ast_value_node_eval(const CbAstValueNode* self);
 bool cb_ast_value_node_check_semantic(const CbAstValueNode* self,
                                       const void* dummy);
 
-/*
- * Check if Value node expression has a specific type
- */
-bool cb_ast_value_node_check_expression_type(const CbAstValueNode* self,
-                                             CbVariantType variant_type);
-
 
 #endif /* AST_VALUE_H */

@@ -136,6 +136,37 @@ bool cb_ast_binary_node_check_semantic(const CbAstBinaryNode* self,
     return result;
 }
 
+CbVariantType cb_ast_binary_node_get_expression_type(const CbAstBinaryNode* self)
+{
+    CbVariantType result = CB_VARIANT_TYPE_UNDEFINED;
+    switch (self->operator_type)
+    {
+        /* operators that always yield a boolean value */
+        case CB_BINARY_OPERATOR_TYPE_COMPARISON_EQ:
+        case CB_BINARY_OPERATOR_TYPE_COMPARISON_GT:
+        case CB_BINARY_OPERATOR_TYPE_COMPARISON_LT:
+        case CB_BINARY_OPERATOR_TYPE_COMPARISON_SE:
+        case CB_BINARY_OPERATOR_TYPE_COMPARISON_GE:
+        case CB_BINARY_OPERATOR_TYPE_COMPARISON_LE:
+        case CB_BINARY_OPERATOR_TYPE_COMPARISON_NE:
+        case CB_BINARY_OPERATOR_TYPE_LOGICAL_AND:
+        case CB_BINARY_OPERATOR_TYPE_LOGICAL_OR:
+            result = CB_VARIANT_TYPE_BOOLEAN;
+            break;
+        
+        default:
+            /*
+             * Only return type of left node, since the binary operation is
+             * ensured to be semantically correct, so types of left and right
+             * node are equal (or both types are numeric).
+             */
+            result = cb_ast_node_get_expression_type(self->base.left);
+            break;
+    }
+    
+    return result;
+}
+
 
 /* -------------------------------------------------------------------------- */
 
@@ -179,20 +210,20 @@ static CbVariant* cb_ast_binary_node_eval_integer(const CbAstBinaryNode* self,
             }
             break;
         
-        case CB_BINARY_OPERATOR_TYPE_COMPARISON_GR:
+        case CB_BINARY_OPERATOR_TYPE_COMPARISON_GT:
             result = cb_boolean_create(v1 > v2); break;
         
-        case CB_BINARY_OPERATOR_TYPE_COMPARISON_GQ:
+        case CB_BINARY_OPERATOR_TYPE_COMPARISON_GE:
             result = cb_boolean_create(v1 >= v2); break;
         
-        case CB_BINARY_OPERATOR_TYPE_COMPARISON_LE:
+        case CB_BINARY_OPERATOR_TYPE_COMPARISON_LT:
             result = cb_boolean_create(v1 < v2); break;
         
-        case CB_BINARY_OPERATOR_TYPE_COMPARISON_LQ:
+        case CB_BINARY_OPERATOR_TYPE_COMPARISON_LE:
             result = cb_boolean_create(v1 <= v2); break;
         
         case CB_BINARY_OPERATOR_TYPE_COMPARISON_EQ:
-        case CB_BINARY_OPERATOR_TYPE_COMPARISON_SQ:
+        case CB_BINARY_OPERATOR_TYPE_COMPARISON_SE:
             result = cb_boolean_create(v1 == v2); break;
         
         case CB_BINARY_OPERATOR_TYPE_COMPARISON_NE:
@@ -235,20 +266,20 @@ static CbVariant* cb_ast_binary_node_eval_float(const CbAstBinaryNode* self,
                 result = cb_float_create(v1 / v2);
             break;
         
-        case CB_BINARY_OPERATOR_TYPE_COMPARISON_GR:
-            cb_abort("Not yet implemented"); break;
+        case CB_BINARY_OPERATOR_TYPE_COMPARISON_GT:
+            result = cb_boolean_create(v1 > v2); break;
         
-        case CB_BINARY_OPERATOR_TYPE_COMPARISON_GQ:
-            cb_abort("Not yet implemented"); break;
+        case CB_BINARY_OPERATOR_TYPE_COMPARISON_GE:
+            result = cb_boolean_create((v1 > v2) || dequal(v1, v2)); break;
+        
+        case CB_BINARY_OPERATOR_TYPE_COMPARISON_LT:
+            result = cb_boolean_create(v1 < v2); break;
         
         case CB_BINARY_OPERATOR_TYPE_COMPARISON_LE:
-            cb_abort("Not yet implemented"); break;
-        
-        case CB_BINARY_OPERATOR_TYPE_COMPARISON_LQ:
-            cb_abort("Not yet implemented"); break;
+            result = cb_boolean_create((v1 < v2) || dequal(v1, v2)); break;
         
         case CB_BINARY_OPERATOR_TYPE_COMPARISON_EQ:
-        case CB_BINARY_OPERATOR_TYPE_COMPARISON_SQ:
+        case CB_BINARY_OPERATOR_TYPE_COMPARISON_SE:
             result = cb_boolean_create(dequal(v1, v2)); break;
         
         case CB_BINARY_OPERATOR_TYPE_COMPARISON_NE:
@@ -275,10 +306,9 @@ static CbVariant* cb_ast_binary_node_eval_string(const CbAstBinaryNode* self,
             break;
         
         case CB_BINARY_OPERATOR_TYPE_COMPARISON_EQ:
-            /* result = cb_boolean_create(); break; */
-            cb_abort("Left handed string comparison not yet implemented"); break;
+            result = cb_boolean_create(cb_string_lhs_equal(left, right)); break;
             
-        case CB_BINARY_OPERATOR_TYPE_COMPARISON_SQ:
+        case CB_BINARY_OPERATOR_TYPE_COMPARISON_SE:
             result = cb_boolean_create(cb_string_equal(left, right)); break;
         
         case CB_BINARY_OPERATOR_TYPE_COMPARISON_NE:
@@ -312,7 +342,7 @@ static CbVariant* cb_ast_binary_node_eval_boolean(const CbAstBinaryNode* self,
             result = cb_boolean_create(v1 || v2); break;
         
         case CB_BINARY_OPERATOR_TYPE_COMPARISON_EQ:
-        case CB_BINARY_OPERATOR_TYPE_COMPARISON_SQ:
+        case CB_BINARY_OPERATOR_TYPE_COMPARISON_SE:
             result = cb_boolean_create(v1 == v2); break;
         
         case CB_BINARY_OPERATOR_TYPE_COMPARISON_NE:

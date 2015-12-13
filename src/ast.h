@@ -88,16 +88,6 @@ bool cb_ast_node_check_semantic(CbAstNode* self, CbSymbolTable* symbols);
 bool cb_ast_node_safe_check_semantic(CbAstNode* self, CbSymbolTable* symbols);
 
 /*
- * Check if the variant type of an expression is correct
- * 
- * NOTE: This function recursively walks the AST until it finds a value node
- *       (CB_AST_TYPE_VALUE). At this point it is possible to determine the
- *       variant type.
- */
-bool cb_ast_node_check_expression_type(const CbAstNode* self,
-                                       CbVariantType variant_type);
-
-/*
  * Get the variant type of an expression
  * 
  * NOTE: This function recursively walks the AST until it finds a value node

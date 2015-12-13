@@ -47,11 +47,12 @@ void yyerror(void* data, const char* format, ...);
 %token               ENDOFFILE
 
 %right    ASSIGNMENT
+%left     LOGICAL_AND LOGICAL_OR
+%nonassoc LOGICAL_NOT
+%left     COMPARISON_EQ COMPARISON_GT COMPARISON_LT COMPARISON_SE COMPARISON_GE
+          COMPARISON_LE COMPARISON_NE
 %left     '+' '-'
 %left     '*' '/'
-%left     LOGICAL_AND
-%left     LOGICAL_OR
-%nonassoc LOGICAL_NOT
 
 %type <ast> expression
             statement statement_list
@@ -214,6 +215,48 @@ expression:
                             );
                             cb_ast_node_set_line($$, yylineno);
                         }
+    | expression COMPARISON_EQ expression {
+                            $$ = (CbAstNode*) cb_ast_binary_node_create(
+                                CB_BINARY_OPERATOR_TYPE_COMPARISON_EQ, $1, $3
+                            );
+                            cb_ast_node_set_line($$, yylineno);
+                        }
+    | expression COMPARISON_GT expression {
+                            $$ = (CbAstNode*) cb_ast_binary_node_create(
+                                CB_BINARY_OPERATOR_TYPE_COMPARISON_GT, $1, $3
+                            );
+                            cb_ast_node_set_line($$, yylineno);
+                        }
+    | expression COMPARISON_LT expression {
+                            $$ = (CbAstNode*) cb_ast_binary_node_create(
+                                CB_BINARY_OPERATOR_TYPE_COMPARISON_LT, $1, $3
+                            );
+                            cb_ast_node_set_line($$, yylineno);
+                        }
+    | expression COMPARISON_SE expression {
+                            $$ = (CbAstNode*) cb_ast_binary_node_create(
+                                CB_BINARY_OPERATOR_TYPE_COMPARISON_SE, $1, $3
+                            );
+                            cb_ast_node_set_line($$, yylineno);
+                        }
+    | expression COMPARISON_GE expression {
+                            $$ = (CbAstNode*) cb_ast_binary_node_create(
+                                CB_BINARY_OPERATOR_TYPE_COMPARISON_GE, $1, $3
+                            );
+                            cb_ast_node_set_line($$, yylineno);
+                        }
+    | expression COMPARISON_LE expression {
+                            $$ = (CbAstNode*) cb_ast_binary_node_create(
+                                CB_BINARY_OPERATOR_TYPE_COMPARISON_LE, $1, $3
+                            );
+                            cb_ast_node_set_line($$, yylineno);
+                        }
+    | expression COMPARISON_NE expression {
+                            $$ = (CbAstNode*) cb_ast_binary_node_create(
+                                CB_BINARY_OPERATOR_TYPE_COMPARISON_NE, $1, $3
+                            );
+                            cb_ast_node_set_line($$, yylineno);
+                        }
     | expression '+' expression {
                             $$ = (CbAstNode*) cb_ast_binary_node_create(
                                 CB_BINARY_OPERATOR_TYPE_ADD,
@@ -242,7 +285,6 @@ expression:
                             );
                             cb_ast_node_set_line($$, yylineno);
                         }
-    | '(' expression ')' {  $$ = $2; }
     | expression LOGICAL_AND expression {
                             $$ = (CbAstNode*) cb_ast_binary_node_create(
                                 CB_BINARY_OPERATOR_TYPE_LOGICAL_AND,
@@ -271,6 +313,7 @@ expression:
                             );
                             cb_ast_node_set_line($$, yylineno);
                         }
+    | '(' expression ')' {  $$ = $2; }
     ;
 
 

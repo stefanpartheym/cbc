@@ -71,44 +71,6 @@ bool cb_ast_node_safe_check_semantic(CbAstNode* self, CbSymbolTable* symbols)
     return (self == NULL) || cb_ast_node_check_semantic(self, symbols);
 }
 
-bool cb_ast_node_check_expression_type(const CbAstNode* self,
-                                       CbVariantType variant_type)
-{
-    bool result = false;
-    
-    switch (self->type)
-    {
-        case CB_AST_TYPE_VALUE:
-            result = cb_ast_value_node_check_expression_type(
-                (CbAstValueNode*) self, variant_type
-            );
-            break;
-        
-        case CB_AST_TYPE_BINARY:
-            result =
-                cb_ast_node_check_expression_type(self->left,  variant_type) &&
-                cb_ast_node_check_expression_type(self->right, variant_type);
-            break;
-        
-        case CB_AST_TYPE_UNARY:
-            result =
-                cb_ast_node_check_expression_type(self->left, variant_type);
-            break;
-        
-        case CB_AST_TYPE_VARIABLE:
-            result = cb_ast_variable_node_check_expression_type(
-                (CbAstVariableNode*) self, variant_type
-            );
-            break;
-        
-        /* invalid AST node types */
-        case CB_AST_TYPE_NONE:
-        default: cb_abort("Invalid AST node type"); break;
-    }
-    
-    return result;
-}
-
 CbVariantType cb_ast_node_get_expression_type(const CbAstNode* self)
 {
     const CbVariant* value;
@@ -118,17 +80,12 @@ CbVariantType cb_ast_node_get_expression_type(const CbAstNode* self)
     {
         
         case CB_AST_TYPE_VALUE:
-            value  = cb_ast_value_node_get_value((CbAstValueNode*) self);
+            value  = cb_ast_value_node_get_value((const CbAstValueNode*) self);
             result = cb_variant_get_type(value);
             break;
         
         case CB_AST_TYPE_BINARY:
-            /*
-             * Only return type of left node, since the binary operation is
-             * ensured to be semantically correct, so types of left and right
-             * node are equal (or both types are numeric).
-             */
-            result = cb_ast_node_get_expression_type(self->left);
+            result = cb_ast_binary_node_get_expression_type((const CbAstBinaryNode*) self);
             break;
         
         case CB_AST_TYPE_UNARY:

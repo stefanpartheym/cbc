@@ -56,9 +56,3 @@ bool cb_ast_value_node_check_semantic(const CbAstValueNode* self,
      */
     return true;
 }
-
-bool cb_ast_value_node_check_expression_type(const CbAstValueNode* self,
-                                             CbVariantType variant_type)
-{
-    return cb_variant_is_type(self->value, variant_type);
-}

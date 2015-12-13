@@ -45,12 +45,12 @@ typedef enum
     CB_BINARY_OPERATOR_TYPE_DIV,
     CB_BINARY_OPERATOR_TYPE_LOGICAL_AND,
     CB_BINARY_OPERATOR_TYPE_LOGICAL_OR,
-    CB_BINARY_OPERATOR_TYPE_COMPARISON_GR, /* greater than          */
-    CB_BINARY_OPERATOR_TYPE_COMPARISON_GQ, /* greater than or equal */
-    CB_BINARY_OPERATOR_TYPE_COMPARISON_LE, /* less than             */
-    CB_BINARY_OPERATOR_TYPE_COMPARISON_LQ, /* less than or equal    */
+    CB_BINARY_OPERATOR_TYPE_COMPARISON_GT, /* greater than          */
+    CB_BINARY_OPERATOR_TYPE_COMPARISON_GE, /* greater than or equal */
+    CB_BINARY_OPERATOR_TYPE_COMPARISON_LT, /* less than             */
+    CB_BINARY_OPERATOR_TYPE_COMPARISON_LE, /* less than or equal    */
     CB_BINARY_OPERATOR_TYPE_COMPARISON_EQ, /* equal                 */
-    CB_BINARY_OPERATOR_TYPE_COMPARISON_SQ, /* string equal          */
+    CB_BINARY_OPERATOR_TYPE_COMPARISON_SE, /* string equal          */
     CB_BINARY_OPERATOR_TYPE_COMPARISON_NE  /* not equal             */
 } CbBinaryOperatorType;
 
@@ -239,6 +239,11 @@ CbConstStringDataType cb_string_get_value(const CbVariant* self);
  * Compare two strings
  */
 CbBooleanDataType cb_string_equal(const CbVariant* lhs, const CbVariant* rhs);
+
+/*
+ * Perform left handed side string comparison
+ */
+CbBooleanDataType cb_string_lhs_equal(const CbVariant* lhs, const CbVariant* rhs);
 
 /*
  * Concatenate two strings together

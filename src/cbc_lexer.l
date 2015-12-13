@@ -103,6 +103,15 @@
                 /* single character operators */
 [-+*/|,()]      { return *yytext; }
 
+                /* comparison operators */
+"="             { return COMPARISON_EQ; }
+">"             { return COMPARISON_GT; }
+"<"             { return COMPARISON_LT; }
+"=="            { return COMPARISON_SE; } /* strict equality operator */
+">="            { return COMPARISON_GE; }
+"<="            { return COMPARISON_LE; }
+"<>"            { return COMPARISON_NE; }
+
                 /* assignment operator */
 ":="            { return ASSIGNMENT; }
 

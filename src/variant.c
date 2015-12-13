@@ -130,10 +130,10 @@ bool cb_variant_type_is_binary_operation_valid(const CbBinaryOperatorType operat
         case CB_BINARY_OPERATOR_TYPE_SUB:
         case CB_BINARY_OPERATOR_TYPE_MUL:
         case CB_BINARY_OPERATOR_TYPE_DIV:
-        case CB_BINARY_OPERATOR_TYPE_COMPARISON_GR:
-        case CB_BINARY_OPERATOR_TYPE_COMPARISON_GQ:
+        case CB_BINARY_OPERATOR_TYPE_COMPARISON_GT:
+        case CB_BINARY_OPERATOR_TYPE_COMPARISON_GE:
+        case CB_BINARY_OPERATOR_TYPE_COMPARISON_LT:
         case CB_BINARY_OPERATOR_TYPE_COMPARISON_LE:
-        case CB_BINARY_OPERATOR_TYPE_COMPARISON_LQ:
             result = (cb_variant_type_is_numeric(lhs) &&
                       cb_variant_type_is_numeric(rhs)) ||
                      (lhs == CB_VARIANT_TYPE_UNDEFINED ||
@@ -149,7 +149,7 @@ bool cb_variant_type_is_binary_operation_valid(const CbBinaryOperatorType operat
             break;
         
         case CB_BINARY_OPERATOR_TYPE_COMPARISON_EQ:
-        case CB_BINARY_OPERATOR_TYPE_COMPARISON_SQ:
+        case CB_BINARY_OPERATOR_TYPE_COMPARISON_SE:
         case CB_BINARY_OPERATOR_TYPE_COMPARISON_NE:
             result = (cb_variant_type_is_numeric(lhs) &&
                       cb_variant_type_is_numeric(rhs)) ||
@@ -449,4 +449,17 @@ void cb_string_concat(CbVariant* self, const CbVariant* source)
 CbBooleanDataType cb_string_equal(const CbVariant* lhs, const CbVariant* rhs)
 {
     return strequ(cb_string_get_value(lhs), cb_string_get_value(rhs));
+}
+
+CbBooleanDataType cb_string_lhs_equal(const CbVariant* lhs, const CbVariant* rhs)
+{
+    CbConstStringDataType lhs_string = cb_string_get_value(lhs);
+    CbConstStringDataType rhs_string = cb_string_get_value(rhs);
+    size_t lhs_length                = strlen(lhs_string);
+    size_t rhs_length                = strlen(rhs_string);
+    
+    if (lhs_length > rhs_length)
+        return false;
+    else
+        return strnequ(lhs_string, rhs_string, lhs_length);
 }
