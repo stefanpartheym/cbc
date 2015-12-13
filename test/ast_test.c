@@ -159,22 +159,111 @@ void ast_eval_test(void** state)
     test_ast_binary_node_eval(
         CB_BINARY_OPERATOR_TYPE_LOGICAL_OR, cb_boolean_create(false), cb_boolean_create(true),  cb_boolean_create(true));
     /* eval binary AST nodes (comparison operator >) */
-    /*
-     * TODO: Test also with other value types:
-     *   - float
-     *   - string
-     *   - boolean
-     */
-    test_ast_binary_node_eval(
-        CB_BINARY_OPERATOR_TYPE_COMPARISON_GR, cb_integer_create(984),   cb_integer_create(8),  cb_boolean_create(true));
-    test_ast_binary_node_eval(
-        CB_BINARY_OPERATOR_TYPE_COMPARISON_GR, cb_integer_create(-1),   cb_integer_create(0),   cb_boolean_create(false));
-    test_ast_binary_node_eval(
-        CB_BINARY_OPERATOR_TYPE_COMPARISON_GR, cb_integer_create(0),   cb_integer_create(-1), cb_boolean_create(true));
-    test_ast_binary_node_eval(
-        CB_BINARY_OPERATOR_TYPE_COMPARISON_GR, cb_integer_create(-3),   cb_integer_create(-8),  cb_boolean_create(true));
-    test_ast_binary_node_eval(
-        CB_BINARY_OPERATOR_TYPE_COMPARISON_GR, cb_integer_create(1),   cb_integer_create(1),  cb_boolean_create(false));
+    test_ast_binary_node_eval(CB_BINARY_OPERATOR_TYPE_COMPARISON_GT, cb_integer_create(984),     cb_integer_create(8),       cb_boolean_create(true));
+    test_ast_binary_node_eval(CB_BINARY_OPERATOR_TYPE_COMPARISON_GT, cb_integer_create(-1),      cb_integer_create(0),       cb_boolean_create(false));
+    test_ast_binary_node_eval(CB_BINARY_OPERATOR_TYPE_COMPARISON_GT, cb_integer_create(0),       cb_integer_create(-1),      cb_boolean_create(true));
+    test_ast_binary_node_eval(CB_BINARY_OPERATOR_TYPE_COMPARISON_GT, cb_integer_create(-3),      cb_integer_create(-8),      cb_boolean_create(true));
+    test_ast_binary_node_eval(CB_BINARY_OPERATOR_TYPE_COMPARISON_GT, cb_integer_create(1),       cb_integer_create(1),       cb_boolean_create(false));
+    test_ast_binary_node_eval(CB_BINARY_OPERATOR_TYPE_COMPARISON_GT, cb_float_create(8.5),       cb_float_create(8.3),       cb_boolean_create(true));
+    test_ast_binary_node_eval(CB_BINARY_OPERATOR_TYPE_COMPARISON_GT, cb_float_create(-1.993483), cb_float_create(-1.993484), cb_boolean_create(true));
+    test_ast_binary_node_eval(CB_BINARY_OPERATOR_TYPE_COMPARISON_GT, cb_float_create(1.993483),  cb_float_create(1.993484),  cb_boolean_create(false));
+    test_ast_binary_node_eval(CB_BINARY_OPERATOR_TYPE_COMPARISON_GT, cb_integer_create(2),       cb_float_create(1.999999),  cb_boolean_create(true));
+    test_ast_binary_node_eval(CB_BINARY_OPERATOR_TYPE_COMPARISON_GT, cb_float_create(0.000001),  cb_float_create(0),         cb_boolean_create(true));
+    test_ast_binary_node_eval(CB_BINARY_OPERATOR_TYPE_COMPARISON_GT, cb_float_create(-8),        cb_float_create(-8.000001), cb_boolean_create(true));
+    test_ast_binary_node_eval(CB_BINARY_OPERATOR_TYPE_COMPARISON_GT, cb_float_create(1.999999),  cb_float_create(1.999999),  cb_boolean_create(false));
+    /* eval binary AST nodes (comparison operator >=) */
+    test_ast_binary_node_eval(CB_BINARY_OPERATOR_TYPE_COMPARISON_GE, cb_integer_create(984),     cb_integer_create(8),       cb_boolean_create(true));
+    test_ast_binary_node_eval(CB_BINARY_OPERATOR_TYPE_COMPARISON_GE, cb_integer_create(-1),      cb_integer_create(0),       cb_boolean_create(false));
+    test_ast_binary_node_eval(CB_BINARY_OPERATOR_TYPE_COMPARISON_GE, cb_integer_create(0),       cb_integer_create(-1),      cb_boolean_create(true));
+    test_ast_binary_node_eval(CB_BINARY_OPERATOR_TYPE_COMPARISON_GE, cb_integer_create(-3),      cb_integer_create(-8),      cb_boolean_create(true));
+    test_ast_binary_node_eval(CB_BINARY_OPERATOR_TYPE_COMPARISON_GE, cb_integer_create(1),       cb_integer_create(1),       cb_boolean_create(true));
+    test_ast_binary_node_eval(CB_BINARY_OPERATOR_TYPE_COMPARISON_GE, cb_float_create(8.5),       cb_float_create(8.3),       cb_boolean_create(true));
+    test_ast_binary_node_eval(CB_BINARY_OPERATOR_TYPE_COMPARISON_GE, cb_float_create(-1.993483), cb_float_create(-1.993484), cb_boolean_create(true));
+    test_ast_binary_node_eval(CB_BINARY_OPERATOR_TYPE_COMPARISON_GE, cb_float_create(1.993483),  cb_float_create(1.993484),  cb_boolean_create(false));
+    test_ast_binary_node_eval(CB_BINARY_OPERATOR_TYPE_COMPARISON_GE, cb_integer_create(2),       cb_float_create(1.999999),  cb_boolean_create(true));
+    test_ast_binary_node_eval(CB_BINARY_OPERATOR_TYPE_COMPARISON_GE, cb_float_create(0.000001),  cb_float_create(0),         cb_boolean_create(true));
+    test_ast_binary_node_eval(CB_BINARY_OPERATOR_TYPE_COMPARISON_GE, cb_float_create(-8),        cb_float_create(-8.000001), cb_boolean_create(true));
+    test_ast_binary_node_eval(CB_BINARY_OPERATOR_TYPE_COMPARISON_GE, cb_float_create(1.999999),  cb_float_create(1.999999),  cb_boolean_create(true));
+    /* eval binary AST nodes (comparison operator <) */
+    test_ast_binary_node_eval(CB_BINARY_OPERATOR_TYPE_COMPARISON_LT, cb_integer_create(984),     cb_integer_create(8),       cb_boolean_create(false));
+    test_ast_binary_node_eval(CB_BINARY_OPERATOR_TYPE_COMPARISON_LT, cb_integer_create(-1),      cb_integer_create(0),       cb_boolean_create(true));
+    test_ast_binary_node_eval(CB_BINARY_OPERATOR_TYPE_COMPARISON_LT, cb_integer_create(0),       cb_integer_create(-1),      cb_boolean_create(false));
+    test_ast_binary_node_eval(CB_BINARY_OPERATOR_TYPE_COMPARISON_LT, cb_integer_create(-3),      cb_integer_create(-8),      cb_boolean_create(false));
+    test_ast_binary_node_eval(CB_BINARY_OPERATOR_TYPE_COMPARISON_LT, cb_integer_create(1),       cb_integer_create(1),       cb_boolean_create(false));
+    test_ast_binary_node_eval(CB_BINARY_OPERATOR_TYPE_COMPARISON_LT, cb_float_create(8.5),       cb_float_create(8.3),       cb_boolean_create(false));
+    test_ast_binary_node_eval(CB_BINARY_OPERATOR_TYPE_COMPARISON_LT, cb_float_create(-1.993483), cb_float_create(-1.993484), cb_boolean_create(false));
+    test_ast_binary_node_eval(CB_BINARY_OPERATOR_TYPE_COMPARISON_LT, cb_float_create(1.993483),  cb_float_create(1.993484),  cb_boolean_create(true));
+    test_ast_binary_node_eval(CB_BINARY_OPERATOR_TYPE_COMPARISON_LT, cb_integer_create(2),       cb_float_create(1.999999),  cb_boolean_create(false));
+    test_ast_binary_node_eval(CB_BINARY_OPERATOR_TYPE_COMPARISON_LT, cb_float_create(0.000001),  cb_float_create(0),         cb_boolean_create(false));
+    test_ast_binary_node_eval(CB_BINARY_OPERATOR_TYPE_COMPARISON_LT, cb_float_create(-8),        cb_float_create(-8.000001), cb_boolean_create(false));
+    test_ast_binary_node_eval(CB_BINARY_OPERATOR_TYPE_COMPARISON_LT, cb_float_create(1.999999),  cb_float_create(1.999999),  cb_boolean_create(false));
+    /* eval binary AST nodes (comparison operator <=) */
+    test_ast_binary_node_eval(CB_BINARY_OPERATOR_TYPE_COMPARISON_LE, cb_integer_create(984),     cb_integer_create(8),       cb_boolean_create(false));
+    test_ast_binary_node_eval(CB_BINARY_OPERATOR_TYPE_COMPARISON_LE, cb_integer_create(-1),      cb_integer_create(0),       cb_boolean_create(true));
+    test_ast_binary_node_eval(CB_BINARY_OPERATOR_TYPE_COMPARISON_LE, cb_integer_create(0),       cb_integer_create(-1),      cb_boolean_create(false));
+    test_ast_binary_node_eval(CB_BINARY_OPERATOR_TYPE_COMPARISON_LE, cb_integer_create(-3),      cb_integer_create(-8),      cb_boolean_create(false));
+    test_ast_binary_node_eval(CB_BINARY_OPERATOR_TYPE_COMPARISON_LE, cb_integer_create(1),       cb_integer_create(1),       cb_boolean_create(true));
+    test_ast_binary_node_eval(CB_BINARY_OPERATOR_TYPE_COMPARISON_LE, cb_float_create(8.5),       cb_float_create(8.3),       cb_boolean_create(false));
+    test_ast_binary_node_eval(CB_BINARY_OPERATOR_TYPE_COMPARISON_LE, cb_float_create(-1.993483), cb_float_create(-1.993484), cb_boolean_create(false));
+    test_ast_binary_node_eval(CB_BINARY_OPERATOR_TYPE_COMPARISON_LE, cb_float_create(1.993483),  cb_float_create(1.993484),  cb_boolean_create(true));
+    test_ast_binary_node_eval(CB_BINARY_OPERATOR_TYPE_COMPARISON_LE, cb_integer_create(2),       cb_float_create(1.999999),  cb_boolean_create(false));
+    test_ast_binary_node_eval(CB_BINARY_OPERATOR_TYPE_COMPARISON_LE, cb_float_create(0.000001),  cb_float_create(0),         cb_boolean_create(false));
+    test_ast_binary_node_eval(CB_BINARY_OPERATOR_TYPE_COMPARISON_LE, cb_float_create(-8),        cb_float_create(-8.000001), cb_boolean_create(false));
+    test_ast_binary_node_eval(CB_BINARY_OPERATOR_TYPE_COMPARISON_LE, cb_float_create(1.999999),  cb_float_create(1.999999),  cb_boolean_create(true));
+    /* eval binary AST nodes (comparison operator =) */
+    test_ast_binary_node_eval(CB_BINARY_OPERATOR_TYPE_COMPARISON_EQ, cb_integer_create(984),     cb_integer_create(8),       cb_boolean_create(false));
+    test_ast_binary_node_eval(CB_BINARY_OPERATOR_TYPE_COMPARISON_EQ, cb_integer_create(-1),      cb_integer_create(0),       cb_boolean_create(false));
+    test_ast_binary_node_eval(CB_BINARY_OPERATOR_TYPE_COMPARISON_EQ, cb_integer_create(0),       cb_integer_create(0),       cb_boolean_create(true));
+    test_ast_binary_node_eval(CB_BINARY_OPERATOR_TYPE_COMPARISON_EQ, cb_integer_create(-8),      cb_integer_create(-8),      cb_boolean_create(true));
+    test_ast_binary_node_eval(CB_BINARY_OPERATOR_TYPE_COMPARISON_EQ, cb_integer_create(1),       cb_integer_create(1),       cb_boolean_create(true));
+    test_ast_binary_node_eval(CB_BINARY_OPERATOR_TYPE_COMPARISON_EQ, cb_float_create(8.5),       cb_float_create(8.3),       cb_boolean_create(false));
+    test_ast_binary_node_eval(CB_BINARY_OPERATOR_TYPE_COMPARISON_EQ, cb_float_create(-1.993483), cb_float_create(-1.993484), cb_boolean_create(false));
+    test_ast_binary_node_eval(CB_BINARY_OPERATOR_TYPE_COMPARISON_EQ, cb_integer_create(2),       cb_float_create(1.999999),  cb_boolean_create(false));
+    test_ast_binary_node_eval(CB_BINARY_OPERATOR_TYPE_COMPARISON_EQ, cb_float_create(0.000001),  cb_float_create(0),         cb_boolean_create(false));
+    test_ast_binary_node_eval(CB_BINARY_OPERATOR_TYPE_COMPARISON_EQ, cb_float_create(0.000001),  cb_float_create(0.000001),  cb_boolean_create(true));
+    test_ast_binary_node_eval(CB_BINARY_OPERATOR_TYPE_COMPARISON_EQ, cb_integer_create(1),       cb_float_create(1),         cb_boolean_create(true));
+    test_ast_binary_node_eval(CB_BINARY_OPERATOR_TYPE_COMPARISON_EQ, cb_string_create("abc"),    cb_string_create("foobar"), cb_boolean_create(false));
+    test_ast_binary_node_eval(CB_BINARY_OPERATOR_TYPE_COMPARISON_EQ, cb_string_create("abc"),    cb_string_create("abc"),    cb_boolean_create(true));
+    test_ast_binary_node_eval(CB_BINARY_OPERATOR_TYPE_COMPARISON_EQ, cb_string_create("foo"),    cb_string_create("foobar"), cb_boolean_create(true));
+    test_ast_binary_node_eval(CB_BINARY_OPERATOR_TYPE_COMPARISON_EQ, cb_boolean_create(true),    cb_boolean_create(true),    cb_boolean_create(true));
+    test_ast_binary_node_eval(CB_BINARY_OPERATOR_TYPE_COMPARISON_EQ, cb_boolean_create(false),   cb_boolean_create(false),   cb_boolean_create(true));
+    test_ast_binary_node_eval(CB_BINARY_OPERATOR_TYPE_COMPARISON_EQ, cb_boolean_create(true),    cb_boolean_create(false),   cb_boolean_create(false));
+    /* eval binary AST nodes (comparison operator ==) */
+    test_ast_binary_node_eval(CB_BINARY_OPERATOR_TYPE_COMPARISON_SE, cb_integer_create(984),     cb_integer_create(8),       cb_boolean_create(false));
+    test_ast_binary_node_eval(CB_BINARY_OPERATOR_TYPE_COMPARISON_SE, cb_integer_create(-1),      cb_integer_create(0),       cb_boolean_create(false));
+    test_ast_binary_node_eval(CB_BINARY_OPERATOR_TYPE_COMPARISON_SE, cb_integer_create(0),       cb_integer_create(0),       cb_boolean_create(true));
+    test_ast_binary_node_eval(CB_BINARY_OPERATOR_TYPE_COMPARISON_SE, cb_integer_create(-8),      cb_integer_create(-8),      cb_boolean_create(true));
+    test_ast_binary_node_eval(CB_BINARY_OPERATOR_TYPE_COMPARISON_SE, cb_integer_create(1),       cb_integer_create(1),       cb_boolean_create(true));
+    test_ast_binary_node_eval(CB_BINARY_OPERATOR_TYPE_COMPARISON_SE, cb_float_create(8.5),       cb_float_create(8.3),       cb_boolean_create(false));
+    test_ast_binary_node_eval(CB_BINARY_OPERATOR_TYPE_COMPARISON_SE, cb_float_create(-1.993483), cb_float_create(-1.993484), cb_boolean_create(false));
+    test_ast_binary_node_eval(CB_BINARY_OPERATOR_TYPE_COMPARISON_SE, cb_integer_create(2),       cb_float_create(1.999999),  cb_boolean_create(false));
+    test_ast_binary_node_eval(CB_BINARY_OPERATOR_TYPE_COMPARISON_SE, cb_float_create(0.000001),  cb_float_create(0),         cb_boolean_create(false));
+    test_ast_binary_node_eval(CB_BINARY_OPERATOR_TYPE_COMPARISON_SE, cb_float_create(0.000001),  cb_float_create(0.000001),  cb_boolean_create(true));
+    test_ast_binary_node_eval(CB_BINARY_OPERATOR_TYPE_COMPARISON_SE, cb_integer_create(1),       cb_float_create(1),         cb_boolean_create(true));
+    test_ast_binary_node_eval(CB_BINARY_OPERATOR_TYPE_COMPARISON_SE, cb_string_create("abc"),    cb_string_create("foobar"), cb_boolean_create(false));
+    test_ast_binary_node_eval(CB_BINARY_OPERATOR_TYPE_COMPARISON_SE, cb_string_create("abc"),    cb_string_create("abc"),    cb_boolean_create(true));
+    test_ast_binary_node_eval(CB_BINARY_OPERATOR_TYPE_COMPARISON_SE, cb_string_create("foo"),    cb_string_create("foobar"), cb_boolean_create(false));
+    test_ast_binary_node_eval(CB_BINARY_OPERATOR_TYPE_COMPARISON_SE, cb_boolean_create(true),    cb_boolean_create(true),    cb_boolean_create(true));
+    test_ast_binary_node_eval(CB_BINARY_OPERATOR_TYPE_COMPARISON_SE, cb_boolean_create(false),   cb_boolean_create(false),   cb_boolean_create(true));
+    test_ast_binary_node_eval(CB_BINARY_OPERATOR_TYPE_COMPARISON_SE, cb_boolean_create(true),    cb_boolean_create(false),   cb_boolean_create(false));
+    /* eval binary AST nodes (comparison operator <>) */
+    test_ast_binary_node_eval(CB_BINARY_OPERATOR_TYPE_COMPARISON_NE, cb_integer_create(984),     cb_integer_create(8),       cb_boolean_create(true));
+    test_ast_binary_node_eval(CB_BINARY_OPERATOR_TYPE_COMPARISON_NE, cb_integer_create(-1),      cb_integer_create(0),       cb_boolean_create(true));
+    test_ast_binary_node_eval(CB_BINARY_OPERATOR_TYPE_COMPARISON_NE, cb_integer_create(0),       cb_integer_create(0),       cb_boolean_create(false));
+    test_ast_binary_node_eval(CB_BINARY_OPERATOR_TYPE_COMPARISON_NE, cb_integer_create(-8),      cb_integer_create(-8),      cb_boolean_create(false));
+    test_ast_binary_node_eval(CB_BINARY_OPERATOR_TYPE_COMPARISON_NE, cb_integer_create(1),       cb_integer_create(1),       cb_boolean_create(false));
+    test_ast_binary_node_eval(CB_BINARY_OPERATOR_TYPE_COMPARISON_NE, cb_float_create(8.5),       cb_float_create(8.3),       cb_boolean_create(true));
+    test_ast_binary_node_eval(CB_BINARY_OPERATOR_TYPE_COMPARISON_NE, cb_float_create(-1.993483), cb_float_create(-1.993484), cb_boolean_create(true));
+    test_ast_binary_node_eval(CB_BINARY_OPERATOR_TYPE_COMPARISON_NE, cb_integer_create(2),       cb_float_create(1.999999),  cb_boolean_create(true));
+    test_ast_binary_node_eval(CB_BINARY_OPERATOR_TYPE_COMPARISON_NE, cb_float_create(0.000001),  cb_float_create(0),         cb_boolean_create(true));
+    test_ast_binary_node_eval(CB_BINARY_OPERATOR_TYPE_COMPARISON_NE, cb_float_create(0.000001),  cb_float_create(0.000001),  cb_boolean_create(false));
+    test_ast_binary_node_eval(CB_BINARY_OPERATOR_TYPE_COMPARISON_NE, cb_integer_create(1),       cb_float_create(1),         cb_boolean_create(false));
+    test_ast_binary_node_eval(CB_BINARY_OPERATOR_TYPE_COMPARISON_NE, cb_string_create("abc"),    cb_string_create("foobar"), cb_boolean_create(true));
+    test_ast_binary_node_eval(CB_BINARY_OPERATOR_TYPE_COMPARISON_NE, cb_string_create("abc"),    cb_string_create("abc"),    cb_boolean_create(false));
+    test_ast_binary_node_eval(CB_BINARY_OPERATOR_TYPE_COMPARISON_NE, cb_string_create("foo"),    cb_string_create("foobar"), cb_boolean_create(true));
+    test_ast_binary_node_eval(CB_BINARY_OPERATOR_TYPE_COMPARISON_NE, cb_boolean_create(true),    cb_boolean_create(true),    cb_boolean_create(false));
+    test_ast_binary_node_eval(CB_BINARY_OPERATOR_TYPE_COMPARISON_NE, cb_boolean_create(false),   cb_boolean_create(false),   cb_boolean_create(false));
+    test_ast_binary_node_eval(CB_BINARY_OPERATOR_TYPE_COMPARISON_NE, cb_boolean_create(true),    cb_boolean_create(false),   cb_boolean_create(true));
     
     /* unary AST node (expression: - <integer>) */
     unary_node = cb_ast_unary_node_create(
@@ -541,6 +630,7 @@ void ast_check_semantic_error_test(void** state)
         stream_to_string(*state, stream_content, true);
         assert_string_equal("semantic error: line 1: Condition is not a "\
                             "boolean expression", stream_content);
+        cb_variant_destroy(dummy);
     }
 }
 
