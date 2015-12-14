@@ -23,6 +23,9 @@
 "then"          { return THEN; }
 "else"          { return ELSE; }
 "endif"         { return ENDIF; }
+"while"         { return WHILE; }
+"do"            { return DO; }
+"end"           { return END; }
 
                 /* logical gates */
 "not"           { return LOGICAL_NOT; }

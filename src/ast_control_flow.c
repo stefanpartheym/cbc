@@ -107,6 +107,81 @@ bool cb_ast_if_node_check_semantic(const CbAstControlFlowNode* self,
 
 /* -------------------------------------------------------------------------- */
 
+CbAstControlFlowNode* cb_ast_while_node_create(CbAstNode* condition,
+                                               CbAstNode* body)
+{
+    
+    return cb_ast_control_flow_node_create(
+        CB_AST_CONTROL_FLOW_TYPE_WHILE,
+        (CbAstNodeDestructorFunc) cb_ast_while_node_destroy,
+        (CbAstNodeEvalFunc) cb_ast_while_node_eval,
+        (CbAstNodeSemanticFunc) cb_ast_while_node_check_semantic,
+        condition, body, NULL
+    );
+}
+
+void cb_ast_while_node_destroy(CbAstControlFlowNode* self)
+{
+    /* destroy condition node */
+    cb_ast_node_destroy(self->condition);
+    
+    /* destroy left child node */
+    cb_ast_node_destroy(self->base.left);
+    
+    memfree(self);
+}
+
+CbVariant* cb_ast_while_node_eval(const CbAstControlFlowNode* self,
+                                  const CbSymbolTable* symbols)
+{
+    CbVariant* result   = NULL;
+    bool execute_body   = true;
+    
+    while (execute_body)
+    {
+        CbVariant* condition = cb_ast_node_eval(self->condition, symbols);
+        execute_body         = cb_boolean_get_value(condition);
+        cb_variant_destroy(condition);
+        if (execute_body)
+        {
+            if (result != NULL)
+                cb_variant_destroy(result);
+            
+            result = cb_ast_node_eval(self->base.left, symbols);
+        }
+        else
+            result = cb_variant_create();
+    }
+    
+    return result;
+}
+
+bool cb_ast_while_node_check_semantic(const CbAstControlFlowNode* self,
+                                      CbSymbolTable* symbols)
+{
+    CbVariantType condition_type = cb_ast_node_get_expression_type(self->condition);
+    bool result                  = condition_type == CB_VARIANT_TYPE_BOOLEAN ||
+                                   condition_type == CB_VARIANT_TYPE_UNDEFINED;
+    
+    if (result)
+    {
+        result = cb_ast_node_check_semantic(self->condition, symbols) &&
+                 cb_ast_node_check_semantic(self->base.left, symbols);
+    }
+    else
+    {
+        cb_error_trigger(
+            self->base.error_context, self->base.line,
+            "Condition is not a boolean expression"
+        );
+    }
+    
+    return result;
+}
+
+
+/* -------------------------------------------------------------------------- */
+
 CbAstControlFlowNode* cb_ast_control_flow_node_create(CbAstControlFlowNodeType type,
                                                       CbAstNodeDestructorFunc destructor_func,
                                                       CbAstNodeEvalFunc eval_func,

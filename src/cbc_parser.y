@@ -44,6 +44,7 @@ void yyerror(void* data, const char* format, ...);
 %token <boolean_val> BOOLEAN
 %token <string_val>  STRING
 %token               IF THEN ELSE ENDIF
+                     WHILE DO END
 %token               ENDOFFILE
 
 %right    ASSIGNMENT
@@ -134,6 +135,10 @@ statement:
                             $$ = (CbAstNode*) cb_ast_if_node_create(
                                 $2, $4, $6
                             );
+                            cb_ast_node_set_line($$, yylineno);
+                        }
+    | WHILE expression DO statement_list END {
+                            $$ = (CbAstNode*) cb_ast_while_node_create($2, $4);
                             cb_ast_node_set_line($$, yylineno);
                         }
     ;

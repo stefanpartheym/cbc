@@ -21,7 +21,8 @@ typedef struct CbAstControlFlowNode CbAstControlFlowNode;
 
 typedef enum
 {
-    CB_AST_CONTROL_FLOW_TYPE_IF
+    CB_AST_CONTROL_FLOW_TYPE_IF,
+    CB_AST_CONTROL_FLOW_TYPE_WHILE
 } CbAstControlFlowNodeType;
 
 
@@ -50,6 +51,32 @@ CbVariant* cb_ast_if_node_eval(const CbAstControlFlowNode* self,
  */
 bool cb_ast_if_node_check_semantic(const CbAstControlFlowNode* self,
                                    CbSymbolTable* symbols);
+
+
+/* -------------------------------------------------------------------------- */
+
+/*
+ * Constructor for a while-statement
+ */
+CbAstControlFlowNode* cb_ast_while_node_create(CbAstNode* condition,
+                                               CbAstNode* body);
+
+/*
+ * Destructor for a while-statement
+ */
+void cb_ast_while_node_destroy(CbAstControlFlowNode* self);
+    
+/*
+ * Evaluate a while-statement
+ */
+CbVariant* cb_ast_while_node_eval(const CbAstControlFlowNode* self,
+                                  const CbSymbolTable* symbols);
+
+/*
+ * Check semantics for a while-statement
+ */
+bool cb_ast_while_node_check_semantic(const CbAstControlFlowNode* self,
+                                      CbSymbolTable* symbols);
 
 
 #endif /* AST_CONTROL_FLOW_H */
