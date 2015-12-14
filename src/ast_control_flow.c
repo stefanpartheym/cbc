@@ -141,14 +141,13 @@ CbVariant* cb_ast_while_node_eval(const CbAstControlFlowNode* self,
     {
         CbVariant* condition = cb_ast_node_eval(self->condition, symbols);
         execute_body         = cb_boolean_get_value(condition);
+        
         cb_variant_destroy(condition);
+        if (result != NULL)
+            cb_variant_destroy(result);
+        
         if (execute_body)
-        {
-            if (result != NULL)
-                cb_variant_destroy(result);
-            
             result = cb_ast_node_eval(self->base.left, symbols);
-        }
         else
             result = cb_variant_create();
     }
