@@ -26,6 +26,9 @@
 "while"         { return WHILE; }
 "do"            { return DO; }
 "end"           { return END; }
+"for"           { return FOR; }
+"to"            { return TO; }
+"next"          { return NEXT; }
 
                 /* logical gates */
 "not"           { return LOGICAL_NOT; }
