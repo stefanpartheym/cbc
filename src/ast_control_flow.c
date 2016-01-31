@@ -147,6 +147,7 @@ CbVariant* cb_ast_while_node_eval(const CbAstControlFlowNode* self,
             cb_variant_destroy(result);
         
         if (execute_body)
+        {
             result = cb_ast_node_eval(self->base.left, symbols);
             /*
              * If an error occurred -> break the loop
