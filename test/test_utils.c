@@ -42,7 +42,7 @@ void _assert_cb_variant_equal(const CbVariant* expected,
         file,
         line
     );
-    
+
     /* compare values */
     switch (expected_type)
     {
@@ -53,18 +53,18 @@ void _assert_cb_variant_equal(const CbVariant* expected,
                 file, line
             );
             break;
-        
+
         case CB_VARIANT_TYPE_FLOAT:
         {
             CbFloatDataType value_expected = cb_float_get_value(expected);
             CbFloatDataType value_actual   = cb_float_get_value(actual);
             char msg[128];
             sprintf(msg, "expected %f, but was %f", value_expected, value_actual);
-            
+
             _assert_true(dequal(value_expected, value_actual), msg, file, line);
             break;
         }
-        
+
         case CB_VARIANT_TYPE_BOOLEAN:
             _assert_int_equal(
                 cast_to_largest_integral_type(cb_boolean_get_value(expected)),
@@ -72,7 +72,7 @@ void _assert_cb_variant_equal(const CbVariant* expected,
                 file, line
             );
             break;
-        
+
         case CB_VARIANT_TYPE_STRING:
             _assert_string_equal(
                 cb_string_get_value(expected),
@@ -81,11 +81,11 @@ void _assert_cb_variant_equal(const CbVariant* expected,
                 line
             );
             break;
-        
+
         case CB_VARIANT_TYPE_UNDEFINED:
             /* CB_VARIANT_TYPE_UNDEFINED has no value to be compared -> equal */
             break;
-        
+
         default:
             _assert_true(0, "Invalid variant type", file, line);
             break;
@@ -125,17 +125,17 @@ void _assert_cb_boolean_equal(const CbBooleanDataType expected,
 void stream_to_string(FILE* stream, char* string, bool trim)
 {
     rewind(stream); /* go to beginning of the stream */
-    
+
     while (!feof(stream))
     {
         *string = fgetc(stream);
-        
+
         if (feof(stream))
             *string = '\0';
         else
             string++;
     }
-    
+
     if (trim) /* trim string */
         while (!isprint((int) *string))
         {

@@ -33,7 +33,7 @@ CbSymbolFunction* cb_symbol_function_create(const char* identifier)
         (CbSymbolDestructorFunc)  cb_symbol_function_destroy,
         (CbSymbolGetDataTypeFunc) cb_symbol_function_get_data_type
     );
-    
+
     return self;
 }
 

@@ -18,14 +18,14 @@ void memclr(void* memory, size_t length)
 void* memalloc(size_t size)
 {
     void* memory = malloc(size);
-    
+
     /*
      * TODO:
      * Implement some kind of error handling API to correctly handle an error
      * like the following.
      */
     if (memory == NULL) raise_last_error();
-    
+
     return memory;
 }
 
@@ -39,7 +39,7 @@ void* memrealloc(void* memory, size_t size)
     void* temp = realloc(memory, size);
     if (temp != NULL)
         memory = temp;
-    
+
     return temp;
 }
 
@@ -84,11 +84,11 @@ size_t fsize(FILE* f)
 {
     size_t size;
     size_t pos = ftell(f); /* memorize current position */
-    
+
     fseek(f, 0, SEEK_END);
     size = ftell(f);
     fseek(f, 0, pos); /* seek back to previous position */
-    
+
     return size;
 }
 
@@ -97,9 +97,9 @@ void msleep(unsigned int mseconds)
     clock_t t;
     const unsigned long CLOCKS_PER_MSEC = (int) ((float) CLOCKS_PER_SEC * 1e-3);
     unsigned long interval;
-    
+
     interval = CLOCKS_PER_MSEC * mseconds;
-    
+
     t = clock();
     while ((clock() - t) < interval) {}
 }

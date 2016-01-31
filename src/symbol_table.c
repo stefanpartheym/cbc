@@ -26,9 +26,9 @@ CbSymbolTable* cb_symbol_table_create()
     CbSymbolTable* self = (CbSymbolTable*) memalloc(sizeof(CbSymbolTable));
     self->scope_stack   = cb_stack_create();
     self->global_scope  = cb_scope_create(NULL); /* create global scope */
-    
+
     cb_stack_push(self->scope_stack, self->global_scope);
-    
+
     return self;
 }
 
@@ -46,7 +46,7 @@ const CbSymbol* cb_symbol_table_insert(const CbSymbolTable* self,
     CbHashTable* symbols   = cb_symbol_table_get_current_symbols(self);
     const char* identifier = cb_symbol_get_identifier(symbol);
     CbSymbol* result       = NULL;
-    
+
     result = cb_hash_table_get(symbols, identifier);
     if (result == NULL)
         /*
@@ -54,7 +54,7 @@ const CbSymbol* cb_symbol_table_insert(const CbSymbolTable* self,
          * identifier in the current scope.
          */
         cb_hash_table_insert(symbols, identifier, symbol);
-    
+
     return result;
 }
 
@@ -65,7 +65,7 @@ CbSymbol* cb_symbol_table_lookup(const CbSymbolTable* self,
     const CbScope* current = cb_stack_get_top_item(self->scope_stack);
     const CbScope* parent  = cb_scope_get_parent(current);
     CbHashTable* symbols   = cb_scope_get_symbols(current);
-    
+
     result = cb_hash_table_get(symbols, identifier);
     while (result == NULL && parent != NULL)
     {
@@ -73,7 +73,7 @@ CbSymbol* cb_symbol_table_lookup(const CbSymbolTable* self,
         result  = cb_hash_table_get(symbols, identifier);
         parent  = cb_scope_get_parent(parent);
     }
-    
+
     return result;
 }
 
@@ -86,10 +86,10 @@ void cb_symbol_table_enter_scope(CbSymbolTable* self)
 void cb_symbol_table_switch_scope(CbSymbolTable* self, const CbScope* parent)
 {
     CbScope* new_scope;
-    
+
     if (parent == NULL)
         parent = self->global_scope;
-    
+
     new_scope = cb_scope_create(parent);
     cb_stack_push(self->scope_stack, new_scope);
 }

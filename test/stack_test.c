@@ -31,11 +31,11 @@ void stack_common_test(void** state)
     CbStack* stack = *state;
     int integer    = 123;
     int* dest      = NULL;
-    
+
     assert_true(cb_stack_is_empty(stack));
-    
+
     cb_stack_push(stack, &integer);
-    
+
     assert_false(cb_stack_is_empty(stack));
     assert_true(cb_stack_pop(stack, (void**) &dest));
     assert_true(cb_stack_is_empty(stack));
@@ -47,11 +47,11 @@ void stack_push_pop_test(void** state)
 {
     CbStack* stack = *state;
     int i          = 0;
-    
+
     assert_int_equal(0, cb_stack_count(stack));
     assert_true(cb_stack_is_empty(stack));
     assert_null(cb_stack_get_top_item(stack));
-    
+
     /* push 100 items onto the stack */
     for (; i < 100; i++)
     {
@@ -60,9 +60,9 @@ void stack_push_pop_test(void** state)
         assert_int_equal(i + 1, cb_stack_count(stack));
         assert_int_equal(dummy, cb_stack_get_top_item(stack));
     }
-    
+
     assert_false(cb_stack_is_empty(stack));
-    
+
     /* pop 100 items off the stack */
     for (; i > 0; i--)
     {

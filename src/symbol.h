@@ -2,7 +2,7 @@
  * This file contains the CbSymbol structure.
  * The CbSymbol strcuture is a representation of any identifier in Codeblock
  * source code with its data type information.
- * 
+ *
  * NOTE: CbSymbol is used as an interface and should only be instantiated by
  *       derived structures like CbSymbolVariable or CbSymbolFunction.
  ******************************************************************************/
@@ -39,7 +39,7 @@ const char* cb_symbol_type_stringify(CbSymbolType type);
 /**
  * @memberof CbSymbol
  * @brief    (virtual) Destructor
- * 
+ *
  * @param self The CbSymbol instance
  */
 void cb_symbol_destroy(CbSymbol* self);
@@ -47,7 +47,7 @@ void cb_symbol_destroy(CbSymbol* self);
 /**
  * @memberof CbSymbol
  * @brief    Get the symbol identifier
- * 
+ *
  * @param self The CbSymbol instance
  */
 const char* cb_symbol_get_identifier(const CbSymbol* self);
@@ -55,7 +55,7 @@ const char* cb_symbol_get_identifier(const CbSymbol* self);
 /**
  * @memberof CbSymbol
  * @brief    Get the symbol type
- * 
+ *
  * @param self The CbSymbol instance
  */
 CbSymbolType cb_symbol_get_type(const CbSymbol* self);
@@ -63,7 +63,7 @@ CbSymbolType cb_symbol_get_type(const CbSymbol* self);
 /**
  * @memberof CbSymbol
  * @brief    (virtual) Get the symbols data type
- * 
+ *
  * @param self The CbSymbol instance
  */
 CbVariantType cb_symbol_get_data_type(const CbSymbol* self);
@@ -71,7 +71,7 @@ CbVariantType cb_symbol_get_data_type(const CbSymbol* self);
 /**
  * @memberof CbSymbol
  * @brief    Check if symbol represents a variable
- * 
+ *
  * @param self The CbSymbol instance
  */
 bool cb_symbol_is_variable(const CbSymbol* self);
@@ -79,7 +79,7 @@ bool cb_symbol_is_variable(const CbSymbol* self);
 /**
  * @memberof CbSymbol
  * @brief    Check if symbol represents a function
- * 
+ *
  * @param self The CbSymbol instance
  */
 bool cb_symbol_is_function(const CbSymbol* self);

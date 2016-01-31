@@ -1,6 +1,6 @@
 /*******************************************************************************
  * Contains the CbSymbolVariable structure.
- * 
+ *
  * CbSymbolVariable is a representation of a variable in Codeblock source code
  * including its data type and current value information.
  ******************************************************************************/

@@ -33,7 +33,7 @@ Vector* vector_create()
     self->block_size   = self->element_size * ITEMS_PER_BLOCK;
     self->elements     = memalloc(self->block_size);
     self->alloc_size   = self->block_size;
-    
+
     return self;
 }
 
@@ -46,14 +46,14 @@ void vector_destroy(Vector* self)
 int vector_append(Vector* self, VectorItem item)
 {
     int index;
-    
+
     if (vector_is_full(self))
         vector_increase_size(self, 1);
-    
+
     self->count++;
     index = self->count - 1;      /* index is the last item */
     self->elements[index] = NULL; /* clear allocated memory (TODO: remove!) */
-    
+
     if (vector_set(self, index, item))
         return index;
     else
@@ -66,21 +66,21 @@ VectorItem vector_remove(Vector* self, int index)
     VectorItem source;
     VectorItem destination;
     size_t size;
-    
+
     /*
      * TODO: Check bounds, when accessing elements via index.
      */
     removed_item = self->elements[index];
     if (!vector_set(self, index, NULL))
         return NULL;
-    
+
     source      = self->elements + index + 1;
     destination = self->elements + index;
     size        = (self->count - (index + 1)) * self->element_size;
     memmove(destination, source, size);
-    
+
     self->count--;
-    
+
     return removed_item;
 }
 
@@ -94,7 +94,7 @@ bool vector_get(const Vector* self, int index, VectorItem* destination)
 {
     if (!vector_check_bounds(self, index))
         return false;
-    
+
     *destination = self->elements[index];
     return true;
 }
@@ -103,7 +103,7 @@ bool vector_set(Vector* self, int index, const VectorItem item)
 {
     if (!vector_check_bounds(self, index))
         return false;
-    
+
     self->elements[index] = item;
     return true;
 }
@@ -127,10 +127,10 @@ static bool vector_increase_size(Vector* self, unsigned int blocks)
     VectorItem* temp = memrealloc(self->elements, new_size);
     if (temp == NULL)
         return false;
-    
+
     self->elements   = temp;
     self->alloc_size = new_size;
-    
+
     return true;
 }
 

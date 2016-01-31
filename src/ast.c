@@ -25,7 +25,7 @@ void cb_ast_node_init(CbAstNode* self,
     self->right         = right_node;
     self->line          = -1;
     self->error_context = CB_ERROR_UNKNOWN;
-    
+
     self->destructor     = destructor;
     self->eval           = eval;
     self->semantic_check = semantic_check;
@@ -75,37 +75,37 @@ CbVariantType cb_ast_node_get_expression_type(const CbAstNode* self)
 {
     const CbVariant* value;
     CbVariantType result = CB_VARIANT_TYPE_UNDEFINED;
-    
+
     switch (self->type)
     {
-        
+
         case CB_AST_TYPE_VALUE:
             value  = cb_ast_value_node_get_value((const CbAstValueNode*) self);
             result = cb_variant_get_type(value);
             break;
-        
+
         case CB_AST_TYPE_BINARY:
             result = cb_ast_binary_node_get_expression_type((const CbAstBinaryNode*) self);
             break;
-        
+
         case CB_AST_TYPE_UNARY:
             result = cb_ast_node_get_expression_type(self->left);
             break;
-        
+
         case CB_AST_TYPE_ASSIGNMENT:
             result = cb_ast_node_get_expression_type(self->right);
             break;
-        
+
         /*
          * For variable AST nodes there is nothing to do, since at this point
          * (semantic checking) there is no value available yet.
          */
         case CB_AST_TYPE_VARIABLE: break;
-        
+
         /* invalid AST node types */
         case CB_AST_TYPE_NONE:
         default: cb_abort("Invalid AST node type"); break;
     }
-    
+
     return result;
 }

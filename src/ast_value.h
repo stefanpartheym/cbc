@@ -1,7 +1,7 @@
 /*******************************************************************************
  * Abstract syntax tree node: Value
  * Representation of a constant value of any type
- * 
+ *
  * Inherites from CbAstNode
  ******************************************************************************/
 

@@ -2,10 +2,10 @@
  * Internal declaration of CbSymbol:
  * Used to access CbSymbol-properties in any derived symbol type
  * (like CbVariable and CbFunction).
- * 
+ *
  * NOTE: Do not include/use this header anywhere else than in CbSymbol
  *       implementation files!
- * 
+ *
  ******************************************************************************/
 
 #ifndef SYMBOL_INTERNAL_H
@@ -23,7 +23,7 @@ struct CbSymbol
 {
     CbSymbolType type;
     char* identifier;
-    
+
     CbSymbolDestructorFunc  destructor;
     CbSymbolGetDataTypeFunc get_data_type;
 };

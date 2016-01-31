@@ -77,7 +77,7 @@ void _assert_cb_boolean_equal(const CbBooleanDataType expected,
 
 /*
  * Copy stream content to a string
- * 
+ *
  * NOTE: Arguemnt string must be allocated before this function is called!
  */
 void stream_to_string(FILE* stream, char* string, bool trim);

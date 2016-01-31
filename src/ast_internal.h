@@ -1,7 +1,7 @@
 /*******************************************************************************
  * Internal declaration of CbAstNode:
  * Used to access CbAstNode-properties in any derived AST node type
- * 
+ *
  * NOTE: Do not include/use this header anywhere else than in AST node
  *       implementation files!
  ******************************************************************************/
@@ -26,10 +26,10 @@ struct CbAstNode
     CbAstType type;
     int line;
     CbErrorType error_context;
-    
+
     struct CbAstNode* left;
     struct CbAstNode* right;
-    
+
     CbAstNodeDestructorFunc destructor;
     CbAstNodeEvalFunc eval;
     CbAstNodeSemanticFunc semantic_check;

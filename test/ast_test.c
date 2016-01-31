@@ -39,26 +39,26 @@ void ast_alloc_test(void** state)
     CbAstValueNode* value_node   = NULL;
     CbAstUnaryNode* unary_node   = NULL;
     CbAstVariableNode* var_node  = NULL;
-    
+
     value_node = test_create_ast_value_integer_node(123);
     cb_ast_node_destroy((CbAstNode*) value_node);
-    
+
     value_node = test_create_ast_value_float_node(123.00123);
     cb_ast_node_destroy((CbAstNode*) value_node);
-    
+
     binary_node = cb_ast_binary_node_create(
         CB_BINARY_OPERATOR_TYPE_ADD,
         (CbAstNode*) test_create_ast_value_integer_node(123),
         (CbAstNode*) test_create_ast_value_integer_node(77)
     );
     cb_ast_node_destroy((CbAstNode*) binary_node);
-    
+
     unary_node = cb_ast_unary_node_create(
         CB_UNARY_OPERATOR_TYPE_MINUS,
         (CbAstNode*) test_create_ast_value_integer_node(123)
     );
     cb_ast_node_destroy((CbAstNode*) unary_node);
-    
+
     var_node = cb_ast_variable_node_create("test_var");
     cb_ast_node_destroy((CbAstNode*) var_node);
 }
@@ -70,7 +70,7 @@ void ast_eval_test(void** state)
 {
     CbAstUnaryNode* unary_node = NULL;
     CbVariant* result          = NULL;
-    
+
     /* eval binary AST nodes (addition) */
     test_ast_binary_node_eval(
         CB_BINARY_OPERATOR_TYPE_ADD, cb_integer_create(123),   cb_integer_create(77),    cb_integer_create(200));
@@ -264,7 +264,7 @@ void ast_eval_test(void** state)
     test_ast_binary_node_eval(CB_BINARY_OPERATOR_TYPE_COMPARISON_NE, cb_boolean_create(true),    cb_boolean_create(true),    cb_boolean_create(false));
     test_ast_binary_node_eval(CB_BINARY_OPERATOR_TYPE_COMPARISON_NE, cb_boolean_create(false),   cb_boolean_create(false),   cb_boolean_create(false));
     test_ast_binary_node_eval(CB_BINARY_OPERATOR_TYPE_COMPARISON_NE, cb_boolean_create(true),    cb_boolean_create(false),   cb_boolean_create(true));
-    
+
     /* unary AST node (expression: - <integer>) */
     unary_node = cb_ast_unary_node_create(
         CB_UNARY_OPERATOR_TYPE_MINUS,
@@ -301,7 +301,7 @@ void ast_eval_test(void** state)
     assert_cb_boolean_equal(true, result);
     cb_variant_destroy(result);
     cb_ast_node_destroy((CbAstNode*) unary_node);
-    
+
     /*
      * variable AST node (expression: <variable>)
      */
@@ -310,7 +310,7 @@ void ast_eval_test(void** state)
         CbSymbolTable* symbols     = NULL;
         CbSymbolVariable* variable = NULL;
         CbVariant* temp            = NULL;
-        
+
         /* prepare symbol and symbol table */
         symbols  = cb_symbol_table_create();
         variable = cb_symbol_variable_create("test_var");
@@ -320,17 +320,17 @@ void ast_eval_test(void** state)
         assert_null(cb_symbol_table_insert(symbols, (CbSymbol*) variable));
         /* prepare AST node */
         node = (CbAstNode*) cb_ast_variable_node_create("test_var");
-        
+
         result = cb_ast_node_eval(node, symbols);
         assert_non_null(result);
         assert_cb_integer_equal(123, result);
-        
+
         /* clean up */
         cb_variant_destroy(result);
         cb_ast_node_destroy(node);
         cb_symbol_table_destroy(symbols);
     }
-    
+
     /*
      * declaration AST node (expression: |<variable>|)
      */
@@ -340,15 +340,15 @@ void ast_eval_test(void** state)
         CbAstNode* node   = (CbAstNode*) cb_ast_declaration_node_create(
             CB_AST_DECLARATION_TYPE_VARIABLE, "test_var"
         );
-        
+
         result = cb_ast_node_eval(node, NULL);
         assert_cb_variant_equal(temp, result);
-        
+
         cb_variant_destroy(result);
         cb_variant_destroy(temp);
         cb_ast_node_destroy(node);
     }
-    
+
     /*
      * Control flow AST nodes
      */
@@ -358,51 +358,51 @@ void ast_eval_test(void** state)
         CbVariant* condition   = cb_boolean_create(false);
         CbVariant* value_true  = cb_integer_create(123);
         CbVariant* value_false = cb_integer_create(321);
-        
+
         /* Case 1: Condition is false */
         node = (CbAstNode*) cb_ast_if_node_create(
             (CbAstNode*) cb_ast_value_node_create(condition),
             (CbAstNode*) cb_ast_value_node_create(value_true),
             (CbAstNode*) cb_ast_value_node_create(value_false)
         );
-        
+
         result = cb_ast_node_eval(node, NULL);
         assert_cb_variant_equal(value_false, result);
-        
+
         cb_variant_destroy(result);
         cb_variant_destroy(condition);
         cb_ast_node_destroy(node);
         condition = cb_boolean_create(true);
-        
+
         /* Case 2: Condition is true */
         node = (CbAstNode*) cb_ast_if_node_create(
             (CbAstNode*) cb_ast_value_node_create(condition),
             (CbAstNode*) cb_ast_value_node_create(value_true),
             (CbAstNode*) cb_ast_value_node_create(value_false)
         );
-        
+
         result = cb_ast_node_eval(node, NULL);
         assert_cb_variant_equal(value_true, result);
-        
+
         cb_variant_destroy(result);
         cb_variant_destroy(condition);
         cb_ast_node_destroy(node);
         condition = cb_boolean_create(false);
-        
+
         /* Case 3: Condition is false, no false-branch */
         node = (CbAstNode*) cb_ast_if_node_create(
             (CbAstNode*) cb_ast_value_node_create(condition),
             (CbAstNode*) cb_ast_value_node_create(value_true),
             NULL
         );
-        
+
         result = cb_ast_node_eval(node, NULL);
         assert_true(cb_variant_is_undefined(result));
-        
+
         cb_variant_destroy(result);
         cb_variant_destroy(condition);
         cb_ast_node_destroy(node);
-        
+
         cb_variant_destroy(value_true);
         cb_variant_destroy(value_false);
     }
@@ -415,7 +415,7 @@ void ast_check_semantic_test(void** state)
 {
     CbAstNode* node;
     CbSymbolTable* symbols;
-    
+
     /* expression: <numeric> + ( - <numeric> ) */
     node = (CbAstNode*) cb_ast_binary_node_create(
         CB_BINARY_OPERATOR_TYPE_ADD,
@@ -427,7 +427,7 @@ void ast_check_semantic_test(void** state)
     );
     assert_true(cb_ast_node_check_semantic(node, NULL));
     cb_ast_node_destroy(node);
-    
+
     /* expression: <numeric> + <float> */
     node = (CbAstNode*) cb_ast_binary_node_create(
         CB_BINARY_OPERATOR_TYPE_ADD,
@@ -436,7 +436,7 @@ void ast_check_semantic_test(void** state)
     );
     assert_true(cb_ast_node_check_semantic(node, NULL));
     cb_ast_node_destroy(node);
-    
+
     /* expression: - <float> */
     node = (CbAstNode*) cb_ast_unary_node_create(
         CB_UNARY_OPERATOR_TYPE_MINUS,
@@ -444,7 +444,7 @@ void ast_check_semantic_test(void** state)
     );
     assert_true(cb_ast_node_check_semantic(node, NULL));
     cb_ast_node_destroy(node);
-    
+
     /* variable "test_var" */
     symbols = cb_symbol_table_create();
     assert_null(cb_symbol_table_insert(
@@ -454,7 +454,7 @@ void ast_check_semantic_test(void** state)
     assert_true(cb_ast_node_check_semantic(node, symbols));
     cb_ast_node_destroy(node);
     cb_symbol_table_destroy(symbols);
-    
+
     /* declaring variable "test_var" */
     symbols = cb_symbol_table_create();
     node    = (CbAstNode*) cb_ast_declaration_node_create(
@@ -467,40 +467,40 @@ void ast_check_semantic_test(void** state)
     assert_true(cb_ast_node_check_semantic(node, symbols));
     cb_ast_node_destroy(node);
     cb_symbol_table_destroy(symbols);
-    
+
     /* statement: if */
     {
         CbVariant* dummy1 = cb_boolean_create(true);
         CbVariant* dummy2 = cb_integer_create(123);
         CbVariant* dummy3 = cb_integer_create(321);
-        
+
         node = (CbAstNode*) cb_ast_if_node_create(
             (CbAstNode*) cb_ast_value_node_create(dummy1),
             (CbAstNode*) cb_ast_value_node_create(dummy2),
             (CbAstNode*) cb_ast_value_node_create(dummy3)
         );
-        
+
         assert_true(cb_ast_node_check_semantic(node, NULL));
         cb_ast_node_destroy(node);
-        
+
         node = (CbAstNode*) cb_ast_if_node_create(
             (CbAstNode*) cb_ast_value_node_create(dummy1),
             (CbAstNode*) cb_ast_value_node_create(dummy2),
             NULL
         );
-        
+
         assert_true(cb_ast_node_check_semantic(node, NULL));
         cb_ast_node_destroy(node);
-        
+
         node = (CbAstNode*) cb_ast_if_node_create(
             (CbAstNode*) cb_ast_value_node_create(dummy1),
             NULL,
             NULL
         );
-        
+
         assert_true(cb_ast_node_check_semantic(node, NULL));
         cb_ast_node_destroy(node);
-        
+
         cb_variant_destroy(dummy1);
         cb_variant_destroy(dummy2);
         cb_variant_destroy(dummy3);
@@ -517,7 +517,7 @@ void ast_check_semantic_error_test(void** state)
     CbVariant* v1;
     CbVariant* v2;
     char stream_content[128];
-    
+
     /*
      * Test: Invalid binary operation
      */
@@ -540,10 +540,10 @@ void ast_check_semantic_error_test(void** state)
     stream_to_string(*state, stream_content, true);
     assert_string_equal("semantic error: line 1: Invalid binary operation: "\
                         "<integer> / <boolean>", stream_content);
-    
+
     /* discard stream content */
     resetup_error_handling(state);
-    
+
     /*
      * Test: Expected identifier is declared as a function
      */
@@ -563,10 +563,10 @@ void ast_check_semantic_error_test(void** state)
                         "declared as function, not as variable",
                         stream_content);
     cb_symbol_table_destroy(symbols);
-    
+
     /* discard stream content */
     resetup_error_handling(state);
-    
+
     /*
      * Test: Expected identifier is not declared at all
      */
@@ -582,10 +582,10 @@ void ast_check_semantic_error_test(void** state)
     assert_string_equal("semantic error: line 1: variable 'test_var' is "\
                         "not declared in an available scope", stream_content);
     cb_symbol_table_destroy(symbols);
-    
+
     /* discard stream content */
     resetup_error_handling(state);
-    
+
     /*
      * Test: Expected identifier is already declared
      */
@@ -607,10 +607,10 @@ void ast_check_semantic_error_test(void** state)
                         "declared as variable in the current scope",
                         stream_content);
     cb_symbol_table_destroy(symbols);
-    
+
     /* discard stream content */
     resetup_error_handling(state);
-    
+
     /*
      * Test: Condition of if-statement is not boolean
      */
@@ -643,7 +643,7 @@ void ast_eval_error_test(void** state)
     CbVariant* left;
     CbVariant* right;
     char buffer[1024];
-    
+
     /*
      * Test: Invalid binary operation
      */
@@ -665,10 +665,10 @@ void ast_eval_error_test(void** state)
     stream_to_string(*state, buffer, true);
     assert_string_equal("runtime error: line 1: Invalid binary operation: "\
                         "<integer> / <boolean>", buffer);
-    
+
     /* discard stream content */
     resetup_error_handling(state);
-    
+
     /*
      * Test: Division by zero
      */
@@ -680,17 +680,17 @@ void ast_eval_error_test(void** state)
         (CbAstNode*) cb_ast_value_node_create(right)
     );
     cb_ast_node_set_line(node, 1);
-    
+
     cb_variant_destroy(left);
     cb_variant_destroy(right);
-    
+
     assert_null(cb_ast_node_eval(node, NULL));
     assert_true(cb_error_occurred());
     cb_error_process();
     stream_to_string(*state, buffer, true);
     assert_string_equal("runtime error: line 1: Division by zero is not allowed",
                         buffer);
-    
+
     cb_ast_node_destroy(node);
 }
 
@@ -711,12 +711,12 @@ static void test_ast_binary_node_eval(const CbBinaryOperatorType operator,
         (CbAstNode*) cb_ast_value_node_create(value2)
     );
     CbVariant* result = cb_ast_node_eval((CbAstNode*) node, NULL);
-    
+
     assert_cb_variant_equal(expected_result, result);
-    
+
     cb_variant_destroy(result);
     cb_ast_node_destroy((CbAstNode*) node);
-    
+
     cb_variant_destroy(value1);
     cb_variant_destroy(value2);
     cb_variant_destroy(expected_result);
@@ -730,7 +730,7 @@ static CbAstValueNode* test_create_ast_value_integer_node(const CbIntegerDataTyp
     CbVariant* variant         = cb_integer_create(value);
     CbAstValueNode* value_node = cb_ast_value_node_create(variant);
     cb_variant_destroy(variant);
-    
+
     return value_node;
 }
 
@@ -742,7 +742,7 @@ static CbAstValueNode* test_create_ast_value_float_node(const CbFloatDataType va
     CbVariant* variant         = cb_float_create(value);
     CbAstValueNode* value_node = cb_ast_value_node_create(variant);
     cb_variant_destroy(variant);
-    
+
     return value_node;
 }
 
@@ -754,6 +754,6 @@ static CbAstValueNode* test_create_ast_value_boolean_node(const CbBooleanDataTyp
     CbVariant* variant         = cb_boolean_create(value);
     CbAstValueNode* value_node = cb_ast_value_node_create(variant);
     cb_variant_destroy(variant);
-    
+
     return value_node;
 }

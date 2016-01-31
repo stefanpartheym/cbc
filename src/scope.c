@@ -22,7 +22,7 @@ CbScope* cb_scope_create(const CbScope* parent)
     self->parent  = parent;
     self->symbols =
         cb_hash_table_create(16, NULL, (CbHashItemDestructor) cb_symbol_destroy);
-    
+
     return self;
 }
 

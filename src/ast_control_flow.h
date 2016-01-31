@@ -5,7 +5,7 @@
  *    - case
  *    - while
  *    - for
- * 
+ *
  * Inherites from CbAstNode
  ******************************************************************************/
 
@@ -66,7 +66,7 @@ CbAstControlFlowNode* cb_ast_while_node_create(CbAstNode* condition,
  * Destructor for a while-statement
  */
 void cb_ast_while_node_destroy(CbAstControlFlowNode* self);
-    
+
 /*
  * Evaluate a while-statement
  */
@@ -93,7 +93,7 @@ CbAstControlFlowNode* cb_ast_for_node_create(CbAstNode* initialisation,
  * Destructor for a for-statement
  */
 void cb_ast_for_node_destroy(CbAstControlFlowNode* self);
-    
+
 /*
  * Evaluate a for-statement
  */

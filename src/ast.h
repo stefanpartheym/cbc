@@ -1,10 +1,10 @@
 /*******************************************************************************
  * Abstract syntax tree (AST)
  * The AST is composed of several AST node types (e.g. CbAstValueNode, ...).
- * 
+ *
  * NOTE: CbAstNode is used as an interface and should only be instantiated by
  *       derived AST node types, i.e. it's an abstract class so to speak.
- * 
+ *
  * Sample class hierarchy:
  * .-----------------------.
  * |       CbAstNode       |
@@ -17,7 +17,7 @@
  *                              |
  *                      .---------------.
  *                      |      ...      |
- * 
+ *
  ******************************************************************************/
 
 #ifndef AST_H
@@ -89,7 +89,7 @@ bool cb_ast_node_safe_check_semantic(CbAstNode* self, CbSymbolTable* symbols);
 
 /*
  * Get the variant type of an expression
- * 
+ *
  * NOTE: This function recursively walks the AST until it finds a value node
  *       (CB_AST_TYPE_VALUE). At this point it is possible to determine the
  *       variant type.

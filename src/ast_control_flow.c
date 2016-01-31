@@ -12,7 +12,7 @@
 struct CbAstControlFlowNode
 {
     CbAstNode base;
-    
+
     CbAstControlFlowNodeType flow_type;
     CbAstNode* condition;
 };
@@ -49,7 +49,7 @@ void cb_ast_if_node_destroy(CbAstControlFlowNode* self)
 {
     /* destroy condition node */
     cb_ast_node_destroy(self->condition);
-    
+
     /*
      * Destroy both child nodes
      * NOTE: Child nodes can be NULL. For example consider the following if:
@@ -61,7 +61,7 @@ void cb_ast_if_node_destroy(CbAstControlFlowNode* self)
      */
     if (self->base.left  != NULL) cb_ast_node_destroy(self->base.left);
     if (self->base.right != NULL) cb_ast_node_destroy(self->base.right);
-    
+
     memfree(self);
 }
 
@@ -70,14 +70,14 @@ CbVariant* cb_ast_if_node_eval(const CbAstControlFlowNode* self,
 {
     CbVariant* result   = NULL;
     CbVariant* decision = cb_ast_node_eval(self->condition, symbols);
-    
+
     if (cb_boolean_get_value(decision))
         result = cb_ast_node_safe_eval(self->base.left, symbols);
     else
         result = cb_ast_node_safe_eval(self->base.right, symbols);
-    
+
     cb_variant_destroy(decision);
-    
+
     return result;
 }
 
@@ -87,7 +87,7 @@ bool cb_ast_if_node_check_semantic(const CbAstControlFlowNode* self,
     CbVariantType condition_type = cb_ast_node_get_expression_type(self->condition);
     bool result                  = condition_type == CB_VARIANT_TYPE_BOOLEAN ||
                                    condition_type == CB_VARIANT_TYPE_UNDEFINED;
-    
+
     if (result)
     {
         result = cb_ast_node_check_semantic(self->condition, symbols)      &&
@@ -101,7 +101,7 @@ bool cb_ast_if_node_check_semantic(const CbAstControlFlowNode* self,
             "Condition is not a boolean expression"
         );
     }
-    
+
     return result;
 }
 
@@ -124,10 +124,10 @@ void cb_ast_while_node_destroy(CbAstControlFlowNode* self)
 {
     /* destroy condition node */
     cb_ast_node_destroy(self->condition);
-    
+
     /* destroy left child node */
     cb_ast_node_destroy(self->base.left);
-    
+
     memfree(self);
 }
 
@@ -136,16 +136,16 @@ CbVariant* cb_ast_while_node_eval(const CbAstControlFlowNode* self,
 {
     CbVariant* result = NULL;
     bool execute_body = true;
-    
+
     while (execute_body)
     {
         CbVariant* condition = cb_ast_node_eval(self->condition, symbols);
         execute_body         = cb_boolean_get_value(condition);
-        
+
         cb_variant_destroy(condition);
         if (result != NULL)
             cb_variant_destroy(result);
-        
+
         if (execute_body)
         {
             result = cb_ast_node_eval(self->base.left, symbols);
@@ -157,7 +157,7 @@ CbVariant* cb_ast_while_node_eval(const CbAstControlFlowNode* self,
         else
             result = cb_variant_create();
     }
-    
+
     return result;
 }
 
@@ -167,7 +167,7 @@ bool cb_ast_while_node_check_semantic(const CbAstControlFlowNode* self,
     CbVariantType condition_type = cb_ast_node_get_expression_type(self->condition);
     bool result                  = condition_type == CB_VARIANT_TYPE_BOOLEAN ||
                                    condition_type == CB_VARIANT_TYPE_UNDEFINED;
-    
+
     if (result)
     {
         result = cb_ast_node_check_semantic(self->condition, symbols) &&
@@ -180,7 +180,7 @@ bool cb_ast_while_node_check_semantic(const CbAstControlFlowNode* self,
             "Condition is not a boolean expression"
         );
     }
-    
+
     return result;
 }
 
@@ -204,11 +204,11 @@ void cb_ast_for_node_destroy(CbAstControlFlowNode* self)
 {
     /* destroy condition node */
     cb_ast_node_destroy(self->condition);
-    
+
     /* destroy both child nodes */
     cb_ast_node_destroy(self->base.left);
     cb_ast_node_destroy(self->base.right);
-    
+
     memfree(self);
 }
 
@@ -216,13 +216,13 @@ CbVariant* cb_ast_for_node_eval(const CbAstControlFlowNode* self,
                                 const CbSymbolTable* symbols)
 {
     CbVariant* result = NULL;
-    
+
     /* initialisation node must be an assignment */
     cb_assert(self->condition->type       == CB_AST_TYPE_ASSIGNMENT);
     cb_assert(self->condition->left->type == CB_AST_TYPE_VARIABLE);
     CbAstVariableNode* variable = (CbAstVariableNode*) self->condition->left;
     CbVariant* vinitial = cb_ast_node_eval(self->condition, symbols);
-    
+
     if (vinitial != NULL)
     {
         CbVariant* vfinal = cb_ast_node_eval(self->base.right, symbols);
@@ -233,7 +233,7 @@ CbVariant* cb_ast_for_node_eval(const CbAstControlFlowNode* self,
             cb_ast_variable_node_assign(variable, symbols, vinitial);
             result = cb_variant_create();
             CbVariant* body_result;
-            
+
             while (current < final)
             {
                 body_result = cb_ast_node_eval(self->base.left, symbols);
@@ -255,13 +255,13 @@ CbVariant* cb_ast_for_node_eval(const CbAstControlFlowNode* self,
                     cb_variant_destroy(current_value);
                 }
             }
-            
+
             cb_variant_destroy(vfinal);
         }
-        
+
         cb_variant_destroy(vinitial);
     }
-    
+
     return result;
 }
 
@@ -297,9 +297,9 @@ CbAstControlFlowNode* cb_ast_control_flow_node_create(CbAstControlFlowNodeType t
         &self->base, CB_AST_TYPE_CONTROL_FLOW, left, right, destructor_func,
         eval_func, semantic_func
     );
-    
+
     self->flow_type = type;
     self->condition = condition;
-    
+
     return self;
 }

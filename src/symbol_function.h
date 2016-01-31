@@ -1,6 +1,6 @@
 /*******************************************************************************
  * Contains the CbSymbolFunction structure.
- * 
+ *
  * CbSymbolFunction is a representation of a function in Codeblock source code
  * including its return data type and the abstract syntax tree (AST) that forms
  * the body of the function.

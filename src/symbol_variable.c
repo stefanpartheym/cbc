@@ -31,7 +31,7 @@ CbSymbolVariable* cb_symbol_variable_create(const char* identifier)
         (CbSymbolGetDataTypeFunc) cb_symbol_variable_get_data_type
     );
     self->value = cb_variant_create();
-    
+
     return self;
 }
 
@@ -47,7 +47,7 @@ void cb_symbol_variable_assign(CbSymbolVariable* self, const CbVariant* value)
      * TODO: Implement cb_variant_assign(...) to avoid free()-ing and allocating
      *       a new CbVariant object each time.
      */
-    
+
     cb_variant_destroy(self->value);
     self->value = cb_variant_copy(value);
 }

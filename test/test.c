@@ -26,6 +26,6 @@ int main(int argc, char* argv[])
         cmocka_unit_test(symbol_variable_test),
         cmocka_unit_test_setup_teardown(codeblock_common_test, setup_error_handling, teardown_error_handling)
     };
-    
+
     return cmocka_run_group_tests(tests, NULL, NULL);
 }

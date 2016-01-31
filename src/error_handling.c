@@ -67,7 +67,7 @@ void cb_error_print_msg(const char* message, ...)
 void cb_error_set_output(FILE* error_output)
 {
     cb_assert(error_output != NULL); /* error_output must be a valid pointer */
-    
+
     err_out = error_output;
 }
 
@@ -75,7 +75,7 @@ void cb_error_initialize(FILE* error_output)
 {
     /* make sure error handling is not initialized yet */
     cb_assert(!err_initialized);
-    
+
     cb_error_set_output(error_output);
     err_initialized = true;
 }
@@ -84,7 +84,7 @@ void cb_error_finalize()
 {
     /* make sure error handling is already initialized */
     cb_assert(err_initialized);
-    
+
     err_initialized = false;
 }
 
@@ -96,7 +96,7 @@ bool cb_error_is_initialized()
 bool cb_error_occurred()
 {
     cb_assert(err_initialized);
-    
+
     return (err_object != NULL);
 }
 
@@ -107,20 +107,20 @@ void cb_error_trigger(CbErrorType type, int line, const char* message, ...)
      *       once in a row without processing the old errors.
      *       -> Implement an error stack
      */
-    
+
     va_list arglist;
     char* message_buf;
-    
+
     /* error handling must be initialized for this function */
     cb_assert(err_initialized);
-    
+
     /* allocate twice the memory of the message format string */
     message_buf = (char*) malloc(sizeof(char) * (strlen(message) * 2));
-    
+
     va_start(arglist, message);
     vsprintf(message_buf, message, arglist);
     va_end(arglist);
-    
+
     if (err_object != NULL)
     {
         /*
@@ -130,7 +130,7 @@ void cb_error_trigger(CbErrorType type, int line, const char* message, ...)
         cb_error_destroy(err_object);
         err_object = NULL;
     }
-    
+
     err_object = cb_error_create(type, line, message_buf);
     free(message_buf);
 }
@@ -139,7 +139,7 @@ void cb_error_process()
 {
     /* error handling must be initialized for this function */
     cb_assert(err_initialized);
-    
+
     if (err_object != NULL)
     {
         cb_error_print(err_object->type, err_object->line, err_object->message);
@@ -173,19 +173,19 @@ static void cb_error_print_internal(FILE* output, CbErrorType type, int line,
     {
         case CB_ERROR_SYNTAX:
             fprintf(output, "syntax error: "); break;
-        
+
         case CB_ERROR_SEMANTIC:
             fprintf(output, "semantic error: "); break;
-        
+
         case CB_ERROR_RUNTIME:
             fprintf(output, "runtime error: "); break;
-        
+
         default: fprintf(output, "unknown error: "); break;
     }
-    
+
     if (line > 0)
         fprintf(output, "line %d: ", line);
-    
+
     cb_error_print_msg_internal(output, format, args);
 }
 

@@ -71,7 +71,7 @@ void yyerror(void* data, const char* format, ...);
 } expression statement statement_list var_declaration var_access
 
 /*
- * TODO: The following destructor might be useless or even wrong, since the 
+ * TODO: The following destructor might be useless or even wrong, since the
  *       identifier string is already freed right after usage.
  *       (see expression rule for IDENTIFIER)
  */

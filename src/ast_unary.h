@@ -1,7 +1,7 @@
 /*******************************************************************************
  * Abstract syntax tree node: Unary
  * Representation of an unary operation (such as unary minus)
- * 
+ *
  * Inherites from CbAstNode
  ******************************************************************************/
 

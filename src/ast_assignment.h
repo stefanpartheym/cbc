@@ -1,7 +1,7 @@
 /*******************************************************************************
  * Abstract syntax tree node: Assignment
  * Representation of an assignment operation.
- * 
+ *
  * Inherites from CbAstNode
  ******************************************************************************/
 

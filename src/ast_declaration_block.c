@@ -1,4 +1,4 @@
-#include "utils.h"
+ #include "utils.h"
 #include "cb_utils.h"
 #include "error_handling.h"
 #include "vector.h"
@@ -27,9 +27,9 @@ CbAstDeclarationBlockNode* cb_ast_declaration_block_node_create()
         (CbAstNodeEvalFunc)       cb_ast_declaration_block_node_eval,
         (CbAstNodeSemanticFunc)   cb_ast_declaration_block_node_check_semantic
     );
-    
+
     self->declarations = vector_create();
-    
+
     return self;
 }
 
@@ -45,7 +45,7 @@ void cb_ast_declaration_block_node_destroy(CbAstDeclarationBlockNode* self)
         );
         cb_ast_declaration_node_destroy(node);
     }
-    
+
     vector_destroy(self->declarations);
     memfree(self);
 }
@@ -57,7 +57,7 @@ CbVariant* cb_ast_declaration_block_node_eval(const CbAstDeclarationBlockNode* s
      * NOTE: The variables were already declared during the semantic check.
      *       -> No further action requiered.
      */
-    
+
     return cb_variant_create();
 }
 
@@ -67,7 +67,7 @@ bool cb_ast_declaration_block_node_check_semantic(const CbAstDeclarationBlockNod
     size_t i;
     size_t size = vector_get_count(self->declarations);
     bool result = true;
-    
+
     for (i = 0; result && i < size; i++)
     {
         CbAstDeclarationNode* node = NULL;
@@ -76,7 +76,7 @@ bool cb_ast_declaration_block_node_check_semantic(const CbAstDeclarationBlockNod
         );
         result = cb_ast_declaration_node_check_semantic(node, symbols);
     }
-    
+
     return result;
 }
 

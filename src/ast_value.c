@@ -25,9 +25,9 @@ CbAstValueNode* cb_ast_value_node_create(const CbVariant* value)
         (CbAstNodeEvalFunc)       cb_ast_value_node_eval,
         (CbAstNodeSemanticFunc)   cb_ast_value_node_check_semantic
     );
-    
+
     self->value = cb_variant_copy(value);
-    
+
     return self;
 }
 

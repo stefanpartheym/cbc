@@ -29,10 +29,10 @@ CbAstDeclarationNode* cb_ast_declaration_node_create(CbAstDeclarationType type,
         (CbAstNodeEvalFunc)       cb_ast_declaration_node_eval,
         (CbAstNodeSemanticFunc)   cb_ast_declaration_node_check_semantic
     );
-    
+
     self->type       = type;
     self->identifier = strdup(identifier);
-    
+
     return self;
 }
 
@@ -49,13 +49,13 @@ CbVariant* cb_ast_declaration_node_eval(const CbAstDeclarationNode* self,
      * NOTE: The symbol was already declared during the semantic check.
      *       -> No further action requiered.
      */
-    
+
     /*
      * TODO: Enable possibility to declare symbols "on the fly".
      *       This could be useful when deciding to evaluate the AST without
      *       doing a semantic check.
      */
-    
+
     return cb_variant_create();
 }
 
@@ -63,7 +63,7 @@ bool cb_ast_declaration_node_check_semantic(const CbAstDeclarationNode* self,
                                             CbSymbolTable* symbols)
 {
     CbSymbol* symbol = cb_symbol_table_lookup(symbols, self->identifier);
-    
+
     /*
      * There should not be a symbol with the same identifier yet!
      */
@@ -80,7 +80,7 @@ bool cb_ast_declaration_node_check_semantic(const CbAstDeclarationNode* self,
         );
         return false;
     }
-    
+
     /*
      * Symbol was not declared yet. -> Declare symbol
      */
@@ -89,15 +89,15 @@ bool cb_ast_declaration_node_check_semantic(const CbAstDeclarationNode* self,
         case CB_AST_DECLARATION_TYPE_VARIABLE:
             symbol = (CbSymbol*) cb_symbol_variable_create(self->identifier);
             break;
-        
+
         case CB_AST_DECLARATION_TYPE_FUNCTION:
             symbol = (CbSymbol*) cb_symbol_function_create(self->identifier);
             break;
-        
+
         default: cb_abort("Invalid symbol declaration type"); break;
     }
-    
+
     cb_symbol_table_insert(symbols, symbol);
-    
+
     return true;
 }

@@ -62,11 +62,11 @@
                     size_t size = yyleng - 1;
                     char* str   = (char*) malloc(size);
                     memclr(str, size);
-                    
+
                     /* omit first and last char, which are both quotes */
                     int offset   = 1;
                     yytext[size] = '\0';
-                    
+
                     if (yytext[0] == '\'')
                     {
                         /*
@@ -89,13 +89,13 @@
                                 last_char       = yytext[i];
                                 str[i - offset] = last_char;
                             }
-                            
+
                             i++;
                         }
                     }
                     else
                         strncpy(str, (yytext + offset), size - offset);
-                    
+
                     yylval.string_val = str;
                     return STRING;
                 }

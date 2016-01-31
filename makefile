@@ -48,7 +48,7 @@ OBJ_TEST               := $(SOURCES_TEST:%.c=$(OBJ_DIR_TEST)/%.o) \
 CFLAGS_COMMON          := -Wall -std=c99 -pedantic -pedantic-errors
 CFLAGS                 := -g $(CFLAGS_COMMON) -D DEBUG
 CFLAGS_RELEASE         := $(CFLAGS_COMMON)
-LDFLAGS                := 
+LDFLAGS                :=
 CFLAGS_TEST            := $(CFLAGS)
 LDFLAGS_TEST           := -lcmocka $(LDFLAGS)
 

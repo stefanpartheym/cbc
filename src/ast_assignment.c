@@ -27,7 +27,7 @@ CbAstAssignmentNode* cb_ast_assignment_node_create(CbAstNode* left,
         (CbAstNodeEvalFunc)       cb_ast_assignment_node_eval,
         (CbAstNodeSemanticFunc)   cb_ast_assignment_node_check_semantic
     );
-    
+
     return self;
 }
 
@@ -36,7 +36,7 @@ void cb_ast_assignment_node_destroy(CbAstAssignmentNode* self)
     /* destroy both child nodes */
     cb_ast_node_destroy(self->base.left);
     cb_ast_node_destroy(self->base.right);
-    
+
     memfree(self);
 }
 
@@ -46,9 +46,9 @@ CbVariant* cb_ast_assignment_node_eval(const CbAstAssignmentNode* self,
     CbVariant* result = NULL;
     CbAstVariableNode* node;
     CbVariant* value;
-    
+
     cb_assert(self->base.left->type == CB_AST_TYPE_VARIABLE);
-    
+
     node  = (CbAstVariableNode*) self->base.left;
     value = cb_ast_node_eval(self->base.right, symbols);
     if (value != NULL)
@@ -58,7 +58,7 @@ CbVariant* cb_ast_assignment_node_eval(const CbAstAssignmentNode* self,
         ));
         cb_variant_destroy(value);
     }
-    
+
     return result;
 }
 
@@ -76,7 +76,7 @@ bool cb_ast_assignment_node_check_semantic(const CbAstAssignmentNode* self,
         if (!result)
             cb_error_trigger(CB_ERROR_SEMANTIC, self->base.line,
                              "Values can only be assigned to variables");
-        
+
         /*
          * TODO: In order to check semantics for the rhs properly, one needs
          *       (in addition to the AST node type) some kind of attribute,
@@ -84,6 +84,6 @@ bool cb_ast_assignment_node_check_semantic(const CbAstAssignmentNode* self,
          *       something else.
          */
     }
-    
+
     return result;
 }

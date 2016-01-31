@@ -33,7 +33,7 @@ CbAstUnaryNode* cb_ast_unary_node_create(const CbUnaryOperatorType operator_type
         (CbAstNodeSemanticFunc)   cb_ast_unary_node_check_semantic
     );
     self->operator_type = operator_type;
-    
+
     return self;
 }
 
@@ -41,7 +41,7 @@ void cb_ast_unary_node_destroy(CbAstUnaryNode* self)
 {
     /* destroy left child node */
     cb_ast_node_destroy(self->base.left);
-    
+
     memfree(self);
 }
 
@@ -50,7 +50,7 @@ CbVariant* cb_ast_unary_node_eval(const CbAstUnaryNode* self,
 {
     CbVariant* result = NULL;
     CbVariant* value  = cb_ast_node_eval(self->base.left, symbols);
-    
+
     if (value != NULL)
     {
         if (cb_ast_unary_node_check_operation(self, cb_variant_get_type(value)))
@@ -66,24 +66,24 @@ CbVariant* cb_ast_unary_node_eval(const CbAstUnaryNode* self,
                     else
                         /* TODO: handle all compatible AST node types */
                         cb_abort("Wrong variant type");
-                    
+
                     break;
                 }
-                
+
                 case CB_UNARY_OPERATOR_TYPE_LOGICAL_NOT:
                     cb_assert(cb_variant_is_boolean(value));
                     result = cb_boolean_create(!cb_boolean_get_value(value));
                     break;
-                
+
                 /* invalid unary operator type */
                 default:
                     cb_abort("Invalid unary operator type"); break;
             }
         }
-        
+
         cb_variant_destroy(value);
     }
-    
+
     return result;
 }
 
@@ -96,7 +96,7 @@ bool cb_ast_unary_node_check_semantic(const CbAstUnaryNode* self,
         CbVariantType type = cb_ast_node_get_expression_type((CbAstNode*) self);
         result             = cb_ast_unary_node_check_operation(self, type);
     }
-    
+
     return result;
 }
 
@@ -114,6 +114,6 @@ static bool cb_ast_unary_node_check_operation(const CbAstUnaryNode* self,
             cb_variant_type_stringify(type)
         );
     }
-    
+
     return result;
 }

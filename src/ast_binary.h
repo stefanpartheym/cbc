@@ -3,7 +3,7 @@
  * Representation of a binary operation (e.g. addition, subtraction, etc.)
  * NOTE: This does not include assignment operations, for these operations the
  *       node type CbAstAssignmentNode is used.
- * 
+ *
  * Inherites from CbAstNode
  ******************************************************************************/
 

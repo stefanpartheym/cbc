@@ -14,7 +14,7 @@ struct CbAstVariableNode
 {
     CbAstNode base;
     char* identifier;
-    
+
     /*
      * TODO:
      * Implement a cache (i.e. a pointer), that holds a reference to the proper
@@ -44,9 +44,9 @@ CbAstVariableNode* cb_ast_variable_node_create(const char* identifier)
         (CbAstNodeEvalFunc)       cb_ast_variable_node_eval,
         (CbAstNodeSemanticFunc)   cb_ast_variable_node_check_semantic
     );
-    
+
     self->identifier = strdup(identifier);
-    
+
     return self;
 }
 
@@ -62,10 +62,10 @@ CbVariant* cb_ast_variable_node_eval(const CbAstVariableNode* self,
     CbVariant* result = NULL;
     const CbSymbolVariable* symbol =
         cb_ast_variable_node_get_symbol_from_table(self, symbols);
-    
+
     /* return copy of the value */
     result = cb_variant_copy(cb_symbol_variable_get_value(symbol));
-    
+
     return result;
 }
 
@@ -73,7 +73,7 @@ bool cb_ast_variable_node_check_semantic(const CbAstVariableNode* self,
                                          CbSymbolTable* symbols)
 {
     CbSymbol* symbol = cb_symbol_table_lookup(symbols, self->identifier);
-    
+
     if (symbol == NULL)
     {
         /*
@@ -100,7 +100,7 @@ bool cb_ast_variable_node_check_semantic(const CbAstVariableNode* self,
         );
         return false;
     }
-    
+
     return true;
 }
 
@@ -144,6 +144,6 @@ static CbSymbolVariable* cb_ast_variable_node_get_symbol_from_table(const CbAstV
     /* make sure symbol is valid */
     cb_assert(symbol != NULL);
     cb_assert(cb_symbol_is_variable(symbol));
-    
+
     return (CbSymbolVariable*) symbol;
 }

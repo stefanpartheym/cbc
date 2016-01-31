@@ -1,7 +1,7 @@
 /*******************************************************************************
  * @file  ast_declaration.h
  * @brief Abstract syntax tree node: Declaration of a symbol
- * 
+ *
  * Representation of a symbol declaration in Codeblock source code
  ******************************************************************************/
 
@@ -15,7 +15,7 @@
 /**
  * @struct CbAstDeclarationNode
  * @brief  Representation of a variable declaration in Codeblock source code
- * 
+ *
  * @implements CbAstNode
  */
 typedef struct CbAstDeclarationNode CbAstDeclarationNode;
@@ -34,7 +34,7 @@ typedef enum CbAstDeclarationType
 /**
  * @memberof CbAstDeclarationNode
  * @brief    Create a CbAstDeclarationNode object.
- * 
+ *
  * @param identifier The name of the symbol to be declared
  */
 CbAstDeclarationNode* cb_ast_declaration_node_create(CbAstDeclarationType type,
@@ -43,7 +43,7 @@ CbAstDeclarationNode* cb_ast_declaration_node_create(CbAstDeclarationType type,
 /**
  * @memberof CbAstDeclarationNode
  * @brief    Destroy a CbAstDeclarationNode object.
- * 
+ *
  * @param self The CbAstDeclarationNode instance
  */
 void cb_ast_declaration_node_destroy(CbAstDeclarationNode* self);
@@ -51,7 +51,7 @@ void cb_ast_declaration_node_destroy(CbAstDeclarationNode* self);
 /**
  * @memberof CbAstDeclarationNode
  * @brief    Evaluate a CbAstDeclarationNode.
- * 
+ *
  * @param self    The CbAstDeclarationNode instance
  * @param symbols The symbol-table
  */
@@ -61,7 +61,7 @@ CbVariant* cb_ast_declaration_node_eval(const CbAstDeclarationNode* self,
 /**
  * @memberof CbAstDeclarationNode
  * @brief    Check semantics of a CbAstDeclarationNode.
- * 
+ *
  * @param self    The CbAstDeclarationNode instance
  * @param symbols The symbol-table
  */

@@ -1,6 +1,6 @@
 /*******************************************************************************
  * CbCodeblock -- Main structure to parse and execute codeblock source code.
- * 
+ *
  * The CbCodeblock structure wraps the abstract syntax tree (AST), its result
  * and the global symbol table.
  ******************************************************************************/
