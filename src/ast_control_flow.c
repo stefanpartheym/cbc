@@ -126,7 +126,7 @@ void cb_ast_while_node_destroy(CbAstControlFlowNode* self)
     cb_ast_node_destroy(self->condition);
 
     /* destroy left child node */
-    cb_ast_node_destroy(self->base.left);
+    if (self->base.left != NULL) cb_ast_node_destroy(self->base.left);
 
     memfree(self);
 }
@@ -143,18 +143,17 @@ CbVariant* cb_ast_while_node_eval(const CbAstControlFlowNode* self,
         execute_body         = cb_boolean_get_value(condition);
 
         cb_variant_destroy(condition);
-        if (result != NULL)
-            cb_variant_destroy(result);
 
         if (execute_body)
         {
-            result = cb_ast_node_eval(self->base.left, symbols);
+            if (result != NULL) cb_variant_destroy(result);
+            result = cb_ast_node_safe_eval(self->base.left, symbols);
             /*
              * If an error occurred -> break the loop
              */
             if (result == NULL) break;
         }
-        else
+        else if (result == NULL)
             result = cb_variant_create();
     }
 
@@ -171,7 +170,7 @@ bool cb_ast_while_node_check_semantic(const CbAstControlFlowNode* self,
     if (result)
     {
         result = cb_ast_node_check_semantic(self->condition, symbols) &&
-                 cb_ast_node_check_semantic(self->base.left, symbols);
+                 cb_ast_node_safe_check_semantic(self->base.left, symbols);
     }
     else
     {
@@ -206,7 +205,7 @@ void cb_ast_for_node_destroy(CbAstControlFlowNode* self)
     cb_ast_node_destroy(self->condition);
 
     /* destroy both child nodes */
-    cb_ast_node_destroy(self->base.left);
+    if (self->base.left != NULL) cb_ast_node_destroy(self->base.left);
     cb_ast_node_destroy(self->base.right);
 
     memfree(self);
@@ -231,22 +230,14 @@ CbVariant* cb_ast_for_node_eval(const CbAstControlFlowNode* self,
             CbIntegerDataType current = cb_integer_get_value(vinitial);
             CbIntegerDataType final   = cb_integer_get_value(vfinal);
             cb_ast_variable_node_assign(variable, symbols, vinitial);
-            result = cb_variant_create();
-            CbVariant* body_result;
 
             while (current < final)
             {
-                body_result = cb_ast_node_eval(self->base.left, symbols);
+                if (result != NULL) cb_variant_destroy(result);
+                
+                result = cb_ast_node_safe_eval(self->base.left, symbols);
                 if (result == NULL)
-                {
-                    /*
-                     * If an error occurred -> cleanup and break the loop
-                     */
-                    cb_variant_destroy(body_result);
-                    cb_variant_destroy(result);
-                    result = NULL;
                     break;
-                }
                 else
                 {
                     current++;
@@ -278,7 +269,7 @@ bool cb_ast_for_node_check_semantic(const CbAstControlFlowNode* self,
            (cb_ast_node_get_expression_type(self->base.right)       == CB_VARIANT_TYPE_INTEGER) &&
            cb_ast_node_check_semantic(self->condition,  symbols)   &&
            cb_ast_node_check_semantic(self->base.right, symbols)   &&
-           cb_ast_node_check_semantic(self->base.left,  symbols);
+           cb_ast_node_safe_check_semantic(self->base.left,  symbols);
 }
 
 
