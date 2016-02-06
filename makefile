@@ -124,12 +124,12 @@ rundebug: build
 # memory-check for main target
 mc:       memcheck
 memcheck: build
-	$(VALGRIND) $(VALGRIND_OPTIONS) ./$(TARGET)
+	$(VALGRIND) $(VALGRIND_OPTIONS) ./$(TARGET) $(p)
 
 mcf:           memcheck-full
 memcheck-full: VALGRIND_OPTIONS += $(VALGRIND_OPTIONS_EXTRA)
 memcheck-full: build
-	$(VALGRIND) $(VALGRIND_OPTIONS) ./$(TARGET)
+	$(VALGRIND) $(VALGRIND_OPTIONS) ./$(TARGET) $(p)
 
 .PHONY: mc memcheck mcf memcheck-full
 
