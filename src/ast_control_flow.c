@@ -259,17 +259,50 @@ CbVariant* cb_ast_for_node_eval(const CbAstControlFlowNode* self,
 bool cb_ast_for_node_check_semantic(const CbAstControlFlowNode* self,
                                     CbSymbolTable* symbols)
 {
-    return (self->condition->type       == CB_AST_TYPE_ASSIGNMENT) &&
-           (self->condition->left->type == CB_AST_TYPE_VARIABLE)   &&
-           cb_ast_variable_node_is_declared(
-               (const CbAstVariableNode*) self->condition->left,
-               symbols
-           )                                                       &&
-           (cb_ast_node_get_expression_type(self->condition->right) == CB_VARIANT_TYPE_INTEGER) &&
-           (cb_ast_node_get_expression_type(self->base.right)       == CB_VARIANT_TYPE_INTEGER) &&
-           cb_ast_node_check_semantic(self->condition,  symbols)   &&
-           cb_ast_node_check_semantic(self->base.right, symbols)   &&
-           cb_ast_node_safe_check_semantic(self->base.left,  symbols);
+    /*
+     * Check semantic of child nodes in the following order:
+     *  - initialisation of the loop counter (self->condition)
+     *  - final loop value                   (self->base.right)
+     *  - body of the loop                   (self->base.left)
+     */
+    bool result = cb_ast_node_check_semantic(self->condition,  symbols) &&
+                  cb_ast_node_check_semantic(self->base.right, symbols);
+
+    if (result)
+    {
+        /*
+         * The initialisation must contain an assignment of an integer value to a
+         * variable.
+         */
+        if (self->condition->type != CB_AST_TYPE_ASSIGNMENT)
+        {
+            result = false;
+            cb_error_trigger(
+                self->base.error_context, self->base.line,
+                "First item must be an assignment"
+            );
+        }
+        /* the initial value to start the loop must be an integer value */
+        else if (cb_ast_node_get_expression_type(self->condition->right) != CB_VARIANT_TYPE_INTEGER)
+        {
+            result = false;
+            cb_error_trigger(
+                self->base.error_context, self->base.line,
+                "The assigned value must be of type integer"
+            );
+        }
+        /* the final value to end the loop must be an integer value as well */
+        else if (cb_ast_node_get_expression_type(self->base.right) != CB_VARIANT_TYPE_INTEGER)
+        {
+            result = false;
+            cb_error_trigger(
+                self->base.error_context, self->base.line,
+                "Second item must be of type integer"
+            );
+        }
+    }
+
+    return result && cb_ast_node_safe_check_semantic(self->base.left, symbols);
 }
 
 
