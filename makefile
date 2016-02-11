@@ -33,6 +33,7 @@ SOURCES                := $(LEXER_SRC) $(PARSER_SRC) \
                           ast_value.c ast_declaration.c ast_statement_list.c \
                           ast_declaration_block.c ast_assignment.c \
                           ast_control_flow.c \
+                          ast_debug_print.c \
                           scope.c symbol.c symbol_variable.c symbol_function.c \
                           symbol_table.c \
                           codeblock.c

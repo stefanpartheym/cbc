@@ -6,6 +6,7 @@
 #include "utils.h"
 #include "variant.h"
 #include "ast.h"
+#include "ast_debug_print.h"
 #include "ast_value.h"
 #include "ast_unary.h"
 #include "ast_binary.h"
@@ -43,6 +44,7 @@ void yyerror(void* data, const char* format, ...);
 %token <float_val>   FLOAT
 %token <boolean_val> BOOLEAN
 %token <string_val>  STRING
+%token               PRINT
 %token               IF THEN ELSE ENDIF
                      WHILE DO END
                      FOR TO NEXT
@@ -120,6 +122,7 @@ statement_list:
 
 statement:
     expression          { $$ = $1; }
+    | PRINT expression  { $$ = (CbAstNode*) cb_ast_debug_print_node_create($2); }
     | IF expression THEN statement_list ENDIF {
                             $$ = (CbAstNode*) cb_ast_if_node_create(
                                 $2, $4, NULL

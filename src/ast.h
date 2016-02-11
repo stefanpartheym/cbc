@@ -33,6 +33,7 @@ typedef struct CbAstNode CbAstNode;
 typedef enum CbAstType
 {
     CB_AST_TYPE_NONE,
+    CB_AST_TYPE_DEBUG_PRINT,
     CB_AST_TYPE_VALUE,
     CB_AST_TYPE_BINARY,
     CB_AST_TYPE_UNARY,

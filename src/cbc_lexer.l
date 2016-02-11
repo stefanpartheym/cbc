@@ -19,6 +19,7 @@
 
 
                 /* keywords */
+"print"         { return PRINT; }
 "if"            { return IF; }
 "then"          { return THEN; }
 "else"          { return ELSE; }
