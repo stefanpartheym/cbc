@@ -30,6 +30,7 @@ CbAstDebugPrintNode* cb_ast_debug_print_node_create(CbAstNode* expression)
 
 void cb_ast_debug_print_node_destroy(CbAstDebugPrintNode* self)
 {
+    cb_ast_node_destroy(self->base.left);
     memfree(self);
 }
 
