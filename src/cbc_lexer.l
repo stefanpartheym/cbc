@@ -32,6 +32,7 @@
 "next"          { return NEXT; }
 "case"          { return CASE; }
 "of"            { return OF; }
+"otherwise"     { return OTHERWISE; }
 "endcase"       { return ENDCASE; }
 
                 /* logical gates */

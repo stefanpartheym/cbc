@@ -21,6 +21,7 @@ struct CbAstSwitchCaseNode
 {
     CbAstControlFlowNode base;
     Vector* cases;
+    CbAstNode* default_case;
 };
 
 struct CbAstCaseNode
@@ -320,7 +321,8 @@ bool cb_ast_for_node_check_semantic(const CbAstControlFlowNode* self,
 /* -------------------------------------------------------------------------- */
 
 CbAstSwitchCaseNode* cb_ast_switch_case_node_create(CbAstNode* switch_node,
-                                                    Vector* cases)
+                                                    Vector* cases,
+                                                    CbAstNode* default_case)
 {
     CbAstSwitchCaseNode* self = (CbAstSwitchCaseNode*) memalloc(sizeof(CbAstSwitchCaseNode));
     cb_ast_node_init(
@@ -333,6 +335,7 @@ CbAstSwitchCaseNode* cb_ast_switch_case_node_create(CbAstNode* switch_node,
     self->base.flow_type = CB_AST_CONTROL_FLOW_TYPE_SWITCH;
     self->base.condition = switch_node;
     self->cases          = cases;
+    self->default_case   = default_case;
 
     return self;
 }
@@ -351,6 +354,7 @@ void cb_ast_switch_case_node_destroy(CbAstSwitchCaseNode* self)
         }
         vector_destroy(self->cases);
     }
+    if (self->default_case != NULL) cb_ast_node_destroy(self->default_case);
 
     memfree(self);
 }
@@ -363,7 +367,9 @@ CbVariant* cb_ast_switch_case_node_eval(const CbAstSwitchCaseNode* self,
 
     if (case_value != NULL)
     {
-        bool process = true;
+        bool process    = true;
+        bool case_match = false;
+        bool error      = false;
         int i;
 
         for (i = 0; process && i < vector_get_count(self->cases); i++)
@@ -374,16 +380,31 @@ CbVariant* cb_ast_switch_case_node_eval(const CbAstSwitchCaseNode* self,
             cb_assert(vector_get(self->cases, i, (VectorItem*) &case_node));
 
             current_value = cb_ast_node_eval(case_node->base.left, symbols);
-            if (current_value == NULL) break;
+            if (current_value == NULL)
+            {
+                error = true;
+                break;
+            }
 
             if (cb_variant_equals(case_value, current_value))
             {
-                process = false;
+                process    = false;
+                case_match = true;
                 result  = cb_ast_node_eval((CbAstNode*) case_node, symbols);
             }
 
             cb_variant_destroy(current_value);
         }
+
+        /*
+         * Default case:
+         * If no case matched -> execute the default case.
+         */
+        if (!error && !case_match)
+            if (self->default_case == NULL)
+                result = cb_variant_create();
+            else
+                result = cb_ast_node_eval(self->default_case, symbols);
 
         cb_variant_destroy(case_value);
     }

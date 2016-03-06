@@ -50,7 +50,7 @@ void yyerror(void* data, const char* format, ...);
 %token               IF THEN ELSE ENDIF
                      WHILE DO END
                      FOR TO NEXT
-                     CASE OF ENDCASE CASE_OPERATOR
+                     CASE OF OTHERWISE ENDCASE CASE_OPERATOR
 %token               ENDOFFILE
 
 %right    ASSIGNMENT
@@ -155,7 +155,15 @@ statement:
                             cb_ast_node_set_line($$, yylineno);
                         }
     | CASE expression case_list ENDCASE {
-                            $$ = (CbAstNode*) cb_ast_switch_case_node_create($2, $3);
+                            $$ = (CbAstNode*) cb_ast_switch_case_node_create(
+                                $2, $3, NULL
+                            );
+                            cb_ast_node_set_line($$, yylineno);
+                        }
+    | CASE expression case_list OTHERWISE statement_list ENDCASE {
+                            $$ = (CbAstNode*) cb_ast_switch_case_node_create(
+                                $2, $3, $5
+                            );
                             cb_ast_node_set_line($$, yylineno);
                         }
     ;

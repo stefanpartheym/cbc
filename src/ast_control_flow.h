@@ -119,7 +119,8 @@ bool cb_ast_for_node_check_semantic(const CbAstControlFlowNode* self,
  * Constructor for a switch-statement
  */
 CbAstSwitchCaseNode* cb_ast_switch_case_node_create(CbAstNode* switch_node,
-                                                    Vector* cases);
+                                                    Vector* cases,
+                                                    CbAstNode* default_case);
 
 /*
  * Destructor for a switch-statement
