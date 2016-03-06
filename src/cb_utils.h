@@ -24,6 +24,8 @@ void _cb_abort(const char* message,
                const int line,
                const char* function);
 #else
+#include <assert.h>
+#include <stdlib.h>
 #define cb_assert(condition) do { assert(condition); } while (0)
 #define cb_abort(message) do { abort(); } while (0)
 #endif /* DEBUG */
