@@ -174,64 +174,14 @@ static CbVariant* cb_ast_binary_node_eval_integer(const CbAstBinaryNode* self,
                                                   const CbVariant* left,
                                                   const CbVariant* right)
 {
-    CbVariant* result    = NULL;
-    CbIntegerDataType v1 = cb_integer_get_value(left);
-    CbIntegerDataType v2 = cb_integer_get_value(right);
+    CbVariant* result = NULL;
 
-    switch (self->operator_type)
-    {
-        case CB_BINARY_OPERATOR_TYPE_ADD:
-            result = cb_integer_create(v1 + v2); break;
-
-        case CB_BINARY_OPERATOR_TYPE_SUB:
-            result = cb_integer_create(v1 - v2); break;
-
-        case CB_BINARY_OPERATOR_TYPE_MUL:
-            result = cb_integer_create(v1 * v2); break;
-
-        case CB_BINARY_OPERATOR_TYPE_DIV:
-            if (v2 == 0)
-                cb_error_trigger(CB_ERROR_RUNTIME, self->base.line,
-                                 "Division by zero is not allowed");
-            else
-            {
-                if ((v1 % v2) == 0)
-                    /*
-                     * Division does not yield a real number.
-                     * -> Create an integer result.
-                     */
-                    result = cb_integer_create(v1 / v2);
-                else
-                    /*
-                     * Division yields a real number -> Create a float result.
-                     */
-                    result = cb_float_create((CbFloatDataType) v1 /
-                                             (CbFloatDataType) v2);
-            }
-            break;
-
-        case CB_BINARY_OPERATOR_TYPE_COMPARISON_GT:
-            result = cb_boolean_create(v1 > v2); break;
-
-        case CB_BINARY_OPERATOR_TYPE_COMPARISON_GE:
-            result = cb_boolean_create(v1 >= v2); break;
-
-        case CB_BINARY_OPERATOR_TYPE_COMPARISON_LT:
-            result = cb_boolean_create(v1 < v2); break;
-
-        case CB_BINARY_OPERATOR_TYPE_COMPARISON_LE:
-            result = cb_boolean_create(v1 <= v2); break;
-
-        case CB_BINARY_OPERATOR_TYPE_COMPARISON_EQ:
-        case CB_BINARY_OPERATOR_TYPE_COMPARISON_SE:
-            result = cb_boolean_create(v1 == v2); break;
-
-        case CB_BINARY_OPERATOR_TYPE_COMPARISON_NE:
-            result = cb_boolean_create(v1 != v2); break;
-
-        /* invalid binary operator type */
-        default: cb_abort("Invalid binary operator type"); break;
-    }
+    if (self->operator_type         == CB_BINARY_OPERATOR_TYPE_DIV &&
+        cb_integer_get_value(right) == 0)
+        cb_error_trigger(CB_ERROR_RUNTIME, self->base.line,
+                         "Division by zero is not allowed");
+    else
+        result = cb_integer_perform_binary_operation(self->operator_type, left, right);
 
     return result;
 }
@@ -240,54 +190,14 @@ static CbVariant* cb_ast_binary_node_eval_float(const CbAstBinaryNode* self,
                                                 const CbVariant* left,
                                                 const CbVariant* right)
 {
-    CbFloatDataType v1;
-    CbFloatDataType v2;
     CbVariant* result = NULL;
 
-    v1 = cb_numeric_as_float(left);
-    v2 = cb_numeric_as_float(right);
-
-    switch (self->operator_type)
-    {
-        case CB_BINARY_OPERATOR_TYPE_ADD:
-            result = cb_float_create(v1 + v2); break;
-
-        case CB_BINARY_OPERATOR_TYPE_SUB:
-            result = cb_float_create(v1 - v2); break;
-
-        case CB_BINARY_OPERATOR_TYPE_MUL:
-            result = cb_float_create(v1 * v2); break;
-
-        case CB_BINARY_OPERATOR_TYPE_DIV:
-            if (v2 == 0.0)
-                cb_error_trigger(CB_ERROR_RUNTIME, self->base.line,
-                                 "Division by zero is not allowed");
-            else
-                result = cb_float_create(v1 / v2);
-            break;
-
-        case CB_BINARY_OPERATOR_TYPE_COMPARISON_GT:
-            result = cb_boolean_create(v1 > v2); break;
-
-        case CB_BINARY_OPERATOR_TYPE_COMPARISON_GE:
-            result = cb_boolean_create((v1 > v2) || dequal(v1, v2)); break;
-
-        case CB_BINARY_OPERATOR_TYPE_COMPARISON_LT:
-            result = cb_boolean_create(v1 < v2); break;
-
-        case CB_BINARY_OPERATOR_TYPE_COMPARISON_LE:
-            result = cb_boolean_create((v1 < v2) || dequal(v1, v2)); break;
-
-        case CB_BINARY_OPERATOR_TYPE_COMPARISON_EQ:
-        case CB_BINARY_OPERATOR_TYPE_COMPARISON_SE:
-            result = cb_boolean_create(dequal(v1, v2)); break;
-
-        case CB_BINARY_OPERATOR_TYPE_COMPARISON_NE:
-            result = cb_boolean_create(!dequal(v1, v2)); break;
-
-        /* invalid binary operator type */
-        default: cb_abort("Invalid binary operator type"); break;
-    }
+    if (self->operator_type        == CB_BINARY_OPERATOR_TYPE_DIV &&
+        cb_numeric_as_float(right) == 0)
+        cb_error_trigger(CB_ERROR_RUNTIME, self->base.line,
+                         "Division by zero is not allowed");
+    else
+        result = cb_float_perform_binary_operation(self->operator_type, left, right);
 
     return result;
 }
@@ -296,63 +206,14 @@ static CbVariant* cb_ast_binary_node_eval_string(const CbAstBinaryNode* self,
                                                  const CbVariant* left,
                                                  const CbVariant* right)
 {
-    CbVariant* result = NULL;
-
-    switch (self->operator_type)
-    {
-        case CB_BINARY_OPERATOR_TYPE_ADD:
-            result = cb_variant_copy(left);
-            cb_string_concat(result, right);
-            break;
-
-        case CB_BINARY_OPERATOR_TYPE_COMPARISON_EQ:
-            result = cb_boolean_create(cb_string_lhs_equal(left, right)); break;
-
-        case CB_BINARY_OPERATOR_TYPE_COMPARISON_SE:
-            result = cb_boolean_create(cb_string_equal(left, right)); break;
-
-        case CB_BINARY_OPERATOR_TYPE_COMPARISON_NE:
-            result = cb_boolean_create(!cb_string_equal(left, right)); break;
-
-        /* invalid binary operator type */
-        default: cb_abort("Invalid binary operator type"); break;
-    }
-
-
-    return result;
+    return cb_string_perform_binary_operation(self->operator_type, left, right);
 }
 
 static CbVariant* cb_ast_binary_node_eval_boolean(const CbAstBinaryNode* self,
                                                   const CbVariant* left,
                                                   const CbVariant* right)
 {
-    CbFloatDataType v1;
-    CbFloatDataType v2;
-    CbVariant* result = NULL;
-
-    v1 = cb_boolean_get_value(left);
-    v2 = cb_boolean_get_value(right);
-
-    switch (self->operator_type)
-    {
-        case CB_BINARY_OPERATOR_TYPE_LOGICAL_AND:
-            result = cb_boolean_create(v1 && v2); break;
-
-        case CB_BINARY_OPERATOR_TYPE_LOGICAL_OR:
-            result = cb_boolean_create(v1 || v2); break;
-
-        case CB_BINARY_OPERATOR_TYPE_COMPARISON_EQ:
-        case CB_BINARY_OPERATOR_TYPE_COMPARISON_SE:
-            result = cb_boolean_create(v1 == v2); break;
-
-        case CB_BINARY_OPERATOR_TYPE_COMPARISON_NE:
-            result = cb_boolean_create(v1 != v2); break;
-
-        /* invalid binary operator type */
-        default: cb_abort("Invalid binary operator type"); break;
-    }
-
-    return result;
+    return cb_boolean_perform_binary_operation(self->operator_type, left, right);
 }
 
 static bool cb_ast_binary_node_check_operation(const CbAstBinaryNode* self,

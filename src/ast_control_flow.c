@@ -17,6 +17,17 @@ struct CbAstControlFlowNode
     CbAstNode* condition;
 };
 
+struct CbAstSwitchCaseNode
+{
+    CbAstControlFlowNode base;
+    Vector* cases;
+};
+
+struct CbAstCaseNode
+{
+    CbAstNode base;
+};
+
 
 /*
  * Constructor (Internal)
@@ -234,7 +245,7 @@ CbVariant* cb_ast_for_node_eval(const CbAstControlFlowNode* self,
             while (current < final)
             {
                 if (result != NULL) cb_variant_destroy(result);
-                
+
                 result = cb_ast_node_safe_eval(self->base.left, symbols);
                 if (result == NULL)
                     break;
@@ -303,6 +314,144 @@ bool cb_ast_for_node_check_semantic(const CbAstControlFlowNode* self,
     }
 
     return result && cb_ast_node_safe_check_semantic(self->base.left, symbols);
+}
+
+
+/* -------------------------------------------------------------------------- */
+
+CbAstSwitchCaseNode* cb_ast_switch_case_node_create(CbAstNode* switch_node,
+                                                    Vector* cases)
+{
+    CbAstSwitchCaseNode* self = (CbAstSwitchCaseNode*) memalloc(sizeof(CbAstSwitchCaseNode));
+    cb_ast_node_init(
+        &self->base.base, CB_AST_TYPE_CONTROL_FLOW, NULL, NULL,
+        (CbAstNodeDestructorFunc) cb_ast_switch_case_node_destroy,
+        (CbAstNodeEvalFunc) cb_ast_switch_case_node_eval,
+        (CbAstNodeSemanticFunc) cb_ast_switch_case_node_check_semantic
+    );
+
+    self->base.flow_type = CB_AST_CONTROL_FLOW_TYPE_SWITCH;
+    self->base.condition = switch_node;
+    self->cases          = cases;
+
+    return self;
+}
+
+void cb_ast_switch_case_node_destroy(CbAstSwitchCaseNode* self)
+{
+    cb_ast_node_destroy(self->base.condition);
+    if (self->cases != NULL)
+    {
+        int i;
+        for (i = 0; i < vector_get_count(self->cases); i++)
+        {
+            CbAstCaseNode* item;
+            vector_get(self->cases, i, (VectorItem*) &item);
+            if (item != NULL) cb_ast_case_node_destroy(item);
+        }
+        vector_destroy(self->cases);
+    }
+
+    memfree(self);
+}
+
+CbVariant* cb_ast_switch_case_node_eval(const CbAstSwitchCaseNode* self,
+                                        const CbSymbolTable* symbols)
+{
+    CbVariant* result     = NULL;
+    CbVariant* case_value = cb_ast_node_eval(self->base.condition, symbols);
+
+    if (case_value != NULL)
+    {
+        bool process = true;
+        int i;
+
+        for (i = 0; process && i < vector_get_count(self->cases); i++)
+        {
+            CbAstCaseNode* case_node = NULL;
+            CbVariant* current_value;
+
+            cb_assert(vector_get(self->cases, i, (VectorItem*) &case_node));
+
+            current_value = cb_ast_node_eval(case_node->base.left, symbols);
+            if (current_value == NULL) break;
+
+            if (cb_variant_equals(case_value, current_value))
+            {
+                process = false;
+                result  = cb_ast_node_eval((CbAstNode*) case_node, symbols);
+            }
+
+            cb_variant_destroy(current_value);
+        }
+
+        cb_variant_destroy(case_value);
+    }
+
+    return result;
+}
+
+bool cb_ast_switch_case_node_check_semantic(const CbAstSwitchCaseNode* self,
+                                            CbSymbolTable* symbols)
+{
+    bool result = true;
+    int i;
+
+    result = cb_ast_node_check_semantic(self->base.condition, symbols);
+    if (result)
+    {
+        for (i = 0; result && i < vector_get_count(self->cases); i++)
+        {
+            /*
+             * Obtain objects as CbAstNode instead of CbAstCaseNode from the
+             * vector.
+             */
+            CbAstNode* case_node;
+            cb_assert(
+                vector_get(self->cases, i, (VectorItem*) &case_node)
+            );
+            result = cb_ast_node_check_semantic(case_node, symbols);
+        }
+    }
+
+    return result;
+}
+
+
+/* -------------------------------------------------------------------------- */
+
+CbAstCaseNode* cb_ast_case_node_create(CbAstNode* condition, CbAstNode* body)
+{
+    CbAstCaseNode* self = (CbAstCaseNode*) memalloc(sizeof(CbAstCaseNode));
+    cb_ast_node_init(
+        &self->base, CB_AST_TYPE_CASE_NODE, condition, body,
+        (CbAstNodeDestructorFunc) cb_ast_case_node_destroy,
+        (CbAstNodeEvalFunc)       cb_ast_case_node_eval,
+        (CbAstNodeSemanticFunc)   cb_ast_case_node_check_semantic
+    );
+
+    return self;
+}
+
+void cb_ast_case_node_destroy(CbAstCaseNode* self)
+{
+    cb_ast_node_destroy(self->base.left);
+    if (self->base.right != NULL) cb_ast_node_destroy(self->base.right);
+
+    memfree(self);
+}
+
+CbVariant* cb_ast_case_node_eval(const CbAstCaseNode* self,
+                                 const CbSymbolTable* symbols)
+{
+    return cb_ast_node_eval(self->base.right, symbols);
+}
+
+bool cb_ast_case_node_check_semantic(const CbAstCaseNode* self,
+                                     CbSymbolTable* symbols)
+{
+    return cb_ast_node_check_semantic(self->base.left, symbols) &&
+           cb_ast_node_safe_check_semantic(self->base.right, symbols);
 }
 
 

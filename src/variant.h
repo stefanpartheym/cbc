@@ -115,6 +115,11 @@ void cb_variant_destroy(CbVariant* self);
 CbVariant* cb_variant_copy(const CbVariant* variant);
 
 /*
+ * Check if two Variant instances have equal values.
+ */
+bool cb_variant_equals(const CbVariant* v1, const CbVariant* v2);
+
+/*
  * Variant type (Getter)
  */
 CbVariantType cb_variant_get_type(const CbVariant* self);
@@ -193,6 +198,13 @@ CbVariant* cb_integer_create(const CbIntegerDataType value);
  */
 CbIntegerDataType cb_integer_get_value(const CbVariant* self);
 
+/*
+ * Perform binary operation (integer)
+ */
+CbVariant* cb_integer_perform_binary_operation(CbBinaryOperatorType operator_type,
+                                               const CbVariant* left,
+                                               const CbVariant* right);
+
 
 /* -------------------------------------------------------------------------- */
 /* float variant type functions */
@@ -207,6 +219,13 @@ CbVariant* cb_float_create(const CbFloatDataType value);
  */
 CbFloatDataType cb_float_get_value(const CbVariant* self);
 
+/*
+ * Perform binary operation (float)
+ */
+CbVariant* cb_float_perform_binary_operation(CbBinaryOperatorType operator_type,
+                                             const CbVariant* left,
+                                             const CbVariant* right);
+
 
 /* -------------------------------------------------------------------------- */
 /* boolean variant type functions */
@@ -220,6 +239,13 @@ CbVariant* cb_boolean_create(const CbBooleanDataType value);
  * Boolean value (Getter)
  */
 CbFloatDataType cb_boolean_get_value(const CbVariant* self);
+
+/*
+ * Perform binary operation (boolean)
+ */
+CbVariant* cb_boolean_perform_binary_operation(CbBinaryOperatorType operator_type,
+                                               const CbVariant* left,
+                                               const CbVariant* right);
 
 
 /* -------------------------------------------------------------------------- */
@@ -249,6 +275,13 @@ CbBooleanDataType cb_string_lhs_equal(const CbVariant* lhs, const CbVariant* rhs
  * Concatenate two strings together
  */
 void cb_string_concat(CbVariant* self, const CbVariant* source);
+
+/*
+ * Perform binary operation (string)
+ */
+CbVariant* cb_string_perform_binary_operation(CbBinaryOperatorType operator_type,
+                                              const CbVariant* left,
+                                              const CbVariant* right);
 
 
 #endif /* VARIANT_H */

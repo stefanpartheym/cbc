@@ -32,11 +32,13 @@ void yyerror(void* data, const char* format, ...);
 
 %union {
     CbAstNode*        ast;
+    CbAstCaseNode*    ast_case_node;
     char*             identifier;
     CbIntegerDataType integer_val;
     CbFloatDataType   float_val;
     CbBooleanDataType boolean_val;
     CbStringDataType  string_val;
+    Vector*           list;
 };
 
 %token <identifier>  IDENTIFIER
@@ -48,6 +50,7 @@ void yyerror(void* data, const char* format, ...);
 %token               IF THEN ELSE ENDIF
                      WHILE DO END
                      FOR TO NEXT
+                     CASE OF ENDCASE CASE_OPERATOR
 %token               ENDOFFILE
 
 %right    ASSIGNMENT
@@ -58,10 +61,12 @@ void yyerror(void* data, const char* format, ...);
 %left     '+' '-'
 %left     '*' '/'
 
-%type <ast> expression
-            statement statement_list
-            var_declaration var_declaration_block var_declaration_list
-            var_access
+%type <ast>           expression
+                      statement statement_list
+                      var_declaration var_declaration_block var_declaration_list
+                      var_access
+%type <ast_case_node> case_node
+%type <list>          case_list case_block
 
 /* Output parameter: The AST of the parsed codeblock */
 %parse-param {CbAstNode** result_ast}
@@ -148,6 +153,31 @@ statement:
     | FOR expression TO expression DO statement_list NEXT {
                             $$ = (CbAstNode*) cb_ast_for_node_create($2, $4, $6);
                             cb_ast_node_set_line($$, yylineno);
+                        }
+    | CASE expression case_list ENDCASE {
+                            $$ = (CbAstNode*) cb_ast_switch_case_node_create($2, $3);
+                            cb_ast_node_set_line($$, yylineno);
+                        }
+    ;
+
+    case_list:
+        case_block      { $$ = $1; }
+        |               { $$ = NULL; }
+    ;
+
+    case_block:
+        OF case_node       {
+                            $$ = vector_create();
+                            vector_append($$, $2);
+                        }
+        | case_block OF case_node {
+                            vector_append($1, $3);
+                        }
+    ;
+
+    case_node:
+        expression CASE_OPERATOR statement_list {
+                            $$ = cb_ast_case_node_create($1, $3);
                         }
     ;
 

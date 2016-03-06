@@ -13,18 +13,24 @@
 #define AST_CONTROL_FLOW_H
 
 #include "ast.h"
+#include "vector.h"
 
 
 /* -------------------------------------------------------------------------- */
 
 typedef struct CbAstControlFlowNode CbAstControlFlowNode;
+typedef struct CbAstSwitchCaseNode CbAstSwitchCaseNode;
+typedef struct CbAstCaseNode CbAstCaseNode;
 
-typedef enum
+enum CbAstControlFlowNodeType
 {
     CB_AST_CONTROL_FLOW_TYPE_IF,
     CB_AST_CONTROL_FLOW_TYPE_WHILE,
-    CB_AST_CONTROL_FLOW_TYPE_FOR
-} CbAstControlFlowNodeType;
+    CB_AST_CONTROL_FLOW_TYPE_FOR,
+    CB_AST_CONTROL_FLOW_TYPE_SWITCH
+};
+
+typedef enum CbAstControlFlowNodeType CbAstControlFlowNodeType;
 
 
 /* -------------------------------------------------------------------------- */
@@ -105,6 +111,57 @@ CbVariant* cb_ast_for_node_eval(const CbAstControlFlowNode* self,
  */
 bool cb_ast_for_node_check_semantic(const CbAstControlFlowNode* self,
                                     CbSymbolTable* symbols);
+
+
+/* -------------------------------------------------------------------------- */
+
+/*
+ * Constructor for a switch-statement
+ */
+CbAstSwitchCaseNode* cb_ast_switch_case_node_create(CbAstNode* switch_node,
+                                                    Vector* cases);
+
+/*
+ * Destructor for a switch-statement
+ */
+void cb_ast_switch_case_node_destroy(CbAstSwitchCaseNode* self);
+
+/*
+ * Evaluate a switch-statement
+ */
+CbVariant* cb_ast_switch_case_node_eval(const CbAstSwitchCaseNode* self,
+                                        const CbSymbolTable* symbols);
+
+/*
+ * Check semantics for a switch-statement
+ */
+bool cb_ast_switch_case_node_check_semantic(const CbAstSwitchCaseNode* self,
+                                            CbSymbolTable* symbols);
+
+
+/* -------------------------------------------------------------------------- */
+
+/*
+ * Constructor for the case node
+ */
+CbAstCaseNode* cb_ast_case_node_create(CbAstNode* condition, CbAstNode* body);
+
+/*
+ * Destructor for the case node
+ */
+void cb_ast_case_node_destroy(CbAstCaseNode* self);
+
+/*
+ * Evaluate a case node
+ */
+CbVariant* cb_ast_case_node_eval(const CbAstCaseNode* self,
+                                 const CbSymbolTable* symbols);
+
+/*
+ * Check semantics for a case node
+ */
+bool cb_ast_case_node_check_semantic(const CbAstCaseNode* self,
+                                     CbSymbolTable* symbols);
 
 
 #endif /* AST_CONTROL_FLOW_H */

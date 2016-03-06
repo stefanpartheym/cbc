@@ -30,6 +30,9 @@
 "for"           { return FOR; }
 "to"            { return TO; }
 "next"          { return NEXT; }
+"case"          { return CASE; }
+"of"            { return OF; }
+"endcase"       { return ENDCASE; }
 
                 /* logical gates */
 "not"           { return LOGICAL_NOT; }
@@ -118,6 +121,9 @@
 ">="            { return COMPARISON_GE; }
 "<="            { return COMPARISON_LE; }
 "<>"            { return COMPARISON_NE; }
+
+                /* case operator */
+"::"            { return CASE_OPERATOR; }
 
                 /* assignment operator */
 ":="            { return ASSIGNMENT; }

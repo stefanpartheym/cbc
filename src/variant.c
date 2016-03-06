@@ -234,6 +234,48 @@ CbVariant* cb_variant_copy(const CbVariant* variant)
     return copy;
 }
 
+bool cb_variant_equals(const CbVariant* v1, const CbVariant* v2)
+{
+    CbBinaryOperatorType operator_type = CB_BINARY_OPERATOR_TYPE_COMPARISON_EQ;
+    bool result = cb_variant_type_is_binary_operation_valid(operator_type,
+                                                            v1->type,
+                                                            v2->type);
+    if (result)
+    {
+        CbVariant* is_equal;
+        switch (v1->type)
+        {
+            case CB_VARIANT_TYPE_INTEGER:
+                is_equal = cb_integer_perform_binary_operation(operator_type, v1, v2);
+                break;
+
+            case CB_VARIANT_TYPE_FLOAT:
+                is_equal = cb_float_perform_binary_operation(operator_type, v1, v2);
+                break;
+
+            case CB_VARIANT_TYPE_BOOLEAN:
+                is_equal = cb_boolean_perform_binary_operation(operator_type, v1, v2);
+                break;
+
+            case CB_VARIANT_TYPE_STRING:
+                is_equal = cb_string_perform_binary_operation(operator_type, v1, v2);
+                break;
+
+            default: is_equal = NULL;
+        }
+
+        if (is_equal == NULL)
+            result = false;
+        else
+        {
+            result = cb_boolean_get_value(is_equal);
+            cb_variant_destroy(is_equal);
+        }
+    }
+
+    return result;
+}
+
 CbVariantType cb_variant_get_type(const CbVariant* self)
 {
     return self->type;
@@ -374,6 +416,71 @@ CbIntegerDataType cb_integer_get_value(const CbVariant* self)
     return self->v.integer;
 }
 
+CbVariant* cb_integer_perform_binary_operation(CbBinaryOperatorType operator_type,
+                                               const CbVariant* left,
+                                               const CbVariant* right)
+{
+    CbVariant* result    = NULL;
+    CbIntegerDataType v1 = cb_integer_get_value(left);
+    CbIntegerDataType v2 = cb_integer_get_value(right);
+
+    switch (operator_type)
+    {
+        case CB_BINARY_OPERATOR_TYPE_ADD:
+            result = cb_integer_create(v1 + v2); break;
+
+        case CB_BINARY_OPERATOR_TYPE_SUB:
+            result = cb_integer_create(v1 - v2); break;
+
+        case CB_BINARY_OPERATOR_TYPE_MUL:
+            result = cb_integer_create(v1 * v2); break;
+
+        case CB_BINARY_OPERATOR_TYPE_DIV:
+            if (v2 == 0)
+                cb_abort("Division by zero is not allowed");
+            else
+            {
+                if ((v1 % v2) == 0)
+                    /*
+                     * Division does not yield a real number.
+                     * -> Create an integer result.
+                     */
+                    result = cb_integer_create(v1 / v2);
+                else
+                    /*
+                     * Division yields a real number -> Create a float result.
+                     */
+                    result = cb_float_create((CbFloatDataType) v1 /
+                                             (CbFloatDataType) v2);
+            }
+            break;
+
+        case CB_BINARY_OPERATOR_TYPE_COMPARISON_GT:
+            result = cb_boolean_create(v1 > v2); break;
+
+        case CB_BINARY_OPERATOR_TYPE_COMPARISON_GE:
+            result = cb_boolean_create(v1 >= v2); break;
+
+        case CB_BINARY_OPERATOR_TYPE_COMPARISON_LT:
+            result = cb_boolean_create(v1 < v2); break;
+
+        case CB_BINARY_OPERATOR_TYPE_COMPARISON_LE:
+            result = cb_boolean_create(v1 <= v2); break;
+
+        case CB_BINARY_OPERATOR_TYPE_COMPARISON_EQ:
+        case CB_BINARY_OPERATOR_TYPE_COMPARISON_SE:
+            result = cb_boolean_create(v1 == v2); break;
+
+        case CB_BINARY_OPERATOR_TYPE_COMPARISON_NE:
+            result = cb_boolean_create(v1 != v2); break;
+
+        /* invalid binary operator type */
+        default: cb_abort("Invalid binary operator type"); break;
+    }
+
+    return result;
+}
+
 
 /* -------------------------------------------------------------------------- */
 
@@ -393,6 +500,61 @@ CbFloatDataType cb_float_get_value(const CbVariant* self)
     return self->v.decimal;
 }
 
+CbVariant* cb_float_perform_binary_operation(CbBinaryOperatorType operator_type,
+                                             const CbVariant* left,
+                                             const CbVariant* right)
+{
+    CbFloatDataType v1;
+    CbFloatDataType v2;
+    CbVariant* result = NULL;
+
+    v1 = cb_numeric_as_float(left);
+    v2 = cb_numeric_as_float(right);
+
+    switch (operator_type)
+    {
+        case CB_BINARY_OPERATOR_TYPE_ADD:
+            result = cb_float_create(v1 + v2); break;
+
+        case CB_BINARY_OPERATOR_TYPE_SUB:
+            result = cb_float_create(v1 - v2); break;
+
+        case CB_BINARY_OPERATOR_TYPE_MUL:
+            result = cb_float_create(v1 * v2); break;
+
+        case CB_BINARY_OPERATOR_TYPE_DIV:
+            if (v2 == 0.0)
+                cb_abort("Division by zero is not allowed");
+            else
+                result = cb_float_create(v1 / v2);
+            break;
+
+        case CB_BINARY_OPERATOR_TYPE_COMPARISON_GT:
+            result = cb_boolean_create(v1 > v2); break;
+
+        case CB_BINARY_OPERATOR_TYPE_COMPARISON_GE:
+            result = cb_boolean_create((v1 > v2) || dequal(v1, v2)); break;
+
+        case CB_BINARY_OPERATOR_TYPE_COMPARISON_LT:
+            result = cb_boolean_create(v1 < v2); break;
+
+        case CB_BINARY_OPERATOR_TYPE_COMPARISON_LE:
+            result = cb_boolean_create((v1 < v2) || dequal(v1, v2)); break;
+
+        case CB_BINARY_OPERATOR_TYPE_COMPARISON_EQ:
+        case CB_BINARY_OPERATOR_TYPE_COMPARISON_SE:
+            result = cb_boolean_create(dequal(v1, v2)); break;
+
+        case CB_BINARY_OPERATOR_TYPE_COMPARISON_NE:
+            result = cb_boolean_create(!dequal(v1, v2)); break;
+
+        /* invalid binary operator type */
+        default: cb_abort("Invalid binary operator type"); break;
+    }
+
+    return result;
+}
+
 
 /* -------------------------------------------------------------------------- */
 
@@ -410,6 +572,39 @@ CbFloatDataType cb_boolean_get_value(const CbVariant* self)
     cb_assert(cb_variant_is_boolean(self));
 
     return self->v.boolean;
+}
+
+CbVariant* cb_boolean_perform_binary_operation(CbBinaryOperatorType operator_type,
+                                               const CbVariant* left,
+                                               const CbVariant* right)
+{
+    CbBooleanDataType v1;
+    CbBooleanDataType v2;
+    CbVariant* result = NULL;
+
+    v1 = cb_boolean_get_value(left);
+    v2 = cb_boolean_get_value(right);
+
+    switch (operator_type)
+    {
+        case CB_BINARY_OPERATOR_TYPE_LOGICAL_AND:
+            result = cb_boolean_create(v1 && v2); break;
+
+        case CB_BINARY_OPERATOR_TYPE_LOGICAL_OR:
+            result = cb_boolean_create(v1 || v2); break;
+
+        case CB_BINARY_OPERATOR_TYPE_COMPARISON_EQ:
+        case CB_BINARY_OPERATOR_TYPE_COMPARISON_SE:
+            result = cb_boolean_create(v1 == v2); break;
+
+        case CB_BINARY_OPERATOR_TYPE_COMPARISON_NE:
+            result = cb_boolean_create(v1 != v2); break;
+
+        /* invalid binary operator type */
+        default: cb_abort("Invalid binary operator type"); break;
+    }
+
+    return result;
 }
 
 
@@ -462,4 +657,33 @@ CbBooleanDataType cb_string_lhs_equal(const CbVariant* lhs, const CbVariant* rhs
         return false;
     else
         return strnequ(lhs_string, rhs_string, lhs_length);
+}
+
+CbVariant* cb_string_perform_binary_operation(CbBinaryOperatorType operator_type,
+                                              const CbVariant* left,
+                                              const CbVariant* right)
+{
+    CbVariant* result = NULL;
+
+    switch (operator_type)
+    {
+        case CB_BINARY_OPERATOR_TYPE_ADD:
+            result = cb_variant_copy(left);
+            cb_string_concat(result, right);
+            break;
+
+        case CB_BINARY_OPERATOR_TYPE_COMPARISON_EQ:
+            result = cb_boolean_create(cb_string_lhs_equal(left, right)); break;
+
+        case CB_BINARY_OPERATOR_TYPE_COMPARISON_SE:
+            result = cb_boolean_create(cb_string_equal(left, right)); break;
+
+        case CB_BINARY_OPERATOR_TYPE_COMPARISON_NE:
+            result = cb_boolean_create(!cb_string_equal(left, right)); break;
+
+        /* invalid binary operator type */
+        default: cb_abort("Invalid binary operator type"); break;
+    }
+
+    return result;
 }
