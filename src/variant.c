@@ -258,7 +258,14 @@ bool cb_variant_equals(const CbVariant* v1, const CbVariant* v2)
                 break;
 
             case CB_VARIANT_TYPE_STRING:
-                is_equal = cb_string_perform_binary_operation(operator_type, v1, v2);
+                /*
+                 * For strings we must use the string-equality operator.
+                 * Otherwise, a left handed side string comparison would be
+                 * performed.
+                 */
+                is_equal = cb_string_perform_binary_operation(
+                    CB_BINARY_OPERATOR_TYPE_COMPARISON_SE, v1, v2
+                );
                 break;
 
             default: is_equal = NULL;

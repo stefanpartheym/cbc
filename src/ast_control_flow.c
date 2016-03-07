@@ -401,10 +401,12 @@ CbVariant* cb_ast_switch_case_node_eval(const CbAstSwitchCaseNode* self,
          * If no case matched -> execute the default case.
          */
         if (!error && !case_match)
+        {
             if (self->default_case == NULL)
                 result = cb_variant_create();
             else
                 result = cb_ast_node_eval(self->default_case, symbols);
+        }
 
         cb_variant_destroy(case_value);
     }
